@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Experiment Mode — BEMS Living Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="app-body">
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<div class="app-layout flex">
+  <div id="sidebar-root"></div>
+  <div class="app-content flex-1 min-w-0">
+    <div id="topbar-root"></div>
+    <main id="main-content" class="app-main p-6 space-y-6">
+      <section class="page-head">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="page-title">Operating / Experiment Mode</h2>
+            <p class="page-subtitle">Atur protokol eksperimen terkontrol tanpa mengubah koneksi atau perangkat bangunan.</p>
+          </div>
+          <button class="tone-select text-sm px-4 py-2 font-semibold">Protokol eksperimen</button>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
+            <button class="indoor-chip">Hari ini</button>
+            <button class="indoor-chip">Semua ruang</button>
+          </div>
+          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+        </div>
+      </section>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <article class="experiment-mode-card card p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-2xl font-semibold text-slate-700">Operating</p>
+          </div>
+          <p class="text-sm text-slate-500 mt-2">Jadwal dan strategi standar untuk operasional harian.</p>
+        </article>
+
+        <article class="experiment-mode-card experiment-mode-card-active card p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-2xl font-semibold text-slate-700">Experiment</p>
+            <span class="demo-badge" style="background:#e8f7f3;color:#1b8a6e;border-color:#cfeee4;">Demo</span>
+          </div>
+          <p class="text-sm text-slate-500 mt-2">Uji skenario, catat variabel, dan evaluasi hasil penelitian.</p>
+        </article>
+
+        <article class="experiment-mode-card card p-4">
+          <div class="flex items-center justify-between">
+            <p class="text-2xl font-semibold text-slate-700">Safety fallback</p>
+          </div>
+          <p class="text-sm text-slate-500 mt-2">Kembali ke batas aman jika kendala terlampaui.</p>
+        </article>
+      </div>
+
+      <div class="rounded-xl border border-teal-100 bg-teal-50 px-4 py-3">
+        <p class="text-sm font-semibold text-teal-700">Experiment mode — simulasi terisolasi</p>
+        <p class="text-xs text-teal-700 mt-1">Run EXP-026 menggunakan data demo. Seluruh perubahan dicatat sebagai skenario penelitian; tidak ada perintah ke perangkat fisik.</p>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <section class="xl:col-span-2 card p-4">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div>
+              <p class="widget-title">Konfigurasi eksperimen</p>
+              <p class="text-sm text-slate-500 mt-1">EXP-026 · Setpoint step-response</p>
+            </div>
+            <span class="demo-badge">Berjalan demo</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div>
+              <label for="exp-name" class="text-xs text-slate-500 block mb-1">Nama eksperimen</label>
+              <input id="exp-name" value="HVAC setpoint step-response" class="w-full tone-select py-2" />
+            </div>
+            <div>
+              <label for="exp-owner" class="text-xs text-slate-500 block mb-1">Penanggung jawab</label>
+              <input id="exp-owner" value="Aditya Pratama" class="w-full tone-select py-2" />
+            </div>
+            <div>
+              <label for="exp-zone" class="text-xs text-slate-500 block mb-1">Zona eksperimen</label>
+              <select id="exp-zone" class="w-full tone-select py-2">
+                <option>Lab A + Office</option>
+                <option>Lab A + Lab B</option>
+              </select>
+            </div>
+            <div>
+              <label for="exp-variable" class="text-xs text-slate-500 block mb-1">Variabel kontrol</label>
+              <select id="exp-variable" class="w-full tone-select py-2">
+                <option>Setpoint AC</option>
+                <option>Dimming lighting</option>
+              </select>
+            </div>
+            <div>
+              <label for="exp-start" class="text-xs text-slate-500 block mb-1">Mulai</label>
+              <input id="exp-start" value="04 Okt 2026 · 14:00 WIB" class="w-full tone-select py-2" />
+            </div>
+            <div>
+              <label for="exp-duration" class="text-xs text-slate-500 block mb-1">Durasi</label>
+              <input id="exp-duration" value="120 menit" class="w-full tone-select py-2" />
+            </div>
+            <div>
+              <label for="exp-range" class="text-xs text-slate-500 block mb-1">Rentang setpoint</label>
+              <input id="exp-range" value="24,5 → 25,5 °C" class="w-full tone-select py-2" />
+            </div>
+            <div>
+              <label for="exp-step" class="text-xs text-slate-500 block mb-1">Step interval</label>
+              <input id="exp-step" value="60 menit" class="w-full tone-select py-2" />
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label for="exp-note" class="text-xs text-slate-500 block mb-1">Catatan / hipotesis</label>
+            <input id="exp-note" value="Kenaikan setpoint 0,5 °C mengurangi daya tanpa menaikkan PPD di atas 10%." class="w-full tone-select py-2" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 mt-4">
+            <button class="tone-select text-sm px-4 py-2" type="button">Jeda simulasi</button>
+            <button class="bg-blue-600 hover:bg-blue-500 text-white text-sm rounded px-4 py-2" type="button">Akhiri & simpan</button>
+            <button class="tone-select text-sm px-4 py-2" type="button">Kembali ke operating</button>
+          </div>
+        </section>
+
+        <div class="space-y-4">
+          <section class="card p-4">
+            <p class="widget-title">Status run</p>
+            <p class="text-sm text-slate-500 mt-1">EXP-026 · 14:00-16:00 WIB</p>
+
+            <div class="mt-3">
+              <div class="flex items-center justify-between text-sm text-slate-500 mb-1">
+                <span>Durasi eksperimen</span>
+                <strong class="text-slate-700">30 / 120 menit</strong>
+              </div>
+              <div class="indoor-progress"><i style="width: 25%;"></i></div>
+            </div>
+
+            <div class="pt-3 space-y-1 text-sm">
+              <div class="flex items-center justify-between"><span class="text-slate-500">Tahap saat ini</span><strong class="text-slate-700">Baseline · 24,5 °C</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Tahap berikutnya</span><strong class="text-slate-700">15:00 · 25,0 °C</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Sampel terkumpul</span><strong class="text-slate-700">120 / 480</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Kelengkapan data</span><strong class="text-slate-700">99,2 %</strong></div>
+            </div>
+          </section>
+
+          <section class="card p-4">
+            <p class="widget-title">Batas keselamatan</p>
+            <p class="text-sm text-slate-500 mt-1">Auto-fallback pada pelanggaran</p>
+
+            <div class="pt-3 space-y-1 text-sm">
+              <div class="flex items-center justify-between"><span class="text-slate-500">Suhu ruang</span><strong class="text-slate-700">23-27 °C</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">PPD maksimum</span><strong class="text-slate-700">10 %</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">CO₂ maksimum</span><strong class="text-slate-700">1.000 ppm</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Daya maksimum</span><strong class="text-slate-700">28 kW</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Jeda kompresor</span><strong class="text-slate-700">≥ 5 menit</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Stop manual</span><strong class="text-slate-700">Selalu tersedia</strong></div>
+            </div>
+
+            <div class="rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 mt-3">
+              <p class="text-xs text-teal-700 font-semibold">Zona eksperimen aman</p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
+        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
+        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="assets/js/config/app-config.js"></script>
+<script src="assets/js/core/session.js"></script>
+<script src="assets/js/core/api-client.js"></script>
+<script src="assets/js/mock/page-data.js"></script>
+<script src="assets/js/services/page-data-service.js"></script>
+<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/pages/page-init.js"></script>
+<script>renderSidebar("experiment-mode"); renderTopbar("Experiment mode", "Operating / Experiment");</script>
+</body>
+</html>

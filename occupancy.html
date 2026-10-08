@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Occupancy — BEMS Living Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="app-body">
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<div class="app-layout flex">
+  <div id="sidebar-root"></div>
+  <div class="app-content flex-1 min-w-0">
+    <div id="topbar-root"></div>
+    <main id="main-content" class="app-main p-6 space-y-6">
+
+      <section class="page-head">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="page-title">Occupancy Monitoring</h2>
+            <p class="page-subtitle">Pantau jumlah okupansi realtime, aktivitas per zona, dan indikator perilaku penghuni.</p>
+          </div>
+          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor laporan</button>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
+            <button class="indoor-chip">Hari ini</button>
+            <button class="indoor-chip">Semua ruang</button>
+          </div>
+          <p class="text-xs text-slate-500">Snapshot demo · interval 1 menit</p>
+        </div>
+      </section>
+
+      <div id="kpi-occupancy-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <section class="card p-4 xl:col-span-2">
+          <div class="flex items-center justify-between mb-1">
+            <p class="widget-title">Peta okupansi per zona</p>
+            <span class="inline-flex px-3 py-1 rounded-md bg-emerald-50 text-xs text-emerald-700">streaming</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-3">Deteksi objek manusia · model YOLOv8 · pemrosesan lokal</p>
+          <div class="h-[280px] rounded-lg border border-slate-100 bg-white p-3">
+            <svg viewBox="0 0 700 230" class="w-full h-[230px]" role="img" aria-label="Peta okupansi per zona">
+              <rect x="0" y="0" width="700" height="230" fill="#f8fbfc"/>
+              <rect x="20" y="20" width="300" height="88" rx="10" fill="#dff2ef"/>
+              <rect x="336" y="20" width="344" height="88" rx="10" fill="#e8f4fa"/>
+              <rect x="20" y="122" width="220" height="88" rx="10" fill="#fff1dd"/>
+              <rect x="252" y="122" width="220" height="88" rx="10" fill="#e6f1fb"/>
+              <rect x="484" y="122" width="196" height="88" rx="10" fill="#edf5ee"/>
+              <text x="34" y="52" fill="#2f5665" font-size="14" font-family="Source Sans 3">Lab A · 6 orang</text>
+              <text x="350" y="52" fill="#2f5665" font-size="14" font-family="Source Sans 3">Lab B · 8 orang</text>
+              <text x="34" y="154" fill="#785d26" font-size="14" font-family="Source Sans 3">Ruang Rapat · 3 orang</text>
+              <text x="266" y="154" fill="#355f88" font-size="14" font-family="Source Sans 3">Studio · 4 orang</text>
+              <text x="498" y="154" fill="#356149" font-size="14" font-family="Source Sans 3">Lounge · 2 orang</text>
+            </svg>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Catatan: video mentah tidak disimpan sebagai data historis utama.</p>
+        </section>
+
+        <section class="card p-4">
+          <p class="widget-title">Tren okupansi (per menit)</p>
+          <p class="text-sm text-slate-500 mb-3">Total orang terdeteksi · 06:00-14:30 WIB</p>
+          <div class="h-[280px] rounded-lg border border-slate-100 bg-white p-3">
+            <svg viewBox="0 0 300 230" class="w-full h-[230px]" role="img" aria-label="Grafik tren okupansi">
+              <rect x="0" y="0" width="300" height="230" fill="#f9fcfd"/>
+              <line x1="0" y1="180" x2="300" y2="180" stroke="#e6eef3"/>
+              <line x1="0" y1="130" x2="300" y2="130" stroke="#e6eef3"/>
+              <line x1="0" y1="80" x2="300" y2="80" stroke="#e6eef3"/>
+              <polyline fill="none" stroke="#1b8f8f" stroke-width="3" points="10,150 60,124 110,88 160,98 210,76 260,90"/>
+            </svg>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <section class="card p-4">
+          <p class="widget-title">MET & CLO distribusi</p>
+          <p class="text-sm text-slate-500 mb-3">Ringkasan observasi perilaku termal penghuni</p>
+          <div class="space-y-3 text-sm">
+            <div class="indoor-progress-row"><span>Rata-rata MET</span><span>1.2</span><div class="indoor-progress"><i style="width: 58%"></i></div></div>
+            <div class="indoor-progress-row"><span>Rata-rata CLO</span><span>0.6</span><div class="indoor-progress"><i style="width: 42%"></i></div></div>
+            <div class="indoor-progress-row"><span>Aktivitas ringan</span><span>71%</span><div class="indoor-progress"><i style="width: 71%"></i></div></div>
+            <div class="indoor-progress-row"><span>Aktivitas duduk</span><span>29%</span><div class="indoor-progress"><i style="width: 29%"></i></div></div>
+          </div>
+        </section>
+
+        <section class="card p-4">
+          <p class="widget-title">Ringkasan zona padat</p>
+          <p class="text-sm text-slate-500 mb-3">Prioritas ventilasi dan pemerataan distribusi ruang</p>
+          <ul class="space-y-2 text-sm text-slate-600">
+            <li class="flex justify-between"><span>Lab B</span><span class="indoor-pill indoor-pill-warn">Padat</span></li>
+            <li class="flex justify-between"><span>Lab A</span><span class="indoor-pill indoor-pill-ok">Normal</span></li>
+            <li class="flex justify-between"><span>Studio</span><span class="indoor-pill indoor-pill-ok">Normal</span></li>
+            <li class="flex justify-between"><span>Lounge</span><span class="indoor-pill indoor-pill-ok">Normal</span></li>
+          </ul>
+        </section>
+      </div>
+
+      <section class="card p-4 overflow-x-auto">
+        <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+          <div>
+            <p class="widget-title">PIR event log</p>
+            <p class="text-sm text-slate-500 mt-1">Aktivitas gerak per sensor · update per menit</p>
+          </div>
+          <span class="demo-badge">Data demo</span>
+        </div>
+        <table class="w-full text-sm indoor-table">
+          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Waktu</th><th>Sensor</th><th>Lokasi</th><th>Event</th><th>Status</th></tr></thead>
+          <tbody class="text-slate-600">
+            <tr class="border-b border-slate-100"><td class="py-2">14:30:12</td><td>PIR-1</td><td>Lab A</td><td>Motion detected</td><td><span class="indoor-pill indoor-pill-ok">Aktif</span></td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">14:28:44</td><td>PIR-3</td><td>Lab B</td><td>Motion detected</td><td><span class="indoor-pill indoor-pill-ok">Aktif</span></td></tr>
+            <tr><td class="py-2">14:25:04</td><td>PIR-2</td><td>Lounge</td><td>No motion (timeout)</td><td><span class="indoor-pill indoor-pill-warn">Idle</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+</div>
+<script src="assets/js/config/app-config.js"></script>
+<script src="assets/js/core/session.js"></script>
+<script src="assets/js/core/api-client.js"></script>
+<script src="assets/js/mock/page-data.js"></script>
+<script src="assets/js/services/page-data-service.js"></script>
+<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/pages/page-init.js"></script>
+<script>renderSidebar("occupancy"); renderTopbar("Occupancy", "Occupancy Monitoring"); initPageData("occupancy");</script>
+</body>
+</html>

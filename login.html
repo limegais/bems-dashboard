@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Login — BEMS Living Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="login-body" data-theme="light" data-tone="corporate">
+  <div class="login-bg-media" aria-hidden="true">
+    <img src="assets/images/login-side.png" onerror="this.onerror=null; this.src='assets/images/login-hero.svg';" alt="" />
+  </div>
+
+  <div class="login-bg-layer" aria-hidden="true"></div>
+
+  <header class="login-head">
+    <p class="login-brand">BEMS Living Lab</p>
+  </header>
+
+  <main class="login-main" id="main-content">
+    <section class="login-panel">
+      <div class="login-panel-inner">
+        <p class="login-overline">Authorized Access</p>
+        <h1 class="login-title">Welcome to BEMS+</h1>
+        <p class="login-subtitle">We, the smart energy innovator for operational monitoring.</p>
+
+        <form id="login-form" class="login-form-stack">
+          <div>
+            <label class="login-label" for="login-user">Username</label>
+            <input id="login-user" type="text" class="login-input login-input-dark" placeholder="Masukkan username" autocomplete="username" required />
+          </div>
+
+          <div>
+            <label class="login-label" for="login-pass">Password</label>
+            <div class="relative">
+              <input id="login-pass" type="password" class="login-input login-input-dark pr-20" placeholder="Masukkan password" autocomplete="current-password" required />
+              <button id="toggle-pass" type="button" class="login-pass-toggle">Lihat</button>
+            </div>
+          </div>
+
+          <div class="login-meta-row">
+            <label class="login-check"><input type="checkbox" checked /> Remember Password</label>
+            <a href="#" class="login-link">Forgot Password</a>
+          </div>
+
+          <label class="login-check login-check-soft"><input type="checkbox" checked /> I have read and agreed to the Service Agreement</label>
+
+          <p id="login-error" class="text-xs text-red-300 hidden">Username atau password tidak valid.</p>
+
+          <button id="login-submit" type="submit" class="login-submit">Login</button>
+        </form>
+
+        <div class="login-panel-foot">
+          <a href="#" class="login-link">Terms of Use</a>
+          <a href="#" class="login-link">Privacy Policy</a>
+          <a href="#" class="login-link">Cookies Policy</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/config/app-config.js"></script>
+  <script src="assets/js/core/session.js"></script>
+  <script src="assets/js/core/api-client.js"></script>
+  <script src="assets/js/mock/accounts.js"></script>
+  <script src="assets/js/services/auth-service.js"></script>
+  <script src="assets/js/pages/login.js"></script>
+</body>
+</html>

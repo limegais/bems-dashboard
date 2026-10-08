@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Thermal & MRT Evaluation — BEMS Living Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="app-body">
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<div class="app-layout flex">
+  <div id="sidebar-root"></div>
+  <div class="app-content flex-1 min-w-0">
+    <div id="topbar-root"></div>
+    <main id="main-content" class="app-main p-6 space-y-6">
+      <section class="page-head">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="page-title">Thermal Comfort & MRT Evaluation</h2>
+            <p class="page-subtitle">Evaluasi kenyamanan termal dengan PMV, PPD, dan mean radiant temperature (MRT).</p>
+          </div>
+          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor laporan</button>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
+            <button class="indoor-chip">Hari ini</button>
+            <button class="indoor-chip">Semua ruang</button>
+          </div>
+          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+        </div>
+      </section>
+
+      <div id="kpi-thermal-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <div class="xl:col-span-2 space-y-4">
+          <section class="card p-4">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <p class="widget-title">Posisi kenyamanan termal</p>
+                <p class="text-sm text-slate-500 mt-1">PMV +0,18 · sensasi rata-rata mendekati netral</p>
+              </div>
+              <span class="demo-badge" style="background:#e8f7f3;color:#1b8a6e;border-color:#cfeee4;">Dalam target</span>
+            </div>
+
+            <div class="thermal-scale" role="img" aria-label="Skala PMV dari -3 hingga +3 dengan target -0,5 sampai +0,5">
+              <div>-3</div><div>-2</div><div>-1</div><div>0</div><div>1</div><div>2</div><div>3</div>
+              <i aria-hidden="true"></i>
+            </div>
+            <div class="flex items-center justify-between text-xs mt-2">
+              <span class="text-blue-500">Dingin</span>
+              <span class="text-teal-600">Target −0,5 ≤ PMV ≤ +0,5</span>
+              <span class="text-amber-600">Panas</span>
+            </div>
+
+            <div class="rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 mt-3">
+              <p class="text-sm font-semibold text-teal-700">Interpretasi: sensasi termal netral</p>
+              <p class="text-xs text-teal-700 mt-1">Hasil model tidak menggantikan feedback penghuni. Evaluasi rata-rata dapat menyembunyikan variasi di dalam ruang.</p>
+            </div>
+          </section>
+
+          <section class="card p-4">
+            <p class="widget-title">Hubungan PMV & PPD</p>
+            <p class="text-sm text-slate-500 mt-1 mb-3">Kurva teoritis Fanger · minimum PPD sekitar 5% pada PMV 0</p>
+            <div class="h-[220px] rounded-lg border border-slate-100 bg-white p-3">
+              <div class="text-xs text-teal-600 mb-2">Predicted percentage dissatisfied</div>
+              <svg viewBox="0 0 700 170" class="w-full h-[170px]" role="img" aria-label="Grafik hubungan PMV dan PPD">
+                <rect x="0" y="0" width="700" height="170" fill="#f9fcfd"/>
+                <line x1="40" y1="140" x2="680" y2="140" stroke="#e6eef3"/>
+                <line x1="40" y1="105" x2="680" y2="105" stroke="#e6eef3"/>
+                <line x1="40" y1="70" x2="680" y2="70" stroke="#e6eef3"/>
+                <line x1="40" y1="35" x2="680" y2="35" stroke="#e6eef3"/>
+                <polygon points="40,35 120,48 200,78 280,118 360,140 440,118 520,78 600,48 680,35 680,140 40,140" fill="#deefeb"/>
+                <polyline fill="none" stroke="#188b86" stroke-width="3" points="40,35 120,48 200,78 280,118 360,140 440,118 520,78 600,48 680,35"/>
+              </svg>
+            </div>
+          </section>
+        </div>
+
+        <div class="space-y-4">
+          <section class="card p-4">
+            <p class="widget-title">Input evaluasi</p>
+            <p class="text-sm text-slate-500 mt-1 mb-3">Rata-rata ruang · snapshot 14:30 WIB</p>
+
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <label for="thermal-ta" class="text-xs text-slate-500 block mb-1">Suhu udara</label>
+                <input id="thermal-ta" value="24,6 °C" class="w-full tone-select py-2" />
+              </div>
+              <div>
+                <label for="thermal-mrt" class="text-xs text-slate-500 block mb-1">MRT</label>
+                <input id="thermal-mrt" value="25,1 °C" class="w-full tone-select py-2" />
+              </div>
+              <div>
+                <label for="thermal-rh" class="text-xs text-slate-500 block mb-1">RH</label>
+                <input id="thermal-rh" value="56 %" class="w-full tone-select py-2" />
+              </div>
+              <div>
+                <label for="thermal-va" class="text-xs text-slate-500 block mb-1">Air velocity</label>
+                <input id="thermal-va" value="0,12 m/s" class="w-full tone-select py-2" />
+              </div>
+              <div>
+                <label for="thermal-met" class="text-xs text-slate-500 block mb-1">Metabolic rate</label>
+                <input id="thermal-met" value="1,1 met" class="w-full tone-select py-2" />
+              </div>
+              <div>
+                <label for="thermal-clo" class="text-xs text-slate-500 block mb-1">Clothing</label>
+                <input id="thermal-clo" value="0,6 clo" class="w-full tone-select py-2" />
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-500 mt-3">Asumsi: aktivitas duduk / kerja ringan, pakaian kantor. Nilai met dan clo merupakan asumsi demo.</p>
+          </section>
+
+          <section class="card p-4">
+            <p class="widget-title">Metode MRT</p>
+            <p class="text-sm text-slate-500 mt-1 mb-3">Estimasi dari globe temperature</p>
+
+            <div class="space-y-1 text-sm">
+              <div class="flex items-center justify-between"><span class="text-slate-500">Diameter globe</span><strong class="text-slate-700">0,15 m</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Emisivitas</span><strong class="text-slate-700">0,95</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Referensi evaluasi</span><strong class="text-slate-700">ISO 7730 · demo</strong></div>
+            </div>
+
+            <p class="text-xs text-slate-500 mt-3">MRT memperhitungkan pengaruh radiasi permukaan, bukan hanya suhu udara.</p>
+          </section>
+        </div>
+      </div>
+
+      <section class="card p-4 overflow-x-auto">
+        <p class="widget-title">Evaluasi per ruang</p>
+        <p class="text-sm text-slate-500 mt-1 mb-3">Input model demo · target |PMV| ≤ 0,5 dan PPD &lt; 10%</p>
+        <table class="w-full text-sm indoor-table">
+          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Ruang</th><th>Suhu °C</th><th>MRT °C</th><th>PMV</th><th>PPD %</th><th>Evaluasi</th><th>Kualitas data</th></tr></thead>
+          <tbody class="text-slate-600">
+            <tr class="border-b border-slate-100"><td class="py-2">Lab A</td><td>24,4</td><td>24,9</td><td>+0,10</td><td>5,2</td><td>Netral</td><td>Valid · 14:30</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">Lab B</td><td>25,1</td><td>25,7</td><td>+0,47</td><td>9,6</td><td>Agak hangat</td><td>Valid · 14:30</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">Ruang Rapat</td><td>24,3</td><td>24,6</td><td>−0,04</td><td>5,0</td><td>Netral</td><td>Valid · 14:30</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">Studio</td><td>24,7</td><td>25,3</td><td>+0,23</td><td>6,1</td><td>Netral</td><td>Valid · 14:30</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">Office</td><td>24,5</td><td>24,9</td><td>+0,08</td><td>5,1</td><td>Netral</td><td>Valid · 14:30</td></tr>
+            <tr><td class="py-2">Lounge</td><td>24,6</td><td>25,2</td><td>+0,26</td><td>6,4</td><td>Netral</td><td>Terlambat · 14:00</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
+        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
+        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="assets/js/config/app-config.js"></script>
+<script src="assets/js/core/session.js"></script>
+<script src="assets/js/core/api-client.js"></script>
+<script src="assets/js/mock/page-data.js"></script>
+<script src="assets/js/services/page-data-service.js"></script>
+<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/pages/page-init.js"></script>
+<script>renderSidebar("thermal-evaluation"); renderTopbar("Thermal evaluation", "PMV / MRT"); initPageData("thermal-evaluation");</script>
+</body>
+</html>

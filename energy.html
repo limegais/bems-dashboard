@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Energy — BEMS Living Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="app-body">
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<div class="app-layout flex">
+  <div id="sidebar-root"></div>
+  <div class="app-content flex-1 min-w-0">
+    <div id="topbar-root"></div>
+    <main id="main-content" class="app-main p-6 space-y-6">
+
+      <section class="page-head">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="page-title">Energy Monitoring</h2>
+            <p class="page-subtitle">Analisis konsumsi listrik, profil beban, dan efisiensi penggunaan energi bangunan.</p>
+          </div>
+          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor laporan</button>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
+            <button class="indoor-chip">Hari ini</button>
+            <button class="indoor-chip">Semua ruang</button>
+          </div>
+          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+        </div>
+      </section>
+
+      <div id="kpi-energy-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <section class="card p-4 xl:col-span-2">
+          <div class="flex items-center justify-between mb-1">
+            <p class="widget-title">Profil daya listrik</p>
+            <span class="demo-badge">Data demo</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-3">Main meter · 06:00-14:30 WIB</p>
+
+          <div class="h-[260px] rounded-lg border border-slate-100 bg-white p-3">
+            <div class="flex items-center gap-5 text-xs mb-2">
+              <span class="text-teal-600">Daya aktual</span>
+              <span class="text-blue-500">Baseline</span>
+            </div>
+            <svg viewBox="0 0 700 210" class="w-full h-[210px]" role="img" aria-label="Grafik profil daya listrik">
+              <rect x="0" y="0" width="700" height="210" fill="#f9fcfd"/>
+              <line x1="0" y1="165" x2="700" y2="165" stroke="#e6eef3"/>
+              <line x1="0" y1="125" x2="700" y2="125" stroke="#e6eef3"/>
+              <line x1="0" y1="85" x2="700" y2="85" stroke="#e6eef3"/>
+              <polyline fill="none" stroke="#1b8f8f" stroke-width="3" points="20,138 120,134 220,102 320,66 420,46 520,70 620,80"/>
+              <polyline fill="none" stroke="#4e7ab3" stroke-width="3" stroke-dasharray="6 6" points="20,126 120,122 220,92 320,58 420,38 520,54 620,66"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="card p-4">
+          <p class="widget-title">Konsumsi per kategori</p>
+          <p class="text-sm text-slate-500 mb-3">Akumulasi hari ini · total 184,6 kWh</p>
+
+          <div class="space-y-3 text-sm">
+            <div class="indoor-progress-row"><span>HVAC</span><span>112,4 kWh · 60,9%</span><div class="indoor-progress"><i style="width: 61%"></i></div></div>
+            <div class="indoor-progress-row"><span>Pencahayaan</span><span>38,2 kWh · 20,7%</span><div class="indoor-progress"><i style="width: 21%"></i></div></div>
+            <div class="indoor-progress-row"><span>Plug load</span><span>34 kWh · 18,4%</span><div class="indoor-progress"><i style="width: 18%"></i></div></div>
+          </div>
+
+          <div class="mt-4 space-y-2 text-sm text-slate-600">
+            <div class="flex justify-between"><span>Target harian</span><strong>≤ 260 kWh</strong></div>
+            <div class="flex justify-between"><span>Sisa anggaran energi</span><strong>75,4 kWh</strong></div>
+            <div class="flex justify-between"><span>Intensitas (1.200 m²)</span><strong>0,154 kWh/m²</strong></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="rounded-xl border border-teal-100 bg-teal-50 px-4 py-3">
+        <p class="text-sm font-semibold text-teal-700">Efisiensi terhadap baseline</p>
+        <p class="text-xs text-teal-700 mt-1">Penghematan ilustratif sebesar 26,8 kWh hingga 14:30 WIB. HVAC menyumbang 60,9% konsumsi; prioritaskan penjadwalan dan setpoint zona.</p>
+      </div>
+
+      <section class="card p-4 overflow-x-auto">
+        <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+          <div>
+            <p class="widget-title">Pembacaan meter & submeter</p>
+            <p class="text-sm text-slate-500 mt-1">Energi kumulatif hari ini · daya sesaat · parameter kelistrikan</p>
+          </div>
+          <span class="demo-badge">Data demo</span>
+        </div>
+        <table class="w-full text-sm indoor-table">
+          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Meter / kategori</th><th>Energi (kWh)</th><th>Daya (kW)</th><th>Tegangan (V)</th><th>Power factor</th><th>Status</th></tr></thead>
+          <tbody class="text-slate-600">
+            <tr class="border-b border-slate-100"><td class="py-2">M-01 · Main meter</td><td>184,6</td><td>18,4</td><td>220,4</td><td>0,96</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">SM-01 · HVAC</td><td>112,4</td><td>11,2</td><td>220,1</td><td>0,95</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">SM-02 · Lighting</td><td>38,2</td><td>3,8</td><td>220,6</td><td>0,98</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
+            <tr><td class="py-2">SM-03 · Plug load</td><td>34,0</td><td>3,4</td><td>219,8</td><td>0,94</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+</div>
+<script src="assets/js/config/app-config.js"></script>
+<script src="assets/js/core/session.js"></script>
+<script src="assets/js/core/api-client.js"></script>
+<script src="assets/js/mock/page-data.js"></script>
+<script src="assets/js/services/page-data-service.js"></script>
+<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/pages/page-init.js"></script>
+<script>renderSidebar("energy"); renderTopbar("Energy", "Energy Monitoring"); initPageData("energy");</script>
+</body>
+</html>

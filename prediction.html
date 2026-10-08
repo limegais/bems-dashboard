@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Prediction — BEMS Living Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="app-body">
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<div class="app-layout flex">
+  <div id="sidebar-root"></div>
+  <div class="app-content flex-1 min-w-0">
+    <div id="topbar-root"></div>
+    <main id="main-content" class="app-main p-6 space-y-6">
+      <section class="page-head">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="page-title">Prediction</h2>
+            <p class="page-subtitle">Prediksi beban energi dan kondisi lingkungan dengan rentang ketidakpastian yang transparan.</p>
+          </div>
+          <button class="tone-select text-sm px-4 py-2 font-semibold">Riwayat model</button>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
+            <button class="indoor-chip">Hari ini</button>
+            <button class="indoor-chip">Semua ruang</button>
+          </div>
+          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+        </div>
+      </section>
+
+      <div id="kpi-prediction-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <div class="xl:col-span-2 space-y-4">
+          <section class="card p-4">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <p class="widget-title">Forecast daya bangunan</p>
+                <p class="text-sm text-slate-500 mt-1">Prediksi dari snapshot 14:30 · confidence interval 95%</p>
+              </div>
+              <span class="demo-badge">LSTM v2</span>
+            </div>
+            <div class="h-[190px] rounded-lg border border-slate-100 bg-white p-3">
+              <div class="flex items-center gap-5 text-xs mb-2">
+                <span class="text-teal-600">Prediksi daya</span>
+                <span class="text-slate-500">Baseline</span>
+                <span class="text-blue-500">Confidence 95%</span>
+              </div>
+              <svg viewBox="0 0 700 150" class="w-full h-[150px]" role="img" aria-label="Grafik forecast daya bangunan">
+                <rect x="0" y="0" width="700" height="150" fill="#f9fcfd"/>
+                <line x1="0" y1="115" x2="700" y2="115" stroke="#e6eef3"/>
+                <line x1="0" y1="80" x2="700" y2="80" stroke="#e6eef3"/>
+                <line x1="0" y1="45" x2="700" y2="45" stroke="#e6eef3"/>
+                <polygon points="20,56 150,50 270,61 380,84 500,100 620,105 620,117 500,112 380,97 270,75 150,63 20,70" fill="#deefeb"/>
+                <polyline fill="none" stroke="#5f8cc7" stroke-width="3" stroke-dasharray="6 6" points="20,62 150,56 270,67 380,89 500,104 620,109"/>
+              </svg>
+            </div>
+          </section>
+
+          <section class="card p-4">
+            <p class="widget-title">Forecast suhu indoor</p>
+            <p class="text-sm text-slate-500 mt-1 mb-3">Semua ruang · asumsi setpoint dan jadwal tidak berubah</p>
+            <div class="h-[190px] rounded-lg border border-slate-100 bg-white p-3">
+              <div class="flex items-center gap-5 text-xs mb-2">
+                <span class="text-teal-600">Suhu rata-rata</span>
+                <span class="text-blue-500">Confidence 95%</span>
+              </div>
+              <svg viewBox="0 0 700 150" class="w-full h-[150px]" role="img" aria-label="Grafik forecast suhu indoor">
+                <rect x="0" y="0" width="700" height="150" fill="#f9fcfd"/>
+                <line x1="0" y1="115" x2="700" y2="115" stroke="#e6eef3"/>
+                <line x1="0" y1="82" x2="700" y2="82" stroke="#e6eef3"/>
+                <line x1="0" y1="50" x2="700" y2="50" stroke="#e6eef3"/>
+                <polygon points="20,84 150,80 270,82 380,85 500,81 620,78 620,92 500,95 380,99 270,95 150,94 20,98" fill="#deefeb"/>
+                <polyline fill="none" stroke="#188b86" stroke-width="3" points="20,91 150,87 270,89 380,92 500,88 620,85"/>
+              </svg>
+            </div>
+          </section>
+        </div>
+
+        <aside class="card p-4">
+          <p class="widget-title">Model & pengaturan</p>
+          <p class="text-sm text-slate-500 mt-1 mb-3">Konfigurasi inferensi demonstrasi</p>
+
+          <div class="space-y-3 text-sm">
+            <div>
+              <label for="pred-model-energy" class="text-xs text-slate-500 block mb-1">Model energi</label>
+              <select id="pred-model-energy" class="w-full tone-select py-2">
+                <option>LSTM v2 · multivariate</option>
+                <option>Temporal CNN · demo</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="pred-model-env" class="text-xs text-slate-500 block mb-1">Model lingkungan</label>
+              <select id="pred-model-env" class="w-full tone-select py-2">
+                <option>XGBoost · indoor temperature</option>
+                <option>Hybrid GRU · demo</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="pred-horizon" class="text-xs text-slate-500 block mb-1">Horizon</label>
+                <select id="pred-horizon" class="w-full tone-select py-2">
+                  <option>6 jam</option>
+                  <option>12 jam</option>
+                </select>
+              </div>
+              <div>
+                <label for="pred-interval" class="text-xs text-slate-500 block mb-1">Interval</label>
+                <select id="pred-interval" class="w-full tone-select py-2">
+                  <option>15 menit</option>
+                  <option>30 menit</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="pred-confidence" class="text-xs text-slate-500 block mb-1">Confidence level</label>
+              <select id="pred-confidence" class="w-full tone-select py-2">
+                <option>95%</option>
+                <option>90%</option>
+              </select>
+            </div>
+
+            <div class="pt-1 space-y-1">
+              <div class="flex items-center justify-between"><span class="text-slate-500">Input fitur</span><strong class="text-slate-700">12 variabel</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Lookback</span><strong class="text-slate-700">24 jam</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Versi model</span><strong class="text-slate-700">demo-2026.10</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Data training demo</span><strong class="text-slate-700">01-30 Sep 2026</strong></div>
+            </div>
+
+            <p class="text-xs text-slate-500">Fitur: cuaca, okupansi, daya, suhu, dan jadwal. Hasil ilustratif bukan jaminan performa model nyata.</p>
+
+            <button class="bg-blue-600 hover:bg-blue-500 text-white text-sm rounded px-4 py-2 w-full" type="button">Jalankan prediksi demo</button>
+          </div>
+        </aside>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <section class="card p-4 overflow-x-auto">
+          <p class="widget-title">Ringkasan forecast</p>
+          <p class="text-sm text-slate-500 mt-1 mb-3">Estimasi titik pada horizon terpilih</p>
+          <table class="w-full text-sm indoor-table">
+            <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Waktu WIB</th><th>Daya kW</th><th>Indoor °C</th><th>RH %</th></tr></thead>
+            <tbody class="text-slate-600">
+              <tr class="border-b border-slate-100"><td class="py-2">15:30</td><td>19,8</td><td>24,8</td><td>56</td></tr>
+              <tr class="border-b border-slate-100"><td class="py-2">16:30</td><td>18,6</td><td>24,8</td><td>57</td></tr>
+              <tr class="border-b border-slate-100"><td class="py-2">18:30</td><td>11,0</td><td>24,8</td><td>58</td></tr>
+              <tr><td class="py-2">20:30</td><td>6,8</td><td>25,2</td><td>59</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card p-4 overflow-x-auto">
+          <p class="widget-title">Performa model</p>
+          <p class="text-sm text-slate-500 mt-1 mb-3">Holdout demo: 27 Sep-03 Okt 2026</p>
+          <table class="w-full text-sm indoor-table">
+            <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Model / target</th><th>MAE</th><th>RMSE</th><th>MAPE</th></tr></thead>
+            <tbody class="text-slate-600">
+              <tr class="border-b border-slate-100"><td class="py-2">LSTM v2 / kW</td><td>0,84 kW</td><td>1,12 kW</td><td>6,2%</td></tr>
+              <tr class="border-b border-slate-100"><td class="py-2">XGBoost / °C</td><td>0,21 °C</td><td>0,29 °C</td><td>0,9%</td></tr>
+              <tr><td class="py-2">Baseline / kW</td><td>1,56 kW</td><td>2,04 kW</td><td>11,4%</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
+        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
+        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="assets/js/config/app-config.js"></script>
+<script src="assets/js/core/session.js"></script>
+<script src="assets/js/core/api-client.js"></script>
+<script src="assets/js/mock/page-data.js"></script>
+<script src="assets/js/services/page-data-service.js"></script>
+<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/pages/page-init.js"></script>
+<script>renderSidebar("prediction"); renderTopbar("Prediction", "Model forecasting"); initPageData("prediction");</script>
+</body>
+</html>

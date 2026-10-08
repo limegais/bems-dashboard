@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Comfort Feedback — BEMS Living Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="app-body">
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<div class="app-layout flex">
+  <div id="sidebar-root"></div>
+  <div class="app-content flex-1 min-w-0">
+    <div id="topbar-root"></div>
+    <main id="main-content" class="app-main p-6 space-y-6">
+      <section class="page-head">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="page-title">Thermal & Visual Comfort Feedback</h2>
+            <p class="page-subtitle">Hubungkan persepsi penghuni dengan pengukuran lingkungan ruang secara anonim.</p>
+          </div>
+          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor feedback</button>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
+            <button class="indoor-chip">Hari ini</button>
+            <button class="indoor-chip">Semua ruang</button>
+          </div>
+          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+        </div>
+      </section>
+
+      <div id="kpi-comfort-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <section class="card p-4 xl:row-span-2">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div>
+              <p class="widget-title">Berikan feedback</p>
+              <p class="text-sm text-slate-500 mt-1">Form contoh · tidak mengirim data</p>
+            </div>
+            <span class="demo-badge">Anonim</span>
+          </div>
+
+          <div class="space-y-3 text-sm">
+            <div>
+              <label for="comfort-room" class="text-xs text-slate-500 block mb-1">Ruang</label>
+              <select id="comfort-room" class="w-full tone-select py-2">
+                <option>Lab A</option>
+                <option>Lab B</option>
+                <option>Office</option>
+              </select>
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-500 mb-1">Bagaimana sensasi termal Anda?</p>
+              <div class="comfort-vote-grid">
+                <button type="button" class="comfort-vote-btn">-3</button>
+                <button type="button" class="comfort-vote-btn">-2</button>
+                <button type="button" class="comfort-vote-btn">-1</button>
+                <button type="button" class="comfort-vote-btn comfort-vote-active">0</button>
+                <button type="button" class="comfort-vote-btn">+1</button>
+                <button type="button" class="comfort-vote-btn">+2</button>
+                <button type="button" class="comfort-vote-btn">+3</button>
+              </div>
+              <div class="flex justify-between text-xs text-slate-500 mt-1"><span>Sangat dingin</span><span>Netral</span><span>Sangat panas</span></div>
+            </div>
+
+            <div>
+              <label for="comfort-thermal-pref" class="text-xs text-slate-500 block mb-1">Preferensi termal</label>
+              <select id="comfort-thermal-pref" class="w-full tone-select py-2">
+                <option>Tidak perlu perubahan</option>
+                <option>Lebih dingin</option>
+                <option>Lebih hangat</option>
+              </select>
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-500 mb-1">Kenyamanan visual</p>
+              <div class="light-segment light-segment-3" role="group" aria-label="Kenyamanan visual">
+                <button class="light-segment-item" type="button">Redup</button>
+                <button class="light-segment-item light-segment-active" type="button">Nyaman</button>
+                <button class="light-segment-item" type="button">Silau</button>
+              </div>
+            </div>
+
+            <div>
+              <label for="comfort-comment" class="text-xs text-slate-500 block mb-1">Komentar (opsional)</label>
+              <input id="comfort-comment" value="Suhu dan cahaya sudah nyaman." class="w-full tone-select py-2" />
+            </div>
+
+            <p class="text-xs text-slate-500">Konteks demo Lab A: 24,4 °C · 480 lux. Identitas penghuni tidak ditampilkan.</p>
+
+            <button class="bg-blue-600 hover:bg-blue-500 text-white text-sm rounded px-4 py-2 w-full" type="button">Kirim feedback demo</button>
+          </div>
+        </section>
+
+        <section class="card p-4">
+          <p class="widget-title">Sensasi termal</p>
+          <p class="text-sm text-slate-500 mt-1 mb-3">48 respons · skala −3 hingga +3</p>
+
+          <div class="space-y-3 text-sm">
+            <div>
+              <div class="flex items-center justify-between text-slate-600"><span>Dingin (-3, -2)</span><span>3 respons</span></div>
+              <div class="indoor-progress mt-1"><i style="width: 8%;"></i></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-slate-600"><span>Nyaman (-1, 0, +1)</span><span>41 respons</span></div>
+              <div class="indoor-progress mt-1"><i style="width: 85%;"></i></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-slate-600"><span>Hangat (+2, +3)</span><span>4 respons</span></div>
+              <div class="indoor-progress mt-1"><i style="width: 12%;"></i></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card p-4">
+          <p class="widget-title">Kenyamanan visual</p>
+          <p class="text-sm text-slate-500 mt-1 mb-3">48 respons · penilaian cahaya</p>
+
+          <div class="space-y-3 text-sm">
+            <div>
+              <div class="flex items-center justify-between text-slate-600"><span>Terlalu redup</span><span>2 respons</span></div>
+              <div class="indoor-progress comfort-progress-blue mt-1"><i style="width: 6%;"></i></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-slate-600"><span>Nyaman</span><span>43 respons</span></div>
+              <div class="indoor-progress comfort-progress-blue mt-1"><i style="width: 90%;"></i></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-slate-600"><span>Silau</span><span>3 respons</span></div>
+              <div class="indoor-progress comfort-progress-blue mt-1"><i style="width: 8%;"></i></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card p-4 xl:col-span-2">
+          <p class="widget-title">Tren kepuasan penghuni</p>
+          <p class="text-sm text-slate-500 mt-1 mb-3">7 hari terakhir · proporsi respons nyaman</p>
+          <div class="h-[190px] rounded-lg border border-slate-100 bg-white p-3">
+            <div class="flex items-center gap-5 text-xs mb-2">
+              <span class="text-teal-600">Thermal</span>
+              <span class="text-blue-500">Visual</span>
+            </div>
+            <svg viewBox="0 0 700 150" class="w-full h-[150px]" role="img" aria-label="Grafik tren kepuasan penghuni">
+              <rect x="0" y="0" width="700" height="150" fill="#f9fcfd"/>
+              <line x1="40" y1="120" x2="680" y2="120" stroke="#e6eef3"/>
+              <line x1="40" y1="90" x2="680" y2="90" stroke="#e6eef3"/>
+              <line x1="40" y1="60" x2="680" y2="60" stroke="#e6eef3"/>
+              <line x1="40" y1="30" x2="680" y2="30" stroke="#e6eef3"/>
+              <polygon points="40,92 140,86 240,89 340,79 440,76 540,70 640,74 640,120 40,120" fill="#deefeb"/>
+              <polyline fill="none" stroke="#188b86" stroke-width="3" points="40,92 140,86 240,89 340,79 440,76 540,70 640,74"/>
+              <polyline fill="none" stroke="#4d78b1" stroke-width="3" points="40,82 140,77 240,80 340,71 440,74 540,69 640,66"/>
+            </svg>
+          </div>
+        </section>
+      </div>
+
+      <section class="card p-4 overflow-x-auto">
+        <p class="widget-title">Feedback terbaru</p>
+        <p class="text-sm text-slate-500 mt-1 mb-3">Contoh respons anonim · 04 Oktober 2026</p>
+        <table class="w-full text-sm indoor-table">
+          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Waktu (WIB)</th><th>Ruang</th><th>Thermal vote</th><th>Visual</th><th>Komentar</th></tr></thead>
+          <tbody class="text-slate-600">
+            <tr class="border-b border-slate-100"><td class="py-2">14:25</td><td>Lab A</td><td>0 · Netral</td><td>Nyaman</td><td>Suhu dan cahaya sudah nyaman.</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">14:20</td><td>Lab B</td><td>+1 · Agak hangat</td><td>Nyaman</td><td>Udara terasa agak pengap.</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">14:10</td><td>Studio</td><td>0 · Netral</td><td>Silau</td><td>Pantulan cahaya dekat jendela.</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-2">13:55</td><td>Office</td><td>-1 · Agak sejuk</td><td>Nyaman</td><td>Tidak perlu perubahan.</td></tr>
+            <tr><td class="py-2">13:40</td><td>Ruang Rapat</td><td>0 · Netral</td><td>Nyaman</td><td>Kondisi nyaman untuk rapat.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
+        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
+        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="assets/js/config/app-config.js"></script>
+<script src="assets/js/core/session.js"></script>
+<script src="assets/js/core/api-client.js"></script>
+<script src="assets/js/mock/page-data.js"></script>
+<script src="assets/js/services/page-data-service.js"></script>
+<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/pages/page-init.js"></script>
+<script>renderSidebar("comfort-feedback"); renderTopbar("Comfort feedback", "Thermal & visual"); initPageData("comfort-feedback");</script>
+</body>
+</html>
