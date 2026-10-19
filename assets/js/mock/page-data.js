@@ -1,14 +1,14 @@
-// Data contoh bentuk respons GET /pages/{pageKey}; hanya dipakai saat APP_CONFIG.USE_MOCK = true.
+// Mock response data for GET /pages/{pageKey}; used when APP_CONFIG.USE_MOCK = true.
 const MOCK_PAGE_DATA = {
   dashboard: {
     kpiGroups: [
       {
-        target: "kpi-dashboard-main",
+        target: "kpi-dashboard-overview",
         items: [
-          { label: "Energi hari ini", value: "184,6 kWh", note: "↓ 12,7% dari baseline 211,4 kWh", noteClass: "text-teal-600" },
-          { label: "Daya saat ini", value: "18,4 kW", note: "Puncak hari ini 26,8 kW", noteClass: "text-teal-600" },
-          { label: "Okupansi bangunan", value: "86 / 120 orang", note: "71,7% kapasitas · 6 ruang aktif", noteClass: "text-teal-600" },
-          { label: "Kepuasan kenyamanan", value: "87 %", note: "48 respons hari ini · thermal & visual", noteClass: "text-teal-600" }
+          { label: "Today's Energy Consumption", value: "184.6 kWh", note: "↓ 12.7% vs baseline 211.4 kWh", noteClass: "text-teal-600" },
+          { label: "Current Active Demand", value: "18.4 kW", note: "Daily peak 26.8 kW", noteClass: "text-teal-600" },
+          { label: "Building Occupancy", value: "86 / 120 occupants", note: "71.7% capacity · 6 active zones", noteClass: "text-teal-600" },
+          { label: "Comfort Satisfaction", value: "87 %", note: "48 daily responses · thermal & visual", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -19,10 +19,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-indoor-main",
         items: [
-          { label: "Suhu rata-rata", value: "24,6°C", note: "Target 24-26 °C · seluruh ruang", noteClass: "text-emerald-500" },
-          { label: "Kelembapan", value: "56 %RH", note: "Dalam rentang 40-60 %RH", noteClass: "text-emerald-500" },
-          { label: "CO₂ rata-rata", value: "810 ppm", note: "Lab B: 1.040 ppm · tinjau ventilasi", noteClass: "text-amber-600" },
-          { label: "Iluminansi", value: "458 lux", note: "Target aktivitas 350-550 lux", noteClass: "text-teal-600" }
+          { label: "Average Temperature", value: "24.6 °C", note: "Target 24–26 °C · all zones", noteClass: "text-emerald-500" },
+          { label: "Relative Humidity", value: "56 %RH", note: "Within 40–60 %RH nominal range", noteClass: "text-emerald-500" },
+          { label: "Average CO₂ Level", value: "810 ppm", note: "Lab B: 1,040 ppm · review ventilation", noteClass: "text-amber-600" },
+          { label: "Workplane Illuminance", value: "458 lux", note: "Task target 350–550 lux", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -33,10 +33,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-outdoor-main",
         items: [
-          { label: "Suhu luar", value: "31,2°C", note: "+6,6 °C dibanding indoor", noteClass: "text-teal-600" },
-          { label: "Kelembapan", value: "64 %RH", note: "Rata-rata hari ini 69 %RH", noteClass: "text-teal-600" },
-          { label: "Radiasi", value: "620 W/m²", note: "Nilai demo · sensor cadangan", noteClass: "text-amber-600" },
-          { label: "Kecepatan angin", value: "2,4 m/s", note: "Arah tenggara · 135°", noteClass: "text-teal-600" }
+          { label: "Outdoor Temperature", value: "31.2 °C", note: "+6.6 °C vs indoor average", noteClass: "text-teal-600" },
+          { label: "Outdoor Humidity", value: "64 %RH", note: "Daily average 69 %RH", noteClass: "text-teal-600" },
+          { label: "Solar Irradiance", value: "620 W/m²", note: "Demo telemetry · backup sensor", noteClass: "text-amber-600" },
+          { label: "Wind Velocity", value: "2.4 m/s", note: "Southeast heading · 135°", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -47,10 +47,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-occupancy-main",
         items: [
-          { label: "Occupancy realtime", value: "23 orang", note: "Puncak hari ini: 28 orang", noteClass: "text-teal-600" },
-          { label: "Rata-rata MET", value: "1.2 met", note: "Aktivitas dominan: duduk/komputer", noteClass: "text-teal-600" },
-          { label: "Rata-rata CLO", value: "0.6 clo", note: "Rentang observasi 0.4-0.8", noteClass: "text-teal-600" },
-          { label: "PIR event terakhir", value: "14:30:12", note: "Sensor PIR-1 · Lab A", noteClass: "text-slate-500" }
+          { label: "Real-Time Occupancy", value: "23 occupants", note: "Peak today: 28 occupants", noteClass: "text-teal-600" },
+          { label: "Average Metabolic Rate", value: "1.2 met", note: "Dominant: seated / typing", noteClass: "text-teal-600" },
+          { label: "Average Clothing Insulation", value: "0.6 clo", note: "Observed range 0.4–0.8 clo", noteClass: "text-teal-600" },
+          { label: "Last Motion Event", value: "14:30:12", note: "PIR-1 sensor · Lab A", noteClass: "text-slate-500" }
         ]
       }
     ]
@@ -61,10 +61,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-energy-main",
         items: [
-          { label: "Konsumsi hari ini", value: "184,6 kWh", note: "↓ 12,7% dari baseline 211,4 kWh", noteClass: "text-teal-600" },
-          { label: "Daya aktif", value: "18,4 kW", note: "Daya puncak 26,8 kW · 10:30", noteClass: "text-teal-600" },
-          { label: "Estimasi biaya", value: "266.062 Rp", note: "Tarif ilustratif Rp1.441,70 / kWh", noteClass: "text-teal-600" },
-          { label: "Emisi ekuivalen", value: "156,9 kgCO₂e", note: "Faktor demo 0,85 kgCO₂e / kWh", noteClass: "text-teal-600" }
+          { label: "Today's Consumption", value: "184.6 kWh", note: "↓ 12.7% vs baseline 211.4 kWh", noteClass: "text-teal-600" },
+          { label: "Active Demand Power", value: "18.4 kW", note: "Peak demand 26.8 kW · 10:30", noteClass: "text-teal-600" },
+          { label: "Estimated Daily Cost", value: "Rp 266,062", note: "Tariff benchmark Rp 1,441.70 / kWh", noteClass: "text-teal-600" },
+          { label: "Carbon Emissions", value: "156.9 kgCO₂e", note: "Factor: 0.85 kgCO₂e / kWh", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -75,10 +75,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-ac-main",
         items: [
-          { label: "Unit aktif", value: "6 / 8 unit", note: "2 standby · tidak ada fault demo", noteClass: "text-teal-600" },
-          { label: "Daya HVAC", value: "11,2 kW", note: "60,9% daya bangunan saat ini", noteClass: "text-teal-600" },
-          { label: "Setpoint rata-rata", value: "24,8 °C", note: "Rentang aman 23-27 °C", noteClass: "text-teal-600" },
-          { label: "Suhu zona", value: "24,6 °C", note: "Selisih rata-rata -0,2 °C", noteClass: "text-teal-600" }
+          { label: "Active HVAC Units", value: "6 / 8 units", note: "2 standby · 0 faults detected", noteClass: "text-teal-600" },
+          { label: "HVAC Demand Power", value: "11.2 kW", note: "60.9% of building demand", noteClass: "text-teal-600" },
+          { label: "Average Setpoint", value: "24.8 °C", note: "Safe range 23–27 °C", noteClass: "text-teal-600" },
+          { label: "Zone Temperature", value: "24.6 °C", note: "Mean deviation -0.2 °C", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -89,10 +89,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-light-main",
         items: [
-          { label: "Fixture aktif", value: "42 / 48", note: "6 redup / standby · 6 ruang", noteClass: "text-teal-600" },
-          { label: "Daya lighting", value: "3,8 kW", note: "Energi hari ini 38,2 kWh", noteClass: "text-teal-600" },
-          { label: "Iluminansi rata-rata", value: "458 lux", note: "Target kerja 350-550 lux", noteClass: "text-teal-600" },
-          { label: "Dimming rata-rata", value: "68 %", note: "Daylight harvesting: simulasi aktif", noteClass: "text-teal-600" }
+          { label: "Active Fixtures", value: "42 / 48", note: "6 dimmed / standby · 6 zones", noteClass: "text-teal-600" },
+          { label: "Lighting Demand", value: "3.8 kW", note: "Today's energy 38.2 kWh", noteClass: "text-teal-600" },
+          { label: "Average Illuminance", value: "458 lux", note: "Task target 350–550 lux", noteClass: "text-teal-600" },
+          { label: "Average Dimming", value: "68 %", note: "Daylight harvesting: active", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -103,10 +103,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-prediction-main",
         items: [
-          { label: "Proyeksi energi harian", value: "258,4 kWh", note: "Aktual 184,6 + prediksi 73,8 kWh", noteClass: "text-teal-600" },
-          { label: "Suhu indoor +1 jam", value: "24,8 °C", note: "Confidence 95%: 24,4-25,2 °C", noteClass: "text-teal-600" },
-          { label: "MAPE energi", value: "6,2 %", note: "Validasi demo · 7 hari terakhir", noteClass: "text-teal-600" },
-          { label: "Horizon prediksi", value: "6 jam", note: "14:30-20:30 WIB · resolusi 15 menit", noteClass: "text-teal-600" }
+          { label: "Daily Energy Forecast", value: "258.4 kWh", note: "Actual 184.6 + forecast 73.8 kWh", noteClass: "text-teal-600" },
+          { label: "Indoor Temp (+1 Hour)", value: "24.8 °C", note: "95% CI: 24.4–25.2 °C", noteClass: "text-teal-600" },
+          { label: "Energy Forecast MAPE", value: "6.2 %", note: "Validation benchmark · last 7 days", noteClass: "text-teal-600" },
+          { label: "Prediction Horizon", value: "6 Hours", note: "15-minute sampling resolution", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -117,10 +117,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-moga-main",
         items: [
-          { label: "Energi solusi terpilih", value: "246,0 kWh/hari", note: "↓ 4,8% terhadap forecast 258,4", noteClass: "text-teal-600" },
-          { label: "PPD solusi terpilih", value: "7,8 %", note: "Memenuhi ambang kenyamanan < 10%", noteClass: "text-teal-600" },
-          { label: "Solusi non-dominated", value: "18 solusi", note: "Pareto archive · run MOGA-024", noteClass: "text-teal-600" },
-          { label: "Generasi selesai", value: "100 / 100", note: "8.000 evaluasi · 42 detik (demo)", noteClass: "text-teal-600" }
+          { label: "Selected Solution Energy", value: "246.0 kWh/day", note: "↓ 4.8% vs forecast 258.4", noteClass: "text-teal-600" },
+          { label: "Selected Solution PPD", value: "7.8 %", note: "Complies with comfort limit < 10%", noteClass: "text-teal-600" },
+          { label: "Non-Dominated Solutions", value: "18 solutions", note: "Pareto archive · run MOGA-024", noteClass: "text-teal-600" },
+          { label: "Generations Completed", value: "100 / 100", note: "8,000 evaluations · 42s", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -131,24 +131,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-mopso-main",
         items: [
-          { label: "Energi solusi terpilih", value: "241,0 kWh/hari", note: "↓ 6,7% terhadap forecast 258,4", noteClass: "text-teal-600" },
-          { label: "PPD solusi terpilih", value: "8,2 %", note: "Memenuhi ambang kenyamanan < 10%", noteClass: "text-teal-600" },
-          { label: "Solusi dalam archive", value: "22 solusi", note: "Non-dominated · run MOPSO-018", noteClass: "text-teal-600" },
-          { label: "Iterasi selesai", value: "120 / 120", note: "7.200 evaluasi · 36 detik (demo)", noteClass: "text-teal-600" }
-        ]
-      }
-    ]
-  },
-
-  "adaptive-control": {
-    kpiGroups: [
-      {
-        target: "kpi-adaptive-main",
-        items: [
-          { label: "Mode strategi", value: "Shadow", note: "Rekomendasi saja · tanpa aktuasi", noteClass: "text-teal-600" },
-          { label: "Potensi penghematan", value: "6,7 %", note: "Solusi MOPSO: 241,0 kWh/hari", noteClass: "text-teal-600" },
-          { label: "Loop interval", value: "15 menit", note: "Evaluasi demo berikutnya 14:45", noteClass: "text-teal-600" },
-          { label: "Safety gate", value: "5 / 6 zona", note: "Lab B ditahan: CO₂ 1.040 ppm", noteClass: "text-amber-400" }
+          { label: "Selected Solution Energy", value: "241.0 kWh/day", note: "↓ 6.7% vs forecast 258.4", noteClass: "text-teal-600" },
+          { label: "Selected Solution PPD", value: "8.2 %", note: "Complies with comfort limit < 10%", noteClass: "text-teal-600" },
+          { label: "Repository Solutions", value: "22 solutions", note: "Non-dominated · run MOPSO-018", noteClass: "text-teal-600" },
+          { label: "Iterations Completed", value: "120 / 120", note: "7,200 evaluations · 36s", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -159,10 +145,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-comfort-main",
         items: [
-          { label: "Respons hari ini", value: "48 respons", note: "6 ruang · feedback demo anonim", noteClass: "text-teal-600" },
-          { label: "Thermal satisfaction", value: "85 %", note: "41 dari 48 respons dalam rentang nyaman", noteClass: "text-teal-600" },
-          { label: "Visual satisfaction", value: "90 %", note: "43 dari 48 respons menilai nyaman", noteClass: "text-teal-600" },
-          { label: "Indeks gabungan", value: "87 %", note: "Bobot thermal 60% · visual 40%", noteClass: "text-teal-600" }
+          { label: "Today's Feedback Count", value: "48 responses", note: "6 zones · anonymous feedback", noteClass: "text-teal-600" },
+          { label: "Thermal Satisfaction", value: "85 %", note: "41 of 48 within comfort band", noteClass: "text-teal-600" },
+          { label: "Visual Satisfaction", value: "90 %", note: "43 of 48 reported comfortable", noteClass: "text-teal-600" },
+          { label: "Combined Comfort Index", value: "87 %", note: "Weighted: 60% thermal · 40% visual", noteClass: "text-teal-600" }
         ]
       }
     ]
@@ -173,10 +159,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-thermal-main",
         items: [
-          { label: "PMV rata-rata", value: "+0,18", note: "Netral · rentang target −0,5 hingga +0,5", noteClass: "text-teal-600" },
-          { label: "PPD rata-rata", value: "5,7 %", note: "Di bawah batas evaluasi 10%", noteClass: "text-teal-600" },
-          { label: "MRT rata-rata", value: "25,1 °C", note: "Estimasi globe thermometer demo", noteClass: "text-teal-600" },
-          { label: "Zona dalam target", value: "6 / 6 zona", note: "Lounge menggunakan sampel 14:00", noteClass: "text-amber-400" }
+          { label: "Average PMV Index", value: "+0.18", note: "Neutral · target range −0.5 to +0.5", noteClass: "text-teal-600" },
+          { label: "Average PPD", value: "5.7 %", note: "Below 10% benchmark limit", noteClass: "text-teal-600" },
+          { label: "Mean Radiant Temp (MRT)", value: "25.1 °C", note: "Globe thermometer estimate", noteClass: "text-teal-600" },
+          { label: "Compliant Zones", value: "6 / 6 zones", note: "Lounge using 14:00 sample", noteClass: "text-amber-400" }
         ]
       }
     ]
@@ -187,10 +173,10 @@ const MOCK_PAGE_DATA = {
       {
         target: "kpi-historical-main",
         items: [
-          { label: "Total konsumsi", value: "1.742,8 kWh", note: "Hari terakhir parsial hingga 14:30", noteClass: "text-teal-600" },
-          { label: "Daya puncak periode", value: "31,6 kW", note: "30 Sep 2026 · 10:45 WIB", noteClass: "text-teal-600" },
-          { label: "Suhu indoor rata-rata", value: "24,7 °C", note: "Min 23,8 °C · max 26,2 °C", noteClass: "text-teal-600" },
-          { label: "Kelengkapan data", value: "99,2 %", note: "3.774 / 3.804 sampel valid", noteClass: "text-teal-600" }
+          { label: "Total Energy Consumption", value: "1,742.8 kWh", note: "Current period partial to 14:30", noteClass: "text-teal-600" },
+          { label: "Period Peak Demand", value: "31.6 kW", note: "Sep 30, 2026 · 10:45", noteClass: "text-teal-600" },
+          { label: "Average Indoor Temp", value: "24.7 °C", note: "Min 23.8 °C · Max 26.2 °C", noteClass: "text-teal-600" },
+          { label: "Data Completeness", value: "99.2 %", note: "3,774 / 3,804 valid samples", noteClass: "text-teal-600" }
         ]
       }
     ]

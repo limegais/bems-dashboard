@@ -1,186 +1,851 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Experiment Mode — BEMS Living Lab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <title>Experiment & Operating Modes — BEMS Living Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body class="app-body">
-<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="app-layout flex">
   <div id="sidebar-root"></div>
   <div class="app-content flex-1 min-w-0">
     <div id="topbar-root"></div>
     <main id="main-content" class="app-main p-6 space-y-6">
+
+      <!-- ── Page Header & Executive Strategy Bar ── -->
       <section class="page-head">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 class="page-title">Operating / Experiment Mode</h2>
-            <p class="page-subtitle">Atur protokol eksperimen terkontrol tanpa mengubah koneksi atau perangkat bangunan.</p>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wider font-mono">BEMS Control Engine</span>
+              <span class="text-slate-400 text-xs">·</span>
+              <span class="text-xs text-slate-500 font-medium">Living Lab FT UNS — Integrated HVAC & Lighting Control</span>
+            </div>
+            <h1 class="page-title text-2xl font-bold text-slate-900 tracking-tight">Operating &amp; Experiment Mode</h1>
+            <p class="page-subtitle text-sm text-slate-500 mt-1">Platform kendali fleksibel untuk mengatur tata udara (AC) dan pencahayaan (Lampu) melalui 4 strategi: Manual, Adaptive Closed-Loop, Scheduling Terprogram, dan Algoritma Optimasi Machine Learning (MOPSO, MOGA, RL, MPC, Fuzzy).</p>
           </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Protokol eksperimen</button>
+
+          <!-- Active Mode Badge & Emergency Killswitch -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span id="active-mode-badge" class="px-3 py-1 rounded-full text-xs font-bold font-mono border inline-flex items-center gap-2 bg-blue-50 text-blue-800 border-blue-200">
+              <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span> Manual Control Active
+            </span>
+            <button onclick="window.ExperimentService.emergencyStop()" class="px-3.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-all">
+              <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              Safety Override (E-Stop)
+            </button>
+          </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
-            <button class="indoor-chip">Hari ini</button>
-            <button class="indoor-chip">Semua ruang</button>
+        <!-- 4 Mode Selector Tabs -->
+        <div class="mt-4 pt-3 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 shadow-2xs">
+            <button onclick="window.ExperimentService.setMode('manual')" data-mode="manual" class="mode-tab-btn px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all bg-white text-teal-900 shadow-sm border border-teal-200/90">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+              Manual Control
+            </button>
+            <button onclick="window.ExperimentService.setMode('adaptive')" data-mode="adaptive" class="mode-tab-btn px-4 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 transition-all text-slate-500 hover:text-slate-800 hover:bg-white/60">
+              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Adaptive Closed-Loop
+            </button>
+            <button onclick="window.ExperimentService.setMode('scheduling')" data-mode="scheduling" class="mode-tab-btn px-4 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 transition-all text-slate-500 hover:text-slate-800 hover:bg-white/60">
+              <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Scheduled Operation
+            </button>
+            <button onclick="window.ExperimentService.setMode('ml')" data-mode="ml" class="mode-tab-btn px-4 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 transition-all text-slate-500 hover:text-slate-800 hover:bg-white/60">
+              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              Machine Learning / AI
+            </button>
           </div>
-          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+
+          <div class="flex items-center gap-3 text-xs text-slate-500 font-mono">
+            <span>Broker MQTT: <strong class="text-slate-800">128.199.206.166</strong></span>
+            <span>·</span>
+            <span>Database: <strong class="text-slate-800">iotlabun_sbms (Ch-1 &amp; Ch-3)</strong></span>
+          </div>
         </div>
       </section>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <article class="experiment-mode-card card p-4">
-          <div class="flex items-center justify-between">
-            <p class="text-2xl font-semibold text-slate-700">Operating</p>
-          </div>
-          <p class="text-sm text-slate-500 mt-2">Jadwal dan strategi standar untuk operasional harian.</p>
-        </article>
-
-        <article class="experiment-mode-card experiment-mode-card-active card p-4">
-          <div class="flex items-center justify-between">
-            <p class="text-2xl font-semibold text-slate-700">Experiment</p>
-            <span class="demo-badge" style="background:#e8f7f3;color:#1b8a6e;border-color:#cfeee4;">Demo</span>
-          </div>
-          <p class="text-sm text-slate-500 mt-2">Uji skenario, catat variabel, dan evaluasi hasil penelitian.</p>
-        </article>
-
-        <article class="experiment-mode-card card p-4">
-          <div class="flex items-center justify-between">
-            <p class="text-2xl font-semibold text-slate-700">Safety fallback</p>
-          </div>
-          <p class="text-sm text-slate-500 mt-2">Kembali ke batas aman jika kendala terlampaui.</p>
-        </article>
-      </div>
-
-      <div class="rounded-xl border border-teal-100 bg-teal-50 px-4 py-3">
-        <p class="text-sm font-semibold text-teal-700">Experiment mode — simulasi terisolasi</p>
-        <p class="text-xs text-teal-700 mt-1">Run EXP-026 menggunakan data demo. Seluruh perubahan dicatat sebagai skenario penelitian; tidak ada perintah ke perangkat fisik.</p>
-      </div>
-
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <section class="xl:col-span-2 card p-4">
-          <div class="flex items-start justify-between gap-2 mb-2">
-            <div>
-              <p class="widget-title">Konfigurasi eksperimen</p>
-              <p class="text-sm text-slate-500 mt-1">EXP-026 · Setpoint step-response</p>
-            </div>
-            <span class="demo-badge">Berjalan demo</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div>
-              <label for="exp-name" class="text-xs text-slate-500 block mb-1">Nama eksperimen</label>
-              <input id="exp-name" value="HVAC setpoint step-response" class="w-full tone-select py-2" />
-            </div>
-            <div>
-              <label for="exp-owner" class="text-xs text-slate-500 block mb-1">Penanggung jawab</label>
-              <input id="exp-owner" value="Aditya Pratama" class="w-full tone-select py-2" />
-            </div>
-            <div>
-              <label for="exp-zone" class="text-xs text-slate-500 block mb-1">Zona eksperimen</label>
-              <select id="exp-zone" class="w-full tone-select py-2">
-                <option>Lab A + Office</option>
-                <option>Lab A + Lab B</option>
-              </select>
-            </div>
-            <div>
-              <label for="exp-variable" class="text-xs text-slate-500 block mb-1">Variabel kontrol</label>
-              <select id="exp-variable" class="w-full tone-select py-2">
-                <option>Setpoint AC</option>
-                <option>Dimming lighting</option>
-              </select>
-            </div>
-            <div>
-              <label for="exp-start" class="text-xs text-slate-500 block mb-1">Mulai</label>
-              <input id="exp-start" value="04 Okt 2026 · 14:00 WIB" class="w-full tone-select py-2" />
-            </div>
-            <div>
-              <label for="exp-duration" class="text-xs text-slate-500 block mb-1">Durasi</label>
-              <input id="exp-duration" value="120 menit" class="w-full tone-select py-2" />
-            </div>
-            <div>
-              <label for="exp-range" class="text-xs text-slate-500 block mb-1">Rentang setpoint</label>
-              <input id="exp-range" value="24,5 → 25,5 °C" class="w-full tone-select py-2" />
-            </div>
-            <div>
-              <label for="exp-step" class="text-xs text-slate-500 block mb-1">Step interval</label>
-              <input id="exp-step" value="60 menit" class="w-full tone-select py-2" />
-            </div>
-          </div>
-
-          <div class="mt-3">
-            <label for="exp-note" class="text-xs text-slate-500 block mb-1">Catatan / hipotesis</label>
-            <input id="exp-note" value="Kenaikan setpoint 0,5 °C mengurangi daya tanpa menaikkan PPD di atas 10%." class="w-full tone-select py-2" />
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2 mt-4">
-            <button class="tone-select text-sm px-4 py-2" type="button">Jeda simulasi</button>
-            <button class="bg-blue-600 hover:bg-blue-500 text-white text-sm rounded px-4 py-2" type="button">Akhiri & simpan</button>
-            <button class="tone-select text-sm px-4 py-2" type="button">Kembali ke operating</button>
-          </div>
-        </section>
-
-        <div class="space-y-4">
-          <section class="card p-4">
-            <p class="widget-title">Status run</p>
-            <p class="text-sm text-slate-500 mt-1">EXP-026 · 14:00-16:00 WIB</p>
-
-            <div class="mt-3">
-              <div class="flex items-center justify-between text-sm text-slate-500 mb-1">
-                <span>Durasi eksperimen</span>
-                <strong class="text-slate-700">30 / 120 menit</strong>
-              </div>
-              <div class="indoor-progress"><i style="width: 25%;"></i></div>
-            </div>
-
-            <div class="pt-3 space-y-1 text-sm">
-              <div class="flex items-center justify-between"><span class="text-slate-500">Tahap saat ini</span><strong class="text-slate-700">Baseline · 24,5 °C</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Tahap berikutnya</span><strong class="text-slate-700">15:00 · 25,0 °C</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Sampel terkumpul</span><strong class="text-slate-700">120 / 480</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Kelengkapan data</span><strong class="text-slate-700">99,2 %</strong></div>
-            </div>
-          </section>
-
-          <section class="card p-4">
-            <p class="widget-title">Batas keselamatan</p>
-            <p class="text-sm text-slate-500 mt-1">Auto-fallback pada pelanggaran</p>
-
-            <div class="pt-3 space-y-1 text-sm">
-              <div class="flex items-center justify-between"><span class="text-slate-500">Suhu ruang</span><strong class="text-slate-700">23-27 °C</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">PPD maksimum</span><strong class="text-slate-700">10 %</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">CO₂ maksimum</span><strong class="text-slate-700">1.000 ppm</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Daya maksimum</span><strong class="text-slate-700">28 kW</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Jeda kompresor</span><strong class="text-slate-700">≥ 5 menit</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Stop manual</span><strong class="text-slate-700">Selalu tersedia</strong></div>
-            </div>
-
-            <div class="rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 mt-3">
-              <p class="text-xs text-teal-700 font-semibold">Zona eksperimen aman</p>
-            </div>
-          </section>
+      <!-- ── Live Telemetry Status Strip ── -->
+      <section aria-label="Integrated Telemetry Status" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 shadow-2xs">
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-mono">Suhu Ruangan (Ta)</span>
+          <strong id="live-room-temp" class="text-lg font-bold text-teal-900 font-mono block mt-0.5">24.2 °C</strong>
+          <span class="text-[11px] text-slate-500">6 Sensor SHT31</span>
         </div>
-      </div>
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 shadow-2xs">
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-mono">Cahaya Meja (Eavg)</span>
+          <strong id="live-desk-lux" class="text-lg font-bold text-amber-900 font-mono block mt-0.5">468 Lux</strong>
+          <span class="text-[11px] text-emerald-700 font-medium">Target SNI: 480 Lux</span>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 shadow-2xs">
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-mono">Daya Aktif AC</span>
+          <strong id="live-ac-power" class="text-lg font-bold text-blue-900 font-mono block mt-0.5">1.25 kW</strong>
+          <span class="text-[11px] text-slate-500">Submeter Ch-1</span>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 shadow-2xs">
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-mono">Daya Lampu (Watt)</span>
+          <strong id="live-lamp-power" class="text-lg font-bold text-amber-800 font-mono block mt-0.5">165 W</strong>
+          <span class="text-[11px] text-slate-500">Submeter Ch-3</span>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 shadow-2xs">
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-mono">Total Beban Terkendali</span>
+          <strong id="live-total-power" class="text-lg font-bold text-slate-900 font-mono block mt-0.5">1.415 kW</strong>
+          <span class="text-[11px] text-slate-500">HVAC + Lighting</span>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 shadow-2xs">
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block font-mono">Okupansi Terdeteksi</span>
+          <strong id="live-occupancy-count" class="text-lg font-bold text-indigo-900 font-mono block mt-0.5">3 Orang</strong>
+          <span class="text-[11px] text-indigo-700 font-medium">Kamera AI Smart Room</span>
+        </div>
+      </section>
 
-      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
-        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
-        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
-      </div>
+      <!-- ── DUAL ACTUATOR CONSOLE: AC & LIGHTING CONTROLLERS ── -->
+      <section id="manual-actuator-console" aria-label="Konsol Aktuator AC dan Lampu" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- ── PANEL A: HVAC / AC ACTUATOR (Col 6) ── -->
+        <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4 hover:border-blue-300 transition-all">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-slate-900">AC / HVAC Controller (Air Conditioner)</h2>
+                <p class="text-xs text-slate-400">Pengaturan setpoint temperatur kompresor, fan blower, dan mode pendinginan</p>
+              </div>
+            </div>
+
+            <!-- Master Power AC -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button id="btn-ac-power-on" onclick="window.ExperimentService.setAcPower(true)" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-xs transition-all">ON</button>
+              <button id="btn-ac-power-off" onclick="window.ExperimentService.setAcPower(false)" class="px-3.5 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-100 transition-all">OFF</button>
+            </div>
+          </div>
+
+          <!-- Status Kompresor & Live Feedback -->
+          <div class="flex items-center justify-between">
+            <span id="ac-actuator-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Compressor Running (Active Demand)
+            </span>
+            <span class="text-xs text-slate-500 font-mono">Batas Aman: <strong class="text-slate-800">20.0 – 28.0 °C</strong></span>
+          </div>
+
+          <!-- Setpoint Stepper & Digital Display -->
+          <div class="bg-gradient-to-br from-blue-50/60 to-slate-50/60 p-4 rounded-xl border border-blue-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-center sm:text-left">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block font-mono">Target Temperatur Setpoint</span>
+              <div class="flex items-baseline justify-center sm:justify-start gap-1 mt-1">
+                <span id="ac-setpoint-display-big" class="text-4xl font-extrabold text-blue-900 font-mono tracking-tight">24.0</span>
+                <span class="text-xl font-bold text-blue-700">°C</span>
+              </div>
+              <p id="ac-setpoint-delta" class="text-xs text-teal-700 font-medium mt-1">Setpoint matches zone temp</p>
+            </div>
+
+            <!-- Stepper Buttons -->
+            <div class="flex items-center gap-2">
+              <button onclick="window.ExperimentService.adjustAcSetpoint(-0.5)" class="w-12 h-12 rounded-xl bg-white border border-slate-300 hover:border-blue-400 hover:bg-blue-50/50 text-slate-700 font-bold text-xl flex items-center justify-center shadow-2xs active:scale-95 transition-all" title="Turunkan 0.5 °C">
+                −
+              </button>
+              <button onclick="window.ExperimentService.adjustAcSetpoint(+0.5)" class="w-12 h-12 rounded-xl bg-white border border-slate-300 hover:border-blue-400 hover:bg-blue-50/50 text-slate-700 font-bold text-xl flex items-center justify-center shadow-2xs active:scale-95 transition-all" title="Naikkan 0.5 °C">
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Slider Setpoint Rentang Halus -->
+          <div>
+            <div class="flex justify-between text-xs text-slate-500 font-mono mb-1.5">
+              <span>16.0 °C (Min)</span>
+              <span class="font-bold text-blue-900">Slider Presisi: <strong id="ac-setpoint-val">24.0 °C</strong></span>
+              <span>30.0 °C (Max)</span>
+            </div>
+            <input type="range" min="16.0" max="30.0" step="0.5" value="24.0" oninput="window.ExperimentService.setAcSetpoint(this.value)" class="w-full accent-blue-600 cursor-pointer h-2 bg-slate-200 rounded-lg" />
+          </div>
+
+          <!-- Fan Speed & AC Operating Mode -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <!-- Fan Speed -->
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+              <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2 font-mono">Kecepatan Fan Blower</label>
+              <div class="grid grid-cols-5 gap-1 text-center">
+                <button onclick="window.ExperimentService.setAcFan('quiet')" data-fan="quiet" class="ac-fan-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Quiet</button>
+                <button onclick="window.ExperimentService.setAcFan('low')" data-fan="low" class="ac-fan-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Low</button>
+                <button onclick="window.ExperimentService.setAcFan('med')" data-fan="med" class="ac-fan-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Med</button>
+                <button onclick="window.ExperimentService.setAcFan('high')" data-fan="high" class="ac-fan-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">High</button>
+                <button onclick="window.ExperimentService.setAcFan('auto')" data-fan="auto" class="ac-fan-btn px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-800 text-white shadow-2xs">Auto</button>
+              </div>
+            </div>
+
+            <!-- AC Mode -->
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+              <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2 font-mono">Mode Siklus AC</label>
+              <div class="grid grid-cols-4 gap-1 text-center">
+                <button onclick="window.ExperimentService.setAcMode('cool')" data-mode="cool" class="ac-mode-btn px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-800 text-white shadow-2xs">Cool</button>
+                <button onclick="window.ExperimentService.setAcMode('dry')" data-mode="dry" class="ac-mode-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Dry</button>
+                <button onclick="window.ExperimentService.setAcMode('fan')" data-mode="fan" class="ac-mode-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Fan</button>
+                <button onclick="window.ExperimentService.setAcMode('auto')" data-mode="auto" class="ac-mode-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Auto</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PANEL B: LIGHTING ACTUATOR (Col 6) ── -->
+        <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4 hover:border-amber-300 transition-all">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Lighting Controller (4x LED 70W / 2-Zona)</h2>
+                <p class="text-xs text-slate-400">PWM fixture dimming settings and daylight harvesting control strategies.</p>
+              </div>
+            </div>
+
+            <!-- Master Power Lampu -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button id="btn-light-power-on" onclick="window.ExperimentService.setLightPower(true)" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-amber-600 text-white shadow-xs transition-all">ON</button>
+              <button id="btn-light-power-off" onclick="window.ExperimentService.setLightPower(false)" class="px-3.5 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-100 transition-all">OFF</button>
+            </div>
+          </div>
+
+          <!-- Status Fixture & Feedback Perkiraan -->
+          <div class="flex items-center justify-between">
+            <span id="light-actuator-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 inline-flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 4 Fixture Aktif (PWM Dimming)
+            </span>
+            <div class="flex items-center gap-2 font-mono text-xs">
+              <span class="text-slate-400">Calculated Demand:</span>
+              <strong id="light-total-calc-w" class="text-amber-800 font-bold">175 W</strong>
+            </div>
+          </div>
+
+          <!-- Zona 1: Area Jendela (Daylight Harvesting) -->
+          <div class="bg-gradient-to-br from-amber-50/50 to-white p-3.5 rounded-xl border border-amber-200/80 space-y-2">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <strong class="text-amber-950 font-sans">Zona 1: Area Fasad Jendela (Lampu 1-2)</strong>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="light-z1-pwm" class="text-[11px] text-slate-500">PWM 140/255</span>
+                <strong id="light-z1-watt" class="text-amber-900 font-bold">77 W</strong>
+                <span id="light-z1-val" class="px-2 py-0.5 rounded font-bold bg-amber-100 text-amber-900">55%</span>
+              </div>
+            </div>
+            <input type="range" id="light-z1-slider" min="0" max="100" step="1" value="55" oninput="window.ExperimentService.setLightZone1(this.value)" class="w-full accent-amber-600 cursor-pointer h-2 bg-slate-200 rounded-lg" />
+            <p class="text-[11px] text-amber-800/90 leading-relaxed">
+              Otomatis sinkron dengan radiasi matahari jendela barat untuk menghemat listrik tanpa mengurangi standar 480 Lux.
+            </p>
+          </div>
+
+          <!-- Zona 2: Area Dalam (Core Zone) -->
+          <div class="bg-gradient-to-br from-blue-50/40 to-white p-3.5 rounded-xl border border-blue-200/80 space-y-2">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                <strong class="text-blue-950 font-sans">Zona 2: Area Dalam / Tengah (Lampu 3-4)</strong>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="light-z2-pwm" class="text-[11px] text-slate-500">PWM 178/255</span>
+                <strong id="light-z2-watt" class="text-blue-900 font-bold">98 W</strong>
+                <span id="light-z2-val" class="px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-900">70%</span>
+              </div>
+            </div>
+            <input type="range" id="light-z2-slider" min="0" max="100" step="1" value="70" oninput="window.ExperimentService.setLightZone2(this.value)" class="w-full accent-blue-600 cursor-pointer h-2 bg-slate-200 rounded-lg" />
+            <p class="text-[11px] text-blue-800/90 leading-relaxed">
+              Area dalam membutuhkan fluks pencahayaan stabil untuk kenyamanan bekerja di depan layar monitor komputer.
+            </p>
+          </div>
+
+          <!-- Quick Lighting Presets -->
+          <div class="pt-1">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2 font-mono">Skenario Instan (Presets)</span>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button onclick="window.ExperimentService.applyLightPreset('daylight')" data-preset="daylight" class="light-preset-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">☀️ Daylight (30/75)</button>
+              <button onclick="window.ExperimentService.applyLightPreset('class')" data-preset="class" class="light-preset-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">💼 Kuliah/Lab (70/75)</button>
+              <button onclick="window.ExperimentService.applyLightPreset('presentation')" data-preset="presentation" class="light-preset-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">🎬 Proyektor (15/25)</button>
+              <button onclick="window.ExperimentService.applyLightPreset('eco')" data-preset="eco" class="light-preset-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">🌱 Eco (40/40)</button>
+              <button onclick="window.ExperimentService.applyLightPreset('full')" data-preset="full" class="light-preset-btn px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">⚡ Max (100%)</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── MODE-SPECIFIC CONFIGURATION PANES (DYNAMIC SWITCHING) ── -->
+      <section aria-label="Konfigurasi Detail Berdasarkan Mode Aktif">
+
+        <!-- MANUAL CONTROL PANE -->
+        <div id="manual-pane" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                Manual Direct Actuation
+              </h3>
+              <p class="text-xs text-slate-500">Seluruh parameter dikendalikan langsung oleh operator lab tanpa intervensi loop otomasi algoritma.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200">Mode: Operator Manual</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <strong class="text-slate-800 font-bold block mb-1">Temperature Boundary Protection</strong>
+              <p class="text-slate-500 leading-relaxed">Kompresor dibatasi secara otomatis pada rentang aman 20°C s/d 28°C untuk mencegah pembekuan evaporator dan overload daya listrik.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <strong class="text-slate-800 font-bold block mb-1">Proteksi Kompresor Anti Short-Cycle</strong>
+              <p class="text-slate-500 leading-relaxed">Delay proteksi minimal 3 menit diterapkan antara perintah ON dan OFF untuk menjaga keawetan pelumas kompresor AC.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <strong class="text-slate-800 font-bold block mb-1">Standar Iluminansi Meja SNI 03-6197</strong>
+              <p class="text-slate-500 leading-relaxed">Pastikan slider PWM disetel agar tingkat cahaya meja kerja mencapai minimal 350 Lux hingga 500 Lux (ideal 480 Lux).</p>
+            </div>
+          </div>
+
+          <!-- ── Apply Setting Bar ── -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 bg-slate-50/60 -mx-5 -mb-5 px-5 py-4 rounded-b-2xl">
+            <div class="text-xs text-slate-500 font-mono">
+              <span id="manual-pending-summary" class="text-slate-600">
+                Setpoint AC: <strong id="pending-ac" class="text-blue-800">24.0 °C</strong>
+                &nbsp;·&nbsp; Fan: <strong id="pending-fan" class="text-blue-800">Auto</strong>
+                &nbsp;·&nbsp; Mode AC: <strong id="pending-acmode" class="text-blue-800">Cool</strong>
+                &nbsp;·&nbsp; Zona 1 PWM: <strong id="pending-z1" class="text-amber-800">55%</strong>
+                &nbsp;·&nbsp; Zona 2 PWM: <strong id="pending-z2" class="text-amber-800">70%</strong>
+              </span>
+            </div>
+            <button id="btn-apply-manual" onclick="window.ExperimentService.applyManualSetting()" class="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 active:scale-95 text-white text-xs font-bold shadow-md flex items-center gap-2 transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Apply Setting
+            </button>
+          </div>
+        </div>
+
+        <!-- ADAPTIVE CONTROL PANE -->
+        <div id="adaptive-pane" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-600"></span>
+                Adaptive Closed-Loop Feedback
+              </h3>
+              <p class="text-xs text-slate-500">Sistem terus membaca umpan balik sensor suhu ruangan SHT31, model kenyamanan PMV ISO 7730, dan sensor lux meja kerja secara otonom.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Interval Loop: 30 Detik</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div class="p-4 rounded-xl bg-emerald-50/50 border border-emerald-200/80 space-y-2">
+              <strong class="text-emerald-950 font-bold block">PMV Thermal Comfort Target</strong>
+              <p class="text-emerald-800 leading-relaxed">Target PMV is locked at nominal neutral comfort (-0.5 to +0.5)."font-mono text-emerald-900">-0.5 s/d +0.5</strong> (Kategori Kenyamanan Internasional). Setpoint AC dinaikkan saat cuaca dingin dan diturunkan saat beban panas bertambah.</p>
+              <div class="pt-2 border-t border-emerald-200/60 flex justify-between font-mono">
+                <span>Deadband Toleransi:</span>
+                <strong class="text-emerald-900">&plusmn; 0.5 °C</strong>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-2">
+              <strong class="text-amber-950 font-bold block">Daylight Harvesting Closed-Loop</strong>
+              <p class="text-amber-800 leading-relaxed">Sensor LX1–LX4 terus memantau fluks cahaya. Saat matahari siang bersinar terang dari jendela barat, PWM Zona 1 otomatis dipangkas hingga 30% untuk efisiensi listrik.</p>
+              <div class="pt-2 border-t border-amber-200/60 flex justify-between font-mono">
+                <span>Target Iluminansi:</span>
+                <strong class="text-amber-900">480 Lux</strong>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-blue-50/50 border border-blue-200/80 space-y-2">
+              <strong class="text-blue-950 font-bold block">Dynamic AI Occupancy Response</strong>
+              <p class="text-blue-800 leading-relaxed">Raspberry Pi Edge camera vision tracks real-time occupant counts, automatically triggering eco-standby during vacancy.</p>
+              <div class="pt-2 border-t border-blue-200/60 flex justify-between font-mono">
+                <span>Occupancy Status:</span>
+                <strong class="text-blue-900">3 Orang Aktif</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCHEDULING PANE -->
+        <div id="scheduling-pane" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-purple-600"></span>
+                Scheduled Operation — Penjadwalan Waktu AC &amp; Lampu
+              </h3>
+              <p class="text-xs text-slate-500">Atur kapan AC dan lampu menyala/mati berdasarkan rentang waktu. Klik tombol + untuk menambah jadwal baru.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-purple-50 text-purple-700 border border-purple-200">Profil: Senin – Jumat</span>
+          </div>
+
+          <!-- ── Form Add New Schedule ── -->
+          <div class="bg-purple-50/60 border border-purple-200/80 rounded-xl p-4 space-y-4">
+            <h4 class="text-xs font-bold text-purple-900 uppercase tracking-wider font-mono flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add New Schedule
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <!-- Nama Sesi -->
+              <div>
+                <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1 font-mono">Nama Sesi</label>
+                <input id="sched-name" type="text" placeholder="cth: Kuliah Pagi" class="w-full px-3 py-2 text-xs rounded-lg border border-purple-200 bg-white text-slate-800 font-sans focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-300" />
+              </div>
+              <!-- Waktu Mulai -->
+              <div>
+                <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1 font-mono">Waktu Mulai</label>
+                <input id="sched-start" type="time" value="08:00" class="w-full px-3 py-2 text-xs rounded-lg border border-purple-200 bg-white text-slate-800 font-mono focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-300" />
+              </div>
+              <!-- Waktu Selesai -->
+              <div>
+                <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1 font-mono">Waktu Selesai</label>
+                <input id="sched-end" type="time" value="12:00" class="w-full px-3 py-2 text-xs rounded-lg border border-purple-200 bg-white text-slate-800 font-mono focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-300" />
+              </div>
+              <!-- Hari Aktif -->
+              <div>
+                <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1 font-mono">Hari Aktif</label>
+                <select id="sched-days" class="w-full px-3 py-2 text-xs rounded-lg border border-purple-200 bg-white text-slate-700 font-sans focus:outline-none focus:border-purple-500">
+                  <option value="Senin–Jumat">Senin – Jumat</option>
+                  <option value="Senin–Sabtu">Senin – Sabtu</option>
+                  <option value="Setiap Hari">Setiap Hari</option>
+                  <option value="Sabtu–Minggu">Sabtu – Minggu</option>
+                  <option value="Custom">Custom</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Setting AC & Lampu -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <!-- AC ON/OFF -->
+              <div class="bg-white rounded-xl border border-blue-200/80 p-3">
+                <label class="text-[11px] font-bold text-blue-800 uppercase tracking-wider block mb-2 font-mono">AC</label>
+                <div class="flex items-center gap-2 mb-2">
+                  <label class="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-slate-600">
+                    <input type="radio" name="sched-ac-power" id="sched-ac-on" value="on" checked class="accent-blue-600" /> ON
+                  </label>
+                  <label class="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-slate-600">
+                    <input type="radio" name="sched-ac-power" id="sched-ac-off" value="off" class="accent-rose-600" /> OFF
+                  </label>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <label class="text-[10px] text-slate-500 font-mono whitespace-nowrap">Setpoint:</label>
+                  <input id="sched-ac-sp" type="number" min="20" max="28" step="0.5" value="24.0" class="w-full px-2 py-1 text-xs rounded border border-blue-200 bg-blue-50 text-blue-900 font-mono focus:outline-none focus:border-blue-500" />
+                  <span class="text-[10px] text-slate-500">°C</span>
+                </div>
+              </div>
+              <!-- AC Fan -->
+              <div class="bg-white rounded-xl border border-blue-200/80 p-3">
+                <label class="text-[11px] font-bold text-blue-800 uppercase tracking-wider block mb-2 font-mono">Fan AC</label>
+                <select id="sched-ac-fan" class="w-full px-2 py-1.5 text-xs rounded border border-blue-200 bg-blue-50 text-blue-900 font-mono focus:outline-none focus:border-blue-500">
+                  <option value="auto">Auto</option>
+                  <option value="low">Low</option>
+                  <option value="med">Medium</option>
+                  <option value="high">High</option>
+                  <option value="quiet">Quiet</option>
+                </select>
+              </div>
+              <!-- Lampu Zona 1 -->
+              <div class="bg-white rounded-xl border border-amber-200/80 p-3">
+                <label class="text-[11px] font-bold text-amber-800 uppercase tracking-wider block mb-2 font-mono">Lampu Zona 1</label>
+                <div class="flex items-center gap-1.5">
+                  <input id="sched-z1" type="number" min="0" max="100" step="5" value="55" class="w-full px-2 py-1 text-xs rounded border border-amber-200 bg-amber-50 text-amber-900 font-mono focus:outline-none focus:border-amber-500" />
+                  <span class="text-[10px] text-slate-500">%</span>
+                </div>
+                <input id="sched-z1-range" type="range" min="0" max="100" step="5" value="55" oninput="document.getElementById('sched-z1').value=this.value" class="w-full mt-2 accent-amber-500 h-1.5" />
+              </div>
+              <!-- Lampu Zona 2 -->
+              <div class="bg-white rounded-xl border border-amber-200/80 p-3">
+                <label class="text-[11px] font-bold text-amber-800 uppercase tracking-wider block mb-2 font-mono">Lampu Zona 2</label>
+                <div class="flex items-center gap-1.5">
+                  <input id="sched-z2" type="number" min="0" max="100" step="5" value="70" class="w-full px-2 py-1 text-xs rounded border border-amber-200 bg-amber-50 text-amber-900 font-mono focus:outline-none focus:border-amber-500" />
+                  <span class="text-[10px] text-slate-500">%</span>
+                </div>
+                <input id="sched-z2-range" type="range" min="0" max="100" step="5" value="70" oninput="document.getElementById('sched-z2').value=this.value" class="w-full mt-2 accent-amber-500 h-1.5" />
+              </div>
+            </div>
+
+            <button onclick="window.ExperimentService.addScheduleEntry()" class="px-4 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 active:scale-95 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add to Schedule
+            </button>
+          </div>
+
+          <!-- ── Tabel Jadwal Aktif ── -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">Jadwal Aktif</h4>
+              <span class="text-[10px] text-slate-400 font-mono">Click 🗑 to remove</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 font-mono">
+                    <th class="py-2 px-3">Nama Sesi</th>
+                    <th class="py-2 px-3">Waktu</th>
+                    <th class="py-2 px-3">Hari</th>
+                    <th class="py-2 px-3">AC</th>
+                    <th class="py-2 px-3">Fan</th>
+                    <th class="py-2 px-3">Lampu Z1</th>
+                    <th class="py-2 px-3">Lampu Z2</th>
+                    <th class="py-2 px-3">Status</th>
+                    <th class="py-2 px-3"></th>
+                  </tr>
+                </thead>
+                <tbody id="sched-table-body" class="divide-y divide-slate-100 text-slate-700">
+                  <!-- Diisi JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Occupancy Auto Rule -->
+          <div class="p-3.5 rounded-xl bg-amber-50/60 border border-amber-200/80 flex flex-wrap items-center justify-between text-xs gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+              <strong class="text-amber-950">Vacant Space Rule:</strong>
+              <span class="text-amber-900">Jika tidak ada orang selama &gt; 15 menit, setpoint AC naik ke 26.5°C dan lampu meredup ke 20%.</span>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="sched-occupancy-rule" checked class="accent-amber-600 w-4 h-4" />
+              <span class="text-amber-900 font-bold">Aktifkan Aturan Ini</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. MACHINE LEARNING & AI OPTIMIZATION PANE -->
+        <div id="ml-pane" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Machine Learning &amp; Artificial Intelligence Engine
+              </h3>
+              <p class="text-xs text-slate-500">Select an intelligent optimization algorithm to compute the Pareto-optimal operational setpoints.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200">Multi-Algorithm Lab</span>
+          </div>
+
+          <!-- 5 Algorithm Picker Cards -->
+          <div>
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2 font-mono">Pilih Algoritma AI yang Ingin Digunakan:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+
+              <!-- Card 1: MOPSO -->
+              <div onclick="window.ExperimentService.setMlAlgorithm('mopso')" data-algo="mopso" class="ml-algo-card p-3 rounded-xl border-2 border-teal-600 bg-teal-50/60 shadow-2xs transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-1">
+                  <strong class="text-xs font-bold text-teal-950">MOPSO</strong>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-teal-200 text-teal-900 font-mono">Swarm</span>
+                </div>
+                <p class="text-[11px] text-teal-800 font-medium">Particle Swarm Optimization</p>
+                <span class="text-[10px] text-slate-500 mt-2 block font-mono">Hemat: 22% – 28%</span>
+              </div>
+
+              <!-- Card 2: MOGA -->
+              <div onclick="window.ExperimentService.setMlAlgorithm('moga')" data-algo="moga" class="ml-algo-card p-3 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-1">
+                  <strong class="text-xs font-bold text-slate-900">MOGA / NSGA-II</strong>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-100 text-blue-800 font-mono">Genetic</span>
+                </div>
+                <p class="text-[11px] text-slate-600 font-medium">Non-Dominated Genetic</p>
+                <span class="text-[10px] text-slate-500 mt-2 block font-mono">Hemat: 20% – 26%</span>
+              </div>
+
+              <!-- Card 3: Deep RL -->
+              <div onclick="window.ExperimentService.setMlAlgorithm('rl')" data-algo="rl" class="ml-algo-card p-3 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-1">
+                  <strong class="text-xs font-bold text-slate-900">Deep RL (PPO)</strong>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-purple-100 text-purple-800 font-mono">RL Agent</span>
+                </div>
+                <p class="text-[11px] text-slate-600 font-medium">Continuous Actor-Critic</p>
+                <span class="text-[10px] text-slate-500 mt-2 block font-mono">Hemat: 24% – 31%</span>
+              </div>
+
+              <!-- Card 4: LSTM-MPC -->
+              <div onclick="window.ExperimentService.setMlAlgorithm('lstm_mpc')" data-algo="lstm_mpc" class="ml-algo-card p-3 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-1">
+                  <strong class="text-xs font-bold text-slate-900">LSTM-MPC</strong>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-100 text-amber-800 font-mono">Predictive</span>
+                </div>
+                <p class="text-[11px] text-slate-600 font-medium">Deep Model Predictive</p>
+                <span class="text-[10px] text-slate-500 mt-2 block font-mono">Hemat: 18% – 25%</span>
+              </div>
+
+              <!-- Card 5: Fuzzy Logic -->
+              <div onclick="window.ExperimentService.setMlAlgorithm('fuzzy')" data-algo="fuzzy" class="ml-algo-card p-3 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-1">
+                  <strong class="text-xs font-bold text-slate-900">Fuzzy Logic</strong>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-100 text-rose-800 font-mono">Inference</span>
+                </div>
+                <p class="text-[11px] text-slate-600 font-medium">Adaptive Neuro-Fuzzy</p>
+                <span class="text-[10px] text-slate-500 mt-2 block font-mono">Hemat: 16% – 22%</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Detail Penjelasan Algoritma Terpilih & Hyperparameters Tuning -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            
+            <!-- Deskripsi Algoritma (Col 7) -->
+            <div class="lg:col-span-7 bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-3">
+              <div>
+                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider font-mono">Algoritma Aktif:</span>
+                <h4 id="ml-selected-title" class="text-sm font-bold text-slate-900 mt-0.5">MOPSO (Multi-Objective Particle Swarm)</h4>
+              </div>
+              <p id="ml-selected-desc" class="text-xs text-slate-600 leading-relaxed">
+                Memanfaatkan kawanan partikel multi-objektif dengan repositori Pareto eksternal untuk menemukan kompromi optimum antara konsumsi energi kWh dan indeks ketidaknyamanan termal PPD ISO 7730.
+              </p>
+              
+              <div class="pt-2 border-t border-slate-200/60 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-slate-400 font-mono block text-[10px]">Keunggulan Komputasi:</span>
+                  <span id="ml-selected-advantages" class="font-medium text-slate-800">Konvergensi cepat, sebaran Pareto merata di edge.</span>
+                </div>
+                <div>
+                  <span class="text-slate-400 font-mono block text-[10px]">Estimasi Efisiensi:</span>
+                  <strong id="ml-selected-savings" class="text-teal-700 font-mono font-bold">22% – 28%</strong>
+                </div>
+              </div>
+              
+              <div class="p-2.5 rounded-lg bg-white border border-slate-200 text-[11px] font-mono text-slate-600">
+                <span class="text-slate-400">Parameter: </span>
+                <span id="ml-selected-params">Partikel: 40 | Repositori: 50 | w=0.72 | c1=1.49 | c2=1.49</span>
+              </div>
+            </div>
+
+            <!-- Hyperparameter Tuning Slider: Bobot Trade-Off Alpha (Col 5) -->
+            <div class="lg:col-span-5 bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">Trade-off Weight (&alpha;)</span>
+                  <strong id="ml-alpha-val" class="text-sm font-bold text-teal-800 font-mono">0.55</strong>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Balanced compromise between energy conservation and occupant comfort.</p>
+              </div>
+
+              <!-- Slider Alpha -->
+              <div>
+                <input type="range" id="ml-alpha-slider" min="0.0" max="1.0" step="0.05" value="0.55" oninput="window.ExperimentService.setMlAlpha(this.value)" class="w-full accent-teal-700 cursor-pointer h-2 bg-slate-200 rounded-lg" />
+                <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
+                  <span>0.0 (Comfort Priority)</span>
+                  <span>0.5 (Seimbang)</span>
+                  <span>1.0 (Hemat Ekstrem)</span>
+                </div>
+              </div>
+
+              <p id="ml-alpha-note" class="text-xs text-teal-700 font-medium">Kompromi Seimbang Pareto Optimal (Standar ISO 7730 &amp; Efisiensi BEMS)</p>
+
+              <!-- Tombol Eksekusi Optimasi -->
+              <div class="pt-2">
+                <button id="btn-run-optimizer" onclick="window.ExperimentService.runMlOptimizer()" class="w-full py-2.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-sm flex items-center justify-center transition-all">
+                  <svg class="w-4 h-4 mr-1.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  Jalankan Optimasi MOPSO
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Progress Bar Optimasi (Tersembunyi secara default) -->
+          <div id="ml-progress-container" class="hidden p-4 rounded-xl bg-teal-50/70 border border-teal-200 space-y-2">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <span id="ml-progress-text" class="text-teal-950 font-bold">Mengevaluasi Fitness Partikel Swarm...</span>
+              <span class="text-teal-700 animate-pulse">Running Simulation...</span>
+            </div>
+            <div class="w-full bg-teal-200/60 rounded-full h-2.5 overflow-hidden">
+              <div id="ml-progress-bar" class="bg-teal-700 h-2.5 rounded-full transition-all duration-200" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Hasil Rekomendasi Solusi Optimal AI Box (Tampil setelah optimasi) -->
+          <div id="ml-results-card" class="bg-gradient-to-br from-amber-50/60 via-white to-teal-50/40 p-5 rounded-2xl border-2 border-amber-300/90 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-amber-200/80">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
+                <h4 class="text-sm font-bold text-amber-950">Rekomendasi Kebijakan Optimal AI (<span id="res-ai-algo">MOPSO</span>)</h4>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 font-mono">Pareto Best Compromise</span>
+              </div>
+              <button onclick="window.ExperimentService.deployMlSolution()" class="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Deploy AI Solution to Room (Deploy to Edge)
+              </button>
+            </div>
+
+            <!-- Rekomendasi Parameter Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] text-slate-400 uppercase font-mono block">Rekomendasi Setpoint AC</span>
+                <strong id="res-ai-setpoint" class="text-xl font-bold text-blue-900 font-mono mt-0.5 block">24.8 °C</strong>
+                <span class="text-[11px] text-slate-500">Fan: <strong id="res-ai-fan">Auto</strong></span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] text-slate-400 uppercase font-mono block">Rekomendasi Dimming Z1</span>
+                <strong id="res-ai-z1" class="text-xl font-bold text-amber-900 font-mono mt-0.5 block">38% PWM</strong>
+                <span class="text-[11px] text-amber-700">Area Jendela Barat</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] text-slate-400 uppercase font-mono block">Rekomendasi Dimming Z2</span>
+                <strong id="res-ai-z2" class="text-xl font-bold text-teal-900 font-mono mt-0.5 block">72% PWM</strong>
+                <span class="text-[11px] text-slate-500">Area Meja Tengah</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] text-slate-400 uppercase font-mono block">Prediksi Penghematan</span>
+                <strong id="res-ai-savings" class="text-xl font-bold text-emerald-800 font-mono mt-0.5 block">23.4%</strong>
+                <span class="text-[11px] text-emerald-700 font-medium">Demand Reduced</span>
+              </div>
+            </div>
+
+            <!-- Kenyamanan Termal & PPD -->
+            <div class="p-3 rounded-xl bg-white border border-slate-200 flex flex-wrap items-center justify-between text-xs gap-3 font-mono">
+              <div class="flex items-center gap-3">
+                <span>Prediksi PMV: <strong id="res-ai-pmv" class="text-teal-700 font-bold">+0.12</strong></span>
+                <span>·</span>
+                <span>PPD Discomfort: <strong id="res-ai-ppd" class="text-blue-700 font-bold">5.4%</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500 font-sans">Comfort Category:</span>
+                <span id="res-ai-class" class="px-2 py-0.5 rounded font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Kelas A (Sangat Nyaman ISO 7730)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ── DUAL INTERACTIVE SIMULATION CHARTS ── -->
+      <section aria-label="Visualisasi Respon Dinamika dan Pareto Front" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        <!-- Chart 1: Respon Dinamika Suhu & Daya AC -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-100">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <svg class="w-4 h-4 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                  Transient Response Simulation of Temp &amp; AC Power
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Indoor temperature dynamics while transitioning toward target setpoint.</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 font-mono">Horizon: 60 Menit</span>
+            </div>
+
+            <!-- Legend Channels -->
+            <div class="flex flex-wrap items-center gap-3 text-xs font-medium text-slate-500 mb-3 bg-slate-50/70 p-2.5 rounded-lg border border-slate-100">
+              <span class="inline-flex items-center gap-1.5 text-teal-800 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-teal-700"></span>Suhu Aktual Ta (°C)</span>
+              <span class="inline-flex items-center gap-1.5 text-rose-700 font-semibold"><span class="w-3 h-0.5 border-t-2 border-dashed border-rose-600"></span>Garis Setpoint</span>
+              <span class="inline-flex items-center gap-1.5 text-blue-800 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>Daya Kompresor (kW)</span>
+            </div>
+
+            <div class="h-[300px] w-full pt-1">
+              <canvas id="experimentResponseChart"></canvas>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono mt-2">
+            <span>Waktu Stabil: <strong class="text-slate-800 font-semibold">~25 Menit</strong></span>
+            <span>Steady State Error: <strong class="text-emerald-700 font-semibold">&lt; 0.1 °C</strong></span>
+          </div>
+        </div>
+
+        <!-- Chart 2: Pareto Front Multi-Objektif Energi vs Kenyamanan -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 hover:border-amber-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-100">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
+                  Multi-Objective Pareto Frontier (Energy vs Comfort)
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Sebaran solusi partikel swarm / genetik: Trade-off Penghematan kWh vs PPD Discomfort %</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 font-mono">MOPSO Archive</span>
+            </div>
+
+            <div class="h-[330px] w-full pt-1">
+              <canvas id="experimentParetoChart"></canvas>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono mt-2">
+            <span>Titik Kuning: <strong class="text-amber-800 font-bold">Solusi Rekomendasi Terpilih</strong></span>
+            <span class="text-teal-800 font-semibold">Dominansi Pareto Non-Kalah</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── AUDIT LOG AKTIVITAS KENDALI & EKSPERIMEN ── -->
+      <section aria-label="Control Activity Log History" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3 pb-2.5 border-b border-slate-100">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Control Action History &amp; Audit Log</h2>
+            <p class="text-xs text-slate-500">Mencatat setiap perubahan setpoint, aktuasi daya, perpindahan strategi, dan eksekusi AI ke broker MQTT</p>
+          </div>
+          <span class="text-xs font-mono text-slate-500">Siklus: <strong class="text-slate-800">Event-Driven Logging</strong></span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                <th class="py-2.5 px-3">Waktu (WIB)</th>
+                <th class="py-2.5 px-3">Strategi Mode</th>
+                <th class="py-2.5 px-3">Target Aktuator / Variabel</th>
+                <th class="py-2.5 px-3">Nilai / Perintah Baru</th>
+                <th class="py-2.5 px-3">Status Pengiriman</th>
+              </tr>
+            </thead>
+            <tbody id="audit-log-tbody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Footer ── -->
+      <footer class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/70 px-1 mt-6">
+        <div>
+          <p class="font-medium text-slate-600">BEMS Living Lab · Departemen Teknik Elektro FT UNS</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Multi-Strategy Smart Room Control System (Manual, Adaptive, Scheduled, AI Optimized) — BEMS Living Lab.</p>
+        </div>
+        <p class="font-mono text-right text-[11px]">MQTT Control Topic: <span class="font-semibold text-slate-600">livinglab/control/#</span> · Edge Gateway: <span class="font-semibold text-slate-600">Raspberry Pi</span></p>
+      </footer>
 
     </main>
   </div>
 </div>
+
+<!-- Scripts -->
 <script src="assets/js/config/app-config.js"></script>
 <script src="assets/js/core/session.js"></script>
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
 <script src="assets/js/components/layout.js"></script>
+<script src="assets/js/core/mqtt-client.js"></script>
+<script src="assets/js/services/experiment-service.js"></script>
 <script src="assets/js/pages/page-init.js"></script>
-<script>renderSidebar("experiment-mode"); renderTopbar("Experiment mode", "Operating / Experiment");</script>
+
+<script>
+  renderSidebar("experiment-mode");
+  renderTopbar("Operating & Experiment Mode", "Integrated HVAC & Lighting Experimentation Platform");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Start MQTT
+    if (window.MqttClient && typeof window.MqttClient.connect === "function") {
+      window.MqttClient.connect();
+    }
+    // Start Experiment Service
+    if (window.ExperimentService && typeof window.ExperimentService.start === "function") {
+      window.ExperimentService.start();
+    }
+  });
+</script>
 </body>
 </html>

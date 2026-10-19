@@ -1,117 +1,862 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Energy — BEMS Living Lab</title>
+<title>Energy Monitoring & Sub-metering — BEMS Living Lab</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Real-time Building Energy Management System (BEMS) & Sub-metering telemetry dashboard for Living Lab facility." />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="assets/css/style.css" />
+<link rel="stylesheet" href="assets/css/style.css?v=8" />
+<style>
+  .metric-val {
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-unit {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-left: 0.2rem;
+  }
+</style>
 </head>
-<body class="app-body">
-<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
-<div class="app-layout flex">
+<body class="bg-[#f8fafc] text-slate-800 antialiased font-sans">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="app-layout flex min-h-screen bg-[#f8fafc]">
+  <!-- Navigation Sidebar (Active) -->
   <div id="sidebar-root"></div>
+  
   <div class="app-content flex-1 min-w-0">
-    <div id="topbar-root"></div>
-    <main id="main-content" class="app-main p-6 space-y-6">
+    <div id="topbar-root" class="hidden"></div>
+    <main id="main-content" class="p-6 md:p-8 space-y-5 max-w-[1700px] mx-auto w-full">
 
+      <!-- ── Page Header ── -->
       <section class="page-head">
-        <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-1">
           <div>
-            <h2 class="page-title">Energy Monitoring</h2>
-            <p class="page-subtitle">Analisis konsumsi listrik, profil beban, dan efisiensi penggunaan energi bangunan.</p>
-          </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor laporan</button>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
-            <button class="indoor-chip">Hari ini</button>
-            <button class="indoor-chip">Semua ruang</button>
-          </div>
-          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
-        </div>
-      </section>
-
-      <div id="kpi-energy-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
-
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <section class="card p-4 xl:col-span-2">
-          <div class="flex items-center justify-between mb-1">
-            <p class="widget-title">Profil daya listrik</p>
-            <span class="demo-badge">Data demo</span>
-          </div>
-          <p class="text-sm text-slate-500 mb-3">Main meter · 06:00-14:30 WIB</p>
-
-          <div class="h-[260px] rounded-lg border border-slate-100 bg-white p-3">
-            <div class="flex items-center gap-5 text-xs mb-2">
-              <span class="text-teal-600">Daya aktual</span>
-              <span class="text-blue-500">Baseline</span>
+            <div class="flex items-center gap-2.5 mb-1">
+              <h1 class="text-2xl lg:text-[1.75rem] font-bold text-slate-900 tracking-tight">Pemantauan &amp; Manajemen Energi</h1>
+              <span id="mysql-conn-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="mysql-conn-text">MySQL Live Connected</span>
+              </span>
             </div>
-            <svg viewBox="0 0 700 210" class="w-full h-[210px]" role="img" aria-label="Grafik profil daya listrik">
-              <rect x="0" y="0" width="700" height="210" fill="#f9fcfd"/>
-              <line x1="0" y1="165" x2="700" y2="165" stroke="#e6eef3"/>
-              <line x1="0" y1="125" x2="700" y2="125" stroke="#e6eef3"/>
-              <line x1="0" y1="85" x2="700" y2="85" stroke="#e6eef3"/>
-              <polyline fill="none" stroke="#1b8f8f" stroke-width="3" points="20,138 120,134 220,102 320,66 420,46 520,70 620,80"/>
-              <polyline fill="none" stroke="#4e7ab3" stroke-width="3" stroke-dasharray="6 6" points="20,126 120,122 220,92 320,58 420,38 520,54 620,66"/>
-            </svg>
+            <p class="text-xs text-slate-500">
+              Sistem Manajemen Energi &amp; Kualitas Lingkungan Dalam Ruang (BEMS) · 3-Phase multi-function power sub-metering and live telemetry integration."font-mono font-semibold text-slate-600">iotlabun_sbms</span>
+            </p>
           </div>
-        </section>
-
-        <section class="card p-4">
-          <p class="widget-title">Konsumsi per kategori</p>
-          <p class="text-sm text-slate-500 mb-3">Akumulasi hari ini · total 184,6 kWh</p>
-
-          <div class="space-y-3 text-sm">
-            <div class="indoor-progress-row"><span>HVAC</span><span>112,4 kWh · 60,9%</span><div class="indoor-progress"><i style="width: 61%"></i></div></div>
-            <div class="indoor-progress-row"><span>Pencahayaan</span><span>38,2 kWh · 20,7%</span><div class="indoor-progress"><i style="width: 21%"></i></div></div>
-            <div class="indoor-progress-row"><span>Plug load</span><span>34 kWh · 18,4%</span><div class="indoor-progress"><i style="width: 18%"></i></div></div>
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <span class="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">LAST UPDATED</span>
+              <span id="energy-last-update-big" class="font-mono text-lg font-bold text-slate-800">--:--:-- WIB</span>
+            </div>
+            <button onclick="window.EnergyService.refresh()" title="Segarkan Data Sekarang" class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200/90 shadow-sm transition-all flex items-center gap-1.5 hover:shadow">
+              <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Refresh
+            </button>
+            <a href="#panel-export" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export CSV
+            </a>
           </div>
-
-          <div class="mt-4 space-y-2 text-sm text-slate-600">
-            <div class="flex justify-between"><span>Target harian</span><strong>≤ 260 kWh</strong></div>
-            <div class="flex justify-between"><span>Sisa anggaran energi</span><strong>75,4 kWh</strong></div>
-            <div class="flex justify-between"><span>Intensitas (1.200 m²)</span><strong>0,154 kWh/m²</strong></div>
-          </div>
-        </section>
-      </div>
-
-      <div class="rounded-xl border border-teal-100 bg-teal-50 px-4 py-3">
-        <p class="text-sm font-semibold text-teal-700">Efisiensi terhadap baseline</p>
-        <p class="text-xs text-teal-700 mt-1">Penghematan ilustratif sebesar 26,8 kWh hingga 14:30 WIB. HVAC menyumbang 60,9% konsumsi; prioritaskan penjadwalan dan setpoint zona.</p>
-      </div>
-
-      <section class="card p-4 overflow-x-auto">
-        <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
-          <div>
-            <p class="widget-title">Pembacaan meter & submeter</p>
-            <p class="text-sm text-slate-500 mt-1">Energi kumulatif hari ini · daya sesaat · parameter kelistrikan</p>
-          </div>
-          <span class="demo-badge">Data demo</span>
         </div>
-        <table class="w-full text-sm indoor-table">
-          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Meter / kategori</th><th>Energi (kWh)</th><th>Daya (kW)</th><th>Tegangan (V)</th><th>Power factor</th><th>Status</th></tr></thead>
-          <tbody class="text-slate-600">
-            <tr class="border-b border-slate-100"><td class="py-2">M-01 · Main meter</td><td>184,6</td><td>18,4</td><td>220,4</td><td>0,96</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">SM-01 · HVAC</td><td>112,4</td><td>11,2</td><td>220,1</td><td>0,95</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">SM-02 · Lighting</td><td>38,2</td><td>3,8</td><td>220,6</td><td>0,98</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
-            <tr><td class="py-2">SM-03 · Plug load</td><td>34,0</td><td>3,4</td><td>219,8</td><td>0,94</td><td><span class="indoor-pill indoor-pill-ok">Valid</span></td></tr>
-          </tbody>
-        </table>
       </section>
+
+      <!-- ── Executive KPI Summary Grid (5 Cards) ── -->
+      <section aria-label="Energy Executive Summary">
+        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3.5">
+
+          <!-- 1. Active Power Total -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Active Power Total</span>
+              <svg class="w-4 h-4 text-blue-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="total-power">--</span> <span class="text-sm font-normal text-slate-500 font-sans">kW</span></div>
+              <div class="mt-3">
+                <span id="total-power-status" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">Efisiensi Tinggi</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">Beban Real-Time 3 Submeter</p>
+          </div>
+
+          <!-- 2. Total Arus Listrik -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Arus Listrik</span>
+              <svg class="w-4 h-4 text-emerald-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="total-current">--</span> <span class="text-sm font-normal text-slate-500 font-sans">A</span></div>
+              <div class="mt-3">
+                <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Arus Seimbang</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">Akumulasi AC + Plug + Lampu</p>
+          </div>
+
+          <!-- 3. Total Cumulative Energy -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Konsumsi Energi</span>
+              <svg class="w-4 h-4 text-indigo-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="total-energy-kwh">--</span> <span class="text-sm font-normal text-slate-500 font-sans">kWh</span></div>
+              <div class="mt-3">
+                <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">Akumulasi PZEM</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">Jejak Emisi: <strong id="total-co2" class="text-slate-600">--</strong> kg CO₂</p>
+          </div>
+
+          <!-- 4. Frequency Jaringan Listrik -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Frequency Jaringan</span>
+              <svg class="w-4 h-4 text-cyan-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="total-freq-card">--</span> <span class="text-sm font-normal text-slate-500 font-sans">Hz</span></div>
+              <div class="mt-3">
+                <span id="total-freq-status" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200">Stabil Normal</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">Standar PLN 50.00 ± 0.20 Hz</p>
+          </div>
+
+          <!-- 5. Estimasi Biaya Listrik -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between col-span-2 sm:col-span-1">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Estimasi Biaya Listrik</span>
+              <svg class="w-4 h-4 text-amber-500 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span class="text-base font-normal text-slate-500 font-sans">Rp </span><span id="daily-cost">--</span></div>
+              <div class="mt-3">
+                <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-amber-50 text-amber-700 border border-amber-200">Tarif B-2 / TR</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">Perhitungan @ Rp 1.500 / kWh</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Submeter Channel Detail Grid (3 Cards: AC, Outlet, Lamp) ── -->
+      <section aria-label="Monitoring Submeter Real-Time">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 tracking-tight">Kanal Submeter Energi (Multi-Channel PZEM)</h2>
+            <p class="text-xs text-slate-500">Telemetri tegangan, arus, daya aktif, daya reaktif, daya semu, frekuensi, dan power factor per beban</p>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Polling: 4.0 detik</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+          <!-- ── Channel 1: AC (id_kwh=1) ── -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between hover:border-blue-300 transition-all">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/60 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m9-9H3m15.364-6.364l-12.728 12.728m0-12.728l12.728 12.728"/></svg>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-blue-900">AC (Air Conditioner)</h3>
+                    <p class="text-[11px] text-slate-400 font-mono">Modbus Channel: id_kwh=1</p>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">LIVE</span>
+              </div>
+
+              <!-- Big Power & Gauge -->
+              <div class="text-center py-4">
+                <div class="text-5xl font-extrabold text-blue-900 font-mono tracking-tight"><span id="ac-power">--</span> <span class="text-base font-semibold text-slate-400 font-sans">kW</span></div>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Active Power (Active Power)</p>
+                <div class="mt-3 mx-auto max-w-[240px] h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div id="eu-ac-pbar" class="h-full bg-gradient-to-r from-blue-700 to-blue-400 transition-all duration-500 rounded-full" style="width: 0%"></div>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1 font-mono">Kapasitas Maksimal: 3.0 kW</p>
+              </div>
+
+              <!-- 6 Metric Micro-Grid -->
+              <div class="grid grid-cols-3 gap-2 pt-2">
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Tegangan</span>
+                  <strong id="eu-ac-voltage" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">V</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Arus</span>
+                  <strong id="eu-ac-current" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">A</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-blue-50/60 border border-blue-100 text-center">
+                  <span class="block text-[10px] font-medium text-blue-600 uppercase font-semibold">Energi</span>
+                  <strong id="eu-ac-kwh" class="block font-mono text-base font-bold text-blue-900 mt-0.5">--</strong>
+                  <span class="text-[10px] text-blue-500">kWh</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Reaktif</span>
+                  <strong id="eu-ac-reactive" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">VAR</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Semu</span>
+                  <strong id="eu-ac-apparent" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">VA</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Frequency</span>
+                  <strong id="eu-ac-freq" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">Hz</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Power Factor Row & Footer -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500 font-medium">Power Factor:</span>
+                <span id="eu-ac-pf" class="font-mono font-bold text-slate-900">--</span>
+                <span id="eu-ac-pf-quality" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">--</span>
+              </div>
+              <span id="eu-ac-ts" class="font-mono text-[11px] text-slate-400">--</span>
+            </div>
+          </div>
+
+          <!-- ── Channel 2: Outlet (id_kwh=2) ── -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between hover:border-emerald-300 transition-all">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-emerald-900">Stop Kontak (Outlet)</h3>
+                    <p class="text-[11px] text-slate-400 font-mono">Modbus Channel: id_kwh=2</p>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">LIVE</span>
+              </div>
+
+              <!-- Big Power & Gauge -->
+              <div class="text-center py-4">
+                <div class="text-5xl font-extrabold text-emerald-700 font-mono tracking-tight"><span id="outlet-power">--</span> <span class="text-base font-semibold text-slate-400 font-sans">kW</span></div>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Active Power (Active Power)</p>
+                <div class="mt-3 mx-auto max-w-[240px] h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div id="eu-outlet-pbar" class="h-full bg-gradient-to-r from-emerald-600 to-teal-400 transition-all duration-500 rounded-full" style="width: 0%"></div>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1 font-mono">Kapasitas Maksimal: 1.0 kW</p>
+              </div>
+
+              <!-- 6 Metric Micro-Grid -->
+              <div class="grid grid-cols-3 gap-2 pt-2">
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Tegangan</span>
+                  <strong id="eu-outlet-voltage" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">V</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Arus</span>
+                  <strong id="eu-outlet-current" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">A</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-emerald-50/60 border border-emerald-100 text-center">
+                  <span class="block text-[10px] font-medium text-emerald-600 uppercase font-semibold">Energi</span>
+                  <strong id="eu-outlet-kwh" class="block font-mono text-base font-bold text-emerald-900 mt-0.5">--</strong>
+                  <span class="text-[10px] text-emerald-500">kWh</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Reaktif</span>
+                  <strong id="eu-outlet-reactive" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">VAR</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Semu</span>
+                  <strong id="eu-outlet-apparent" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">VA</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Frequency</span>
+                  <strong id="eu-outlet-freq" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">Hz</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Power Factor Row & Footer -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500 font-medium">Power Factor:</span>
+                <span id="eu-outlet-pf" class="font-mono font-bold text-slate-900">--</span>
+                <span id="eu-outlet-pf-quality" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">--</span>
+              </div>
+              <span id="eu-outlet-ts" class="font-mono text-[11px] text-slate-400">--</span>
+            </div>
+          </div>
+
+          <!-- ── Channel 3: Lamp (id_kwh=3) ── -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between hover:border-amber-300 transition-all">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 border border-amber-200/60 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-amber-900">Pencahayaan (Lamp)</h3>
+                    <p class="text-[11px] text-slate-400 font-mono">Modbus Channel: id_kwh=3</p>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">LIVE</span>
+              </div>
+
+              <!-- Big Power & Gauge -->
+              <div class="text-center py-4">
+                <div class="text-5xl font-extrabold text-amber-600 font-mono tracking-tight"><span id="lamp-power">--</span> <span class="text-base font-semibold text-slate-400 font-sans">kW</span></div>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Active Power (Active Power)</p>
+                <div class="mt-3 mx-auto max-w-[240px] h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div id="eu-lamp-pbar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-300 transition-all duration-500 rounded-full" style="width: 0%"></div>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1 font-mono">Kapasitas Maksimal: 0.5 kW</p>
+              </div>
+
+              <!-- 6 Metric Micro-Grid -->
+              <div class="grid grid-cols-3 gap-2 pt-2">
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Tegangan</span>
+                  <strong id="eu-lamp-voltage" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">V</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Arus</span>
+                  <strong id="eu-lamp-current" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">A</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-amber-50/60 border border-amber-100 text-center">
+                  <span class="block text-[10px] font-medium text-amber-600 uppercase font-semibold">Energi</span>
+                  <strong id="eu-lamp-kwh" class="block font-mono text-base font-bold text-amber-900 mt-0.5">--</strong>
+                  <span class="text-[10px] text-amber-500">kWh</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Reaktif</span>
+                  <strong id="eu-lamp-reactive" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">VAR</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Semu</span>
+                  <strong id="eu-lamp-apparent" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">VA</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <span class="block text-[10px] font-medium text-slate-400 uppercase">Frequency</span>
+                  <strong id="eu-lamp-freq" class="block font-mono text-base font-bold text-slate-800 mt-0.5">--</strong>
+                  <span class="text-[10px] text-slate-400">Hz</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Power Factor Row & Footer -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500 font-medium">Power Factor:</span>
+                <span id="eu-lamp-pf" class="font-mono font-bold text-slate-900">--</span>
+                <span id="eu-lamp-pf-quality" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">--</span>
+              </div>
+              <span id="eu-lamp-ts" class="font-mono text-[11px] text-slate-400">--</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Dynamic Live Ring-Buffer Charts (Last 30 Points) ── -->
+      <section aria-label="Grafik Dinamis Real-Time">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          <!-- Chart 1: Frequency Jaringan (Hz) -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 hover:border-cyan-300 transition-all">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                <h3 class="text-sm font-bold text-slate-900">Frequency Jaringan Listrik (Grid Frequency)</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200 font-mono">Target: 50.00 Hz</span>
+                <span class="text-[11px] text-slate-400 font-mono">30 Pts Buffer</span>
+              </div>
+            </div>
+            <div class="h-[195px] w-full">
+              <canvas id="mysqlVoltFreqChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Dinamika Arus Multi-Kanal (A) -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 hover:border-blue-300 transition-all">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                <h3 class="text-sm font-bold text-slate-900">Arus Beban Multi-Kanal (Load Current)</h3>
+              </div>
+              <div class="flex items-center gap-2.5 text-[11px] font-semibold">
+                <span class="inline-flex items-center gap-1 text-blue-700"><span class="w-2 h-2 rounded-full bg-blue-600"></span>AC</span>
+                <span class="inline-flex items-center gap-1 text-emerald-700"><span class="w-2 h-2 rounded-full bg-emerald-600"></span>Outlet</span>
+                <span class="inline-flex items-center gap-1 text-amber-700"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Lamp</span>
+              </div>
+            </div>
+            <div class="h-[195px] w-full">
+              <canvas id="mysqlCurrentChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Historical Analytics & Load Trends (Hero Grid: Main Curve + Donut Breakdown) ── -->
+      <section class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <!-- Top Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Analisis Beban &amp; Profil Daya Listrik (Database MySQL)</h2>
+            <p class="text-xs text-slate-500">Visualisasi profil kurva daya aktif kW dan pangsa beban per submeter dari tabel <span class="font-mono text-slate-700 font-semibold">energies</span></p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <!-- Tipe Grafik (Area / Bar) -->
+            <div class="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200/80">
+              <button data-type="line" onclick="window.EnergyService.setChartType('line')" class="chart-type-btn px-2.5 py-1 text-xs font-semibold rounded-md bg-white text-slate-800 shadow-xs border border-slate-200">Kurva Halus</button>
+              <button data-type="bar" onclick="window.EnergyService.setChartType('bar')" class="chart-type-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-500 hover:text-slate-800 transition-colors">Batang</button>
+            </div>
+            <!-- Periode Waktu -->
+            <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-lg border border-slate-200/80">
+              <button data-period="24h" onclick="window.EnergyService.setPeriod('24h')" class="period-btn px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#0f6b64] text-white shadow-sm">24 Jam</button>
+              <button data-period="7d" onclick="window.EnergyService.setPeriod('7d')" class="period-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">7 Hari</button>
+              <button data-period="30d" onclick="window.EnergyService.setPeriod('30d')" class="period-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">30 Hari</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Dataset Checkboxes & KPI Stat Badges -->
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50/70 p-3 rounded-lg border border-slate-200/60">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-slate-500 font-medium">Filter Submeter:</span>
+            <label class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-blue-200 text-blue-800 font-semibold cursor-pointer shadow-xs">
+              <input type="checkbox" checked onchange="window.toggleEnergyDataset('ac', this)" class="rounded text-blue-600 focus:ring-blue-500"> AC
+            </label>
+            <label class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-emerald-200 text-emerald-800 font-semibold cursor-pointer shadow-xs">
+              <input type="checkbox" checked onchange="window.toggleEnergyDataset('outlet', this)" class="rounded text-emerald-600 focus:ring-emerald-500"> Outlet
+            </label>
+            <label class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-amber-200 text-amber-800 font-semibold cursor-pointer shadow-xs">
+              <input type="checkbox" checked onchange="window.toggleEnergyDataset('lamp', this)" class="rounded text-amber-600 focus:ring-amber-500"> Lampu
+            </label>
+            <label class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-purple-200 text-purple-800 font-semibold cursor-pointer shadow-xs">
+              <input type="checkbox" checked onchange="window.toggleEnergyDataset('total', this)" class="rounded text-purple-600 focus:ring-purple-500"> Total Daya
+            </label>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-slate-500 font-mono text-[11px]">
+            <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Terkini: <strong id="stat-pwr-latest" class="text-slate-900 font-bold">-- kW</strong></span>
+            <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Min: <strong id="stat-pwr-min" class="text-slate-900 font-bold">-- kW</strong></span>
+            <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Max: <strong id="stat-pwr-max" class="text-slate-900 font-bold">-- kW</strong></span>
+            <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Rerata: <strong id="stat-pwr-avg" class="text-slate-900 font-bold">-- kW</strong></span>
+          </div>
+        </div>
+
+        <!-- Hero 2-Column Grid: Curve Chart (Left 8 cols) + Donut Breakdown (Right 4 cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-1">
+
+          <!-- Left Column (8 cols): Profil Active Power Beban -->
+          <div class="lg:col-span-8 flex flex-col justify-between">
+            <div class="h-[310px] w-full">
+              <canvas id="energyPowerChart"></canvas>
+            </div>
+            <p class="text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-100 flex items-center justify-between">
+              <span>Kurva interpolasi halus spline dengan fill gradient vertikal anti-aliased</span>
+              <span>Interpolasi: 0.38 Bezier</span>
+            </p>
+          </div>
+
+          <!-- Right Column (4 cols): Distribusi Beban Energi (Donut Chart) -->
+          <div class="lg:col-span-4 bg-slate-50/70 rounded-xl border border-slate-200/80 p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1 pb-2 border-b border-slate-200/60">
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Distribusi Beban (% Energi)</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">Submeter Share</span>
+            </div>
+
+            <!-- Donut Container with Center Cutout Overlay -->
+            <div class="relative h-[180px] w-full my-auto flex items-center justify-center">
+              <canvas id="energyDonutChart"></canvas>
+              <!-- Center Cutout Label -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Energi</span>
+                <span id="donut-center-kwh" class="text-base font-extrabold text-slate-900 font-mono tracking-tight mt-0.5">--</span>
+                <span id="donut-center-kw" class="text-[10px] font-mono text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200 mt-1">-- kW</span>
+              </div>
+            </div>
+
+            <!-- Breakdown Detail List -->
+            <div class="space-y-2 pt-2 border-t border-slate-200/60 text-xs">
+              <!-- AC -->
+              <div>
+                <div class="flex items-center justify-between font-medium">
+                  <span class="flex items-center gap-1.5 text-blue-800 font-semibold"><span class="w-2 h-2 rounded-full bg-blue-600"></span>AC (Air Conditioner)</span>
+                  <div class="font-mono"><strong id="donut-pct-ac" class="text-blue-900">--%</strong> <span id="donut-val-ac" class="text-slate-400 text-[11px]">(-- kWh)</span></div>
+                </div>
+                <div class="h-1.5 w-full bg-slate-200/80 rounded-full overflow-hidden mt-1">
+                  <div id="donut-bar-ac" class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Outlet -->
+              <div>
+                <div class="flex items-center justify-between font-medium">
+                  <span class="flex items-center gap-1.5 text-emerald-800 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-600"></span>Stop Kontak (Outlet)</span>
+                  <div class="font-mono"><strong id="donut-pct-outlet" class="text-emerald-900">--%</strong> <span id="donut-val-outlet" class="text-slate-400 text-[11px]">(-- kWh)</span></div>
+                </div>
+                <div class="h-1.5 w-full bg-slate-200/80 rounded-full overflow-hidden mt-1">
+                  <div id="donut-bar-outlet" class="h-full bg-emerald-600 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Lamp -->
+              <div>
+                <div class="flex items-center justify-between font-medium">
+                  <span class="flex items-center gap-1.5 text-amber-800 font-semibold"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Pencahayaan (Lamp)</span>
+                  <div class="font-mono"><strong id="donut-pct-lamp" class="text-amber-900">--%</strong> <span id="donut-val-lamp" class="text-slate-400 text-[11px]">(-- kWh)</span></div>
+                </div>
+                <div class="h-1.5 w-full bg-slate-200/80 rounded-full overflow-hidden mt-1">
+                  <div id="donut-bar-lamp" class="h-full bg-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Dedicated Spacious Section: Profil Tegangan & Konsumsi Energi (Enlarged & Prominent) ── -->
+      <section aria-label="Analisis Tegangan dan Konsumsi Cumulative Energy" class="space-y-3">
+        <!-- Section Bar with View Switcher -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-900">Analisis Mendalam: Profil Tegangan &amp; Konsumsi Energi</h2>
+              <p class="text-xs text-slate-500">Visualisasi resolusi tinggi kestabilan voltase jaringan PLN &amp; dinamika konsumsi energi 3 submeter</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 font-medium hidden sm:inline">Ukuran Tampilan:</span>
+            <div class="inline-flex p-1 bg-slate-100 rounded-lg border border-slate-200">
+              <button id="btn-layout-grid" class="px-3 py-1 text-xs font-semibold rounded-md bg-white text-slate-800 shadow-2xs border border-slate-200 flex items-center gap-1.5 transition-all">
+                <svg class="w-3.5 h-3.5 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                Berdampingan (2 Kolom)
+              </button>
+              <button id="btn-layout-stacked" class="px-3 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition-all">
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                Bentang Penuh (1 Kolom Besar)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Chart Container (Grid or Stacked) -->
+        <div id="voltage-energy-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          <!-- Card 1: Profil Tegangan Listrik (Voltage Profile) - High Resolution & Enlarged -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 hover:border-emerald-300 transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-100">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Profil Fluktuasi &amp; Stabilitas Tegangan Listrik
+                  </h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Pemantauan voltase 3 submeter terhadap standar PLN 220V &plusmn;5%</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">220 – 240 V Normal</span>
+                  <span id="lbl-volt-status" class="text-xs font-mono font-bold text-slate-700 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">Rerata: ~233.1 V</span>
+                </div>
+              </div>
+
+              <!-- Channel Legends with Live Voltages -->
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-slate-500 mb-3 bg-slate-50/70 p-2.5 rounded-lg border border-slate-100">
+                <div class="flex items-center gap-3 sm:gap-4">
+                  <span class="inline-flex items-center gap-1.5 text-blue-800 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>Tegangan AC: <strong id="lbl-live-vac" class="font-mono text-blue-900">232.7 V</strong>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 text-emerald-800 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>Tegangan Outlet: <strong id="lbl-live-vout" class="font-mono text-emerald-900">232.6 V</strong>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 text-amber-800 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Tegangan Lampu: <strong id="lbl-live-vlamp" class="font-mono text-amber-900">232.6 V</strong>
+                  </span>
+                </div>
+                <span class="text-[11px] text-slate-400 font-mono hidden md:inline">Toleransi PLN: 198V - 242V</span>
+              </div>
+
+              <!-- Extra Spacious Canvas (h-[400px] / lg:h-[440px]) -->
+              <div class="h-[380px] sm:h-[420px] lg:h-[440px] w-full pt-1">
+                <canvas id="energyVoltageChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Footer Metrics -->
+            <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono mt-2 gap-2">
+              <div class="flex items-center gap-3">
+                <span>Rerata: <strong id="lbl-avg-volt" class="text-slate-800">233.2 V</strong></span>
+                <span>Rentang: <strong id="lbl-minmax-volt" class="text-slate-800">231.8 - 235.4 V</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-700 font-semibold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Deviasi: &plusmn;0.7% (Optimal)
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Konsumsi Cumulative Energy (Energy Consumption) - High Resolution & Enlarged -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 hover:border-blue-300 transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-100">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Akumulasi &amp; Dinamika Konsumsi Energi
+                  </h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Dinamika pembebanan kWh kumulatif &amp; konsumsi energi per titik cuplikan</p>
+                </div>
+
+                <!-- Display Mode Toggle (Kumulatif vs Interval) -->
+                <div class="flex items-center gap-2">
+                  <div class="inline-flex p-0.5 bg-slate-100 rounded-lg border border-slate-200 text-xs">
+                    <button id="btn-kwh-cum" class="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-white text-blue-700 shadow-2xs border border-slate-200 transition-all">
+                      Kumulatif (kWh)
+                    </button>
+                    <button id="btn-kwh-wh" class="px-2.5 py-1 text-[11px] font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">
+                      Per Interval (Wh)
+                    </button>
+                  </div>
+                  <span id="lbl-tot-energy-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono">
+                    Total: -- kWh
+                  </span>
+                </div>
+              </div>
+
+              <!-- Channel Legends with Energy Values -->
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-slate-500 mb-3 bg-slate-50/70 p-2.5 rounded-lg border border-slate-100">
+                <div class="flex items-center gap-3 sm:gap-4">
+                  <span class="inline-flex items-center gap-1.5 text-blue-800 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>Energi AC: <strong id="lbl-sub-kwh-ac" class="font-mono text-blue-900">--</strong>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 text-emerald-800 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>Energi Outlet: <strong id="lbl-sub-kwh-out" class="font-mono text-emerald-900">--</strong>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 text-amber-800 font-semibold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Energi Lampu: <strong id="lbl-sub-kwh-lamp" class="font-mono text-amber-900">--</strong>
+                  </span>
+                </div>
+                <span class="text-[11px] text-slate-400 font-mono hidden md:inline">Tarif PLN: Rp 1.500/kWh</span>
+              </div>
+
+              <!-- Extra Spacious Canvas (h-[400px] / lg:h-[440px]) -->
+              <div class="h-[380px] sm:h-[420px] lg:h-[440px] w-full pt-1">
+                <canvas id="energyKwhChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Footer Metrics -->
+            <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono mt-2 gap-2">
+              <div class="flex items-center gap-3">
+                <span>Total Biaya: <strong id="lbl-cost-kwh" class="text-slate-800">Rp 0</strong></span>
+                <span>Rerata / Cuplikan: <strong id="lbl-avg-kwh" class="text-slate-800">--</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-blue-700 font-semibold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>Integrasi Trapezoidal MySQL
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Daily Energy Summary & Statistics (Ringkasan Harian) ── -->
+      <section class="bg-gradient-to-br from-teal-50/50 via-white to-slate-50 rounded-xl border border-teal-200/80 shadow-sm p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Today's Energy Statistics Summary (Daily Summary)</h2>
+            <p class="text-xs text-slate-500">Statistik penggunaan daya, energi terakumulasi, beban puncak, dan estimasi biaya operasional</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 border border-teal-200">Tarif PLN R-1/TR</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          <div class="bg-white p-3 rounded-lg border border-slate-200/80 text-center shadow-xs">
+            <span class="text-[10px] text-slate-400 font-medium uppercase block">HVAC Energy</span>
+            <strong id="ds-ac-kwh" class="text-lg font-bold text-blue-900 font-mono mt-0.5 block">--</strong>
+            <span class="text-[10px] text-slate-400">kWh</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200/80 text-center shadow-xs">
+            <span class="text-[10px] text-slate-400 font-medium uppercase block">Outlet Energy</span>
+            <strong id="ds-outlet-kwh" class="text-lg font-bold text-emerald-800 font-mono mt-0.5 block">--</strong>
+            <span class="text-[10px] text-slate-400">kWh</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200/80 text-center shadow-xs">
+            <span class="text-[10px] text-slate-400 font-medium uppercase block">Lighting Energy</span>
+            <strong id="ds-lamp-kwh" class="text-lg font-bold text-amber-800 font-mono mt-0.5 block">--</strong>
+            <span class="text-[10px] text-slate-400">kWh</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-teal-200 text-center shadow-xs bg-teal-50/40">
+            <span class="text-[10px] text-teal-700 font-semibold uppercase block">Total Energy</span>
+            <strong id="ds-total-kwh" class="text-lg font-bold text-teal-900 font-mono mt-0.5 block">--</strong>
+            <span class="text-[10px] text-teal-600">kWh</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200/80 text-center shadow-xs">
+            <span class="text-[10px] text-slate-400 font-medium uppercase block">Biaya Listrik</span>
+            <strong class="text-base font-bold text-slate-900 font-mono mt-0.5 block">Rp <span id="ds-cost">--</span></strong>
+            <span class="text-[10px] text-slate-400">@ 1.500/kWh</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200/80 text-center shadow-xs">
+            <span class="text-[10px] text-slate-400 font-medium uppercase block">Puncak AC</span>
+            <strong id="ds-ac-peak" class="text-lg font-bold text-blue-900 font-mono mt-0.5 block">--</strong>
+            <span class="text-[10px] text-slate-400">Watt</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200/80 text-center shadow-xs">
+            <span class="text-[10px] text-slate-400 font-medium uppercase block">Puncak Outlet</span>
+            <strong id="ds-outlet-peak" class="text-lg font-bold text-emerald-800 font-mono mt-0.5 block">--</strong>
+            <span class="text-[10px] text-slate-400">Watt</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200/80 text-center shadow-xs">
+            <span class="text-[10px] text-slate-400 font-medium uppercase block">Puncak Lampu</span>
+            <strong id="ds-lamp-peak" class="text-lg font-bold text-amber-800 font-mono mt-0.5 block">--</strong>
+            <span class="text-[10px] text-slate-400">Watt</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Panel Export Data MySQL (CSV Export) ── -->
+      <section id="panel-export" class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export Energy Data from MySQL Database
+            </h2>
+            <p class="text-xs text-slate-500">Pilih rentang tanggal dan unduh file format CSV langsung dari database server</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.setExportPreset(0)" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">Hari Ini</button>
+            <button onclick="window.setExportPreset(7)" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">7 Hari</button>
+            <button onclick="window.setExportPreset(30)" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">30 Hari</button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <div class="flex items-center gap-2">
+            <label for="export-from-date" class="text-xs font-semibold text-slate-600">Dari:</label>
+            <input type="date" id="export-from-date" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-teal-600">
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="export-to-date" class="text-xs font-semibold text-slate-600">Sampai:</label>
+            <input type="date" id="export-to-date" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-teal-600">
+          </div>
+          <div class="flex flex-wrap items-center gap-2 ml-auto">
+            <button id="btn-export-1" onclick="window.EnergyService.exportCSV(1, 'AC')" class="px-3.5 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export HVAC
+            </button>
+            <button id="btn-export-2" onclick="window.EnergyService.exportCSV(2, 'Outlet')" class="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export Outlets
+            </button>
+            <button id="btn-export-3" onclick="window.EnergyService.exportCSV(3, 'Lamp')" class="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export Lighting
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-lg bg-slate-50 border border-slate-200/70 p-3 text-xs text-slate-600 flex items-center gap-2">
+          <svg class="w-4 h-4 text-teal-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Data CSV mencakup kolom: <strong>Timestamp, Voltage (V), Current (A), Frequency (Hz), Active Power (kW), Reactive Power (VAR), Apparent Power (VA), Power Factor, dan Cumulative Energy (kWh)</strong>.</span>
+        </div>
+      </section>
+
+      <!-- ── Tabel Parameter Kelistrikan Real-Time ── -->
+      <section class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Daftar Parameter Kelistrikan &amp; Submeter</h2>
+            <p class="text-xs text-slate-500">Nilai langsung hasil pembacaan sensor PZEM Modbus pada database MySQL</p>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Total: 3 Kanal Terpasang</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/70">
+                <th class="py-2.5 px-3">Kanal</th>
+                <th class="py-2.5 px-3">Load / Channel</th>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3">Active Power</th>
+                <th class="py-2.5 px-3">Tegangan</th>
+                <th class="py-2.5 px-3">Arus</th>
+                <th class="py-2.5 px-3">Frequency</th>
+                <th class="py-2.5 px-3">PF</th>
+                <th class="py-2.5 px-3">Total Energy</th>
+                <th class="py-2.5 px-3">Waktu Cuplikan</th>
+              </tr>
+            </thead>
+            <tbody id="energy-telemetry-tbody" class="divide-y divide-slate-100">
+              <!-- Dynamically populated via energy-service.js -->
+              <tr>
+                <td colspan="10" class="py-6 text-center text-xs text-slate-400 font-mono">
+                  Menghubungkan ke database MySQL iotlabun_sbms...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Footer ── -->
+      <footer class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/70 px-1 mt-6">
+        <div>
+          <p class="font-medium text-slate-600">BEMS Living Lab · Department of Electrical &amp; Mechatronics Engineering, FT UNS</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Seluruh telemetri energi di-query secara langsung dari database MySQL iotlabun_sbms melalui PZEM-004T / RS485 Energy Meter.</p>
+        </div>
+        <p class="font-mono text-right text-[11px]">Database: iotlabun_sbms · Last Updated: <span id="energy-last-update-header" class="font-semibold text-slate-600">--:--:-- WIB</span></p>
+      </footer>
 
     </main>
   </div>
 </div>
-<script src="assets/js/config/app-config.js"></script>
-<script src="assets/js/core/session.js"></script>
-<script src="assets/js/core/api-client.js"></script>
-<script src="assets/js/mock/page-data.js"></script>
-<script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/components/layout.js"></script>
-<script src="assets/js/pages/page-init.js"></script>
-<script>renderSidebar("energy"); renderTopbar("Energy", "Energy Monitoring"); initPageData("energy");</script>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="assets/js/config/app-config.js?v=8"></script>
+<script src="assets/js/core/session.js?v=8"></script>
+<script src="assets/js/core/api-client.js?v=8"></script>
+<script src="assets/js/mock/page-data.js?v=8"></script>
+<script src="assets/js/services/page-data-service.js?v=8"></script>
+<script src="assets/js/components/layout.js?v=8"></script>
+<script src="assets/js/services/energy-service.js?v=8"></script>
+<script>
+  renderSidebar("energy");
+</script>
 </body>
 </html>

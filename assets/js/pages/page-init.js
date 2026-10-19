@@ -3,7 +3,7 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 }
 
-const STATUS_LABELS = { ok: "Normal", warn: "Peringatan", bad: "Bermasalah" };
+const STATUS_LABELS = { ok: "Normal", warn: "Warning", bad: "Critical" };
 
 function renderKpiGrid(targetId, items, plain) {
   const root = document.getElementById(targetId);
@@ -43,7 +43,7 @@ function showLoadError() {
   const banner = document.createElement("div");
   banner.className = "card p-4 text-sm text-red-400";
   banner.setAttribute("role", "alert");
-  banner.textContent = "Data tidak dapat dimuat dari server. Coba muat ulang halaman.";
+  banner.textContent = "Failed to load data from server. Please reload the page.";
   main.prepend(banner);
 }
 
@@ -52,7 +52,7 @@ async function initPageData(pageKey) {
   try {
     data = await PageDataService.get(pageKey);
   } catch (error) {
-    console.error(`Gagal memuat data halaman "${pageKey}":`, error);
+    console.error(`Failed to load page data for "${pageKey}":`, error);
     showLoadError();
     return;
   }

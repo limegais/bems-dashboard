@@ -1,0 +1,17 @@
+[Unit]
+Description=BEMS WebSocket-to-MQTT Bridge Service
+After=network.target
+
+[Service]
+Type=simple
+User=iotlab
+WorkingDirectory=/home/iotlab/bems-dashboard
+ExecStart=/home/iotlab/bems-dashboard/.venv/bin/python bridge.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

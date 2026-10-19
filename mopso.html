@@ -1,201 +1,385 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>MOPSO Optimization — BEMS Living Lab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <title>MOPSO Optimization — BEMS Living Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body class="app-body">
-<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="app-layout flex">
   <div id="sidebar-root"></div>
   <div class="app-content flex-1 min-w-0">
     <div id="topbar-root"></div>
     <main id="main-content" class="app-main p-6 space-y-6">
+
+      <!-- ── Page Header & Executive Strategy Bar ── -->
       <section class="page-head">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 class="page-title">MOPSO Optimization</h2>
-            <p class="page-subtitle">Eksplorasi tradeoff energi dan kenyamanan melalui multi-objective particle swarm optimization.</p>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wider font-mono">Swarm Intelligence Engine</span>
+              <span class="text-slate-400 text-xs">·</span>
+              <span class="text-xs text-slate-500 font-medium">Multi-Objective Particle Swarm Optimization (MOPSO)</span>
+            </div>
+            <h1 class="page-title text-2xl font-bold text-slate-900 tracking-tight">MOPSO Optimization (Multi-Objective Swarm)</h1>
+            <p class="page-subtitle text-sm text-slate-500 mt-1">Eksplorasi trade-off non-linear antara penghematan energi listrik bangunan (kWh) dan kenyamanan termal/visual penghuni (PPD % ISO 7730) melalui kawanan partikel cerdas berbasis arsip Pareto eksternal.</p>
           </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Bandingkan run</button>
+
+          <!-- Status Model & Tombol Re-Run -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <div class="bg-white px-3 py-1.5 rounded-xl border border-slate-200/90 shadow-2xs text-xs flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-teal-600 animate-pulse"></span>
+              <span class="text-slate-600 font-medium">Swarm: <strong class="font-mono text-slate-800">60 Partikel · 120 Iterasi</strong></span>
+              <span class="text-slate-400">·</span>
+              <span class="text-teal-700 font-bold font-mono">Status: Converged</span>
+            </div>
+            <button id="btn-mopso-recompute" onclick="window.MopsoService.recomputeSwarm()" class="px-3.5 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-all">
+              <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Re-Run Optimasi MOPSO
+            </button>
+          </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
-            <button class="indoor-chip">Hari ini</button>
-            <button class="indoor-chip">Semua ruang</button>
-          </div>
-          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
-        </div>
-      </section>
-
-      <div id="kpi-mopso-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
-
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div class="xl:col-span-2 space-y-4">
-          <section class="card p-4">
-            <div class="flex items-start justify-between gap-2 mb-2">
-              <div>
-                <p class="widget-title">Pareto front: energi vs kenyamanan</p>
-                <p class="text-sm text-slate-500 mt-1">MOPSO-018 · archive-guided swarm · hasil simulasi</p>
-              </div>
-              <span class="demo-badge" style="background:#e8f7f3;color:#1b8a6e;border-color:#cfeee4;">Selesai</span>
-            </div>
-            <div class="h-[230px] rounded-lg border border-slate-100 bg-white p-3">
-              <div class="flex flex-wrap items-center gap-4 text-xs mb-2">
-                <span class="text-teal-600">● Pareto front MOPSO</span>
-                <span class="text-slate-500">● Kandidat terdominasi</span>
-                <span class="text-blue-500">◯ Solusi terpilih</span>
-              </div>
-              <svg viewBox="0 0 700 190" class="w-full h-[190px]" role="img" aria-label="Pareto front energi vs kenyamanan">
-                <rect x="0" y="0" width="700" height="190" fill="#f9fcfd"/>
-                <line x1="40" y1="160" x2="680" y2="160" stroke="#e6eef3"/>
-                <line x1="40" y1="125" x2="680" y2="125" stroke="#e6eef3"/>
-                <line x1="40" y1="90" x2="680" y2="90" stroke="#e6eef3"/>
-                <line x1="40" y1="55" x2="680" y2="55" stroke="#e6eef3"/>
-                <g fill="#c7d4dd">
-                  <circle cx="130" cy="62" r="3"/><circle cx="210" cy="56" r="3"/><circle cx="275" cy="68" r="3"/><circle cx="340" cy="62" r="3"/><circle cx="410" cy="56" r="3"/><circle cx="470" cy="68" r="3"/><circle cx="540" cy="56" r="3"/>
-                  <circle cx="130" cy="92" r="3"/><circle cx="210" cy="86" r="3"/><circle cx="275" cy="98" r="3"/><circle cx="340" cy="92" r="3"/><circle cx="410" cy="86" r="3"/><circle cx="470" cy="98" r="3"/><circle cx="540" cy="86" r="3"/>
-                </g>
-                <polyline fill="none" stroke="#188b86" stroke-width="3" points="175,108 230,122 292,140 364,148 455,154 520,157"/>
-                <g fill="#188b86">
-                  <circle cx="175" cy="108" r="3.5"/><circle cx="230" cy="122" r="3.5"/><circle cx="292" cy="140" r="3.5"/><circle cx="364" cy="148" r="3.5"/><circle cx="455" cy="154" r="3.5"/><circle cx="520" cy="157" r="3.5"/>
-                </g>
-                <circle cx="308" cy="142" r="9" fill="none" stroke="#5f8cc7" stroke-width="2"/>
-              </svg>
-            </div>
-            <p class="text-xs text-slate-500 mt-2">Kiri-bawah lebih baik. Solusi seimbang mempertahankan PPD &lt;10% dan lux 350-550.</p>
-          </section>
-
-          <section class="card p-4">
-            <p class="widget-title">Konvergensi swarm</p>
-            <p class="text-sm text-slate-500 mt-1 mb-3">Generational distance · nilai lebih rendah lebih baik</p>
-            <div class="h-[180px] rounded-lg border border-slate-100 bg-white p-3">
-              <div class="flex items-center gap-4 text-xs mb-2">
-                <span class="text-blue-500">Jarak ke front referensi</span>
-              </div>
-              <svg viewBox="0 0 700 140" class="w-full h-[140px]" role="img" aria-label="Grafik konvergensi swarm">
-                <rect x="0" y="0" width="700" height="140" fill="#f9fcfd"/>
-                <line x1="40" y1="120" x2="680" y2="120" stroke="#e6eef3"/>
-                <line x1="40" y1="90" x2="680" y2="90" stroke="#e6eef3"/>
-                <line x1="40" y1="60" x2="680" y2="60" stroke="#e6eef3"/>
-                <line x1="40" y1="30" x2="680" y2="30" stroke="#e6eef3"/>
-                <polygon points="40,28 120,52 200,70 300,84 400,95 500,99 640,102 640,120 40,120" fill="#e9f1f8"/>
-                <polyline fill="none" stroke="#4d78b1" stroke-width="3" points="40,28 120,52 200,70 300,84 400,95 500,99 640,102"/>
-              </svg>
-            </div>
-            <div class="flex items-center justify-between mt-2 text-sm">
-              <span class="text-slate-500">Iterasi</span>
-              <span class="text-slate-600">120 / 120 · konvergen (demo)</span>
-            </div>
-          </section>
-        </div>
-
-        <aside class="card p-4">
-          <p class="widget-title">Konfigurasi MOPSO</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">Parameter swarm · run demonstrasi</p>
-
-          <div class="space-y-3 text-sm">
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label for="mopso-swarm-size" class="text-xs text-slate-500 block mb-1">Swarm size</label>
-                <input id="mopso-swarm-size" type="text" value="60" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="mopso-max-iter" class="text-xs text-slate-500 block mb-1">Max iterations</label>
-                <input id="mopso-max-iter" type="text" value="120" class="w-full tone-select py-2" />
-              </div>
-            </div>
-
-            <div>
-              <label for="mopso-inertia" class="text-xs text-slate-500 block mb-1">Inertia weight (w)</label>
-              <input id="mopso-inertia" type="text" value="0,70" class="w-full tone-select py-2" />
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label for="mopso-c1" class="text-xs text-slate-500 block mb-1">Cognitive (c₁)</label>
-                <input id="mopso-c1" type="text" value="1,50" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="mopso-c2" class="text-xs text-slate-500 block mb-1">Social (c₂)</label>
-                <input id="mopso-c2" type="text" value="1,70" class="w-full tone-select py-2" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label for="mopso-archive" class="text-xs text-slate-500 block mb-1">Archive capacity</label>
-                <input id="mopso-archive" type="text" value="50" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="mopso-vmax" class="text-xs text-slate-500 block mb-1">Velocity limit</label>
-                <input id="mopso-vmax" type="text" value="0,20" class="w-full tone-select py-2" />
-              </div>
-            </div>
-
-            <div>
-              <label for="mopso-leader" class="text-xs text-slate-500 block mb-1">Leader selection</label>
-              <select id="mopso-leader" class="w-full tone-select py-2">
-                <option>Crowding distance</option>
-                <option>Grid density</option>
-              </select>
-            </div>
-
-            <div class="pt-1 space-y-1">
-              <div class="flex items-center justify-between"><span class="text-slate-500">Objective 1</span><strong class="text-slate-700">Min. energi (kWh)</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Objective 2</span><strong class="text-slate-700">Min. PPD (%)</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Random seed</span><strong class="text-slate-700">42</strong></div>
-            </div>
-
-            <p class="text-xs text-slate-500">Bounds: setpoint 23-27 °C, dimming 40-100%. Kendala sama dengan MOGA: PPD &lt; 10%, CO₂ &lt; 1.000 ppm, lux 350-550.</p>
-
-            <div class="flex items-center gap-2 pt-1">
-              <button class="bg-blue-600 hover:bg-blue-500 text-white text-sm rounded px-4 py-2 flex-1" type="button">Jalankan demo</button>
-              <button class="tone-select text-sm px-4 py-2" type="button">Reset</button>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <section class="card p-4 overflow-x-auto">
-        <div class="flex flex-wrap items-start justify-between gap-3 mb-2">
+        <div class="mt-4 pt-3 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-mono">
           <div>
-            <p class="widget-title">Solusi berperingkat</p>
-            <p class="text-sm text-slate-500 mt-1">Preferensi seimbang · kandidat belum diterapkan ke sistem kontrol</p>
+            <span>Arsip Pareto Eksternal: <strong class="text-slate-800">50 Solusi Non-Kalah</strong></span>
+            <span class="mx-2">·</span>
+            <span>Decision Space: <strong class="text-slate-800">3 Variables (HVAC Tset, PWM Z1, PWM Z2)</strong></span>
           </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Simpan kandidat</button>
+          <div>
+            <span>Bobot Swarm: <strong class="text-slate-800">w=0.72 · c₁=1.49 · c₂=1.49</strong></span>
+          </div>
         </div>
-        <table class="w-full text-sm indoor-table">
-          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Solusi</th><th>Energi kWh</th><th>PPD %</th><th>Setpoint °C</th><th>Dimming %</th><th>Preferensi</th><th>Status</th></tr></thead>
-          <tbody class="text-slate-600">
-            <tr class="border-b border-slate-100"><td class="py-2">P-09</td><td>241,0</td><td>8,2</td><td>25,2</td><td>66</td><td>Seimbang</td><td>Terpilih</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">P-06</td><td>239,0</td><td>9,3</td><td>25,5</td><td>62</td><td>Hemat energi</td><td>Feasible</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">P-14</td><td>255,0</td><td>6,4</td><td>24,5</td><td>75</td><td>Kenyamanan</td><td>Feasible</td></tr>
-            <tr><td class="py-2">P-03</td><td>232,0</td><td>12,1</td><td>26,0</td><td>55</td><td>Hemat ekstrem</td><td>PPD tinggi</td></tr>
-          </tbody>
-        </table>
       </section>
 
-      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
-        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
-        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
-      </div>
+      <!-- ── 5 Executive Optimization KPI Cards ── -->
+      <section aria-label="KPI Hasil Optimasi MOPSO" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+
+        <!-- Card 1: Penghematan Energi Pareto Optimal -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Energy Efficiency (nee Point)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono">Hemat Listrik</span>
+            </div>
+            <strong class="text-2xl font-bold text-teal-900 font-mono tracking-tight block">24,2%</strong>
+            <p class="text-xs text-emerald-700 font-medium mt-1">Reduction in Total Facility Demand</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Total Demand:</span>
+            <strong class="text-slate-800 font-bold">1,23 kW (vs 1,83 kW)</strong>
+          </div>
+        </div>
+
+        <!-- Card 2: Indeks Ketidaknyamanan Termal (PPD) -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-blue-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Indeks PPD Fanger</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono">ISO 7730</span>
+            </div>
+            <strong class="text-2xl font-bold text-blue-900 font-mono tracking-tight block">5,2%</strong>
+            <p class="text-xs text-blue-700 font-medium mt-1">PMV Prediksi: +0.10 (Netral)</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Comfort Standard:</span>
+            <span class="text-emerald-700 font-bold">Kelas A (Ideal)</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Rekomendasi Setpoint AC -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-amber-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rekomendasi Setpoint AC</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 font-mono">Kompresor</span>
+            </div>
+            <strong class="text-2xl font-bold text-amber-900 font-mono tracking-tight block">24,8 °C</strong>
+            <p class="text-xs text-slate-500 mt-1">Kecepatan Blower: Auto Fan</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Actual HVAC Demand:</span>
+            <strong class="text-slate-800 font-bold">1,08 kW (Hemat 30%)</strong>
+          </div>
+        </div>
+
+        <!-- Card 4: Dimming Lampu & Daylight Harvesting -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-yellow-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Integrasi Daylight</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-50 text-yellow-800 border border-yellow-200 font-mono">2-Zona</span>
+            </div>
+            <strong class="text-2xl font-bold text-yellow-950 font-mono tracking-tight block">Z1: 40% · Z2: 70%</strong>
+            <p class="text-xs text-slate-500 mt-1">Iluminansi Meja: 482 Lux</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Lighting Demand:</span>
+            <strong class="text-amber-800 font-bold">154 W (dari 280 W)</strong>
+          </div>
+        </div>
+
+        <!-- Card 5: Kualitas Metrik Konvergensi Hypervolume -->
+        <div class="bg-gradient-to-br from-teal-50/70 via-white to-blue-50/50 rounded-2xl border border-teal-200/80 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-teal-800 uppercase tracking-wider">Metrik Hypervolume (HV)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-900 font-mono">Kualitas Swarm</span>
+            </div>
+            <strong class="text-2xl font-bold text-teal-900 font-mono tracking-tight block">0.942 / 1.0</strong>
+            <p class="text-xs text-slate-500 mt-1">Generational Distance: 0.012</p>
+          </div>
+          <div class="pt-3 border-t border-teal-100 mt-3 flex items-center justify-between text-xs text-slate-600 font-mono">
+            <span>Konvergensi:</span>
+            <strong class="text-teal-800 font-bold">Sangat Stabil (Iterasi 45)</strong>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── INTERACTIVE PARETO FRONT EXPLORER & SOLUTION DETAIL ── -->
+      <section aria-label="Eksplorasi Kurva Pareto Front Interaktif" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        
+        <!-- Header & Solution Selector Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
+              MOPSO Pareto Frontier (Energy vs Comfort Trade-off)
+            </h2>
+            <p class="text-xs text-slate-500">Pilih titik solusi optimal di bawah ini untuk melihat konfigurasi aktuator dan penjelasan matematisnya.</p>
+          </div>
+
+          <!-- 3 Interactive Solution Selection Buttons -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="window.MopsoService.selectSolution('eco')" data-sol="eco" class="mopso-sol-btn px-3.5 py-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:border-slate-300 transition-all">
+              🌱 Solusi A: Extreme Eco (Hemat 31,5%)
+            </button>
+            <button onclick="window.MopsoService.selectSolution('knee')" data-sol="knee" class="mopso-sol-btn px-3.5 py-2 rounded-xl text-xs font-bold border-2 border-teal-700 bg-teal-50 text-teal-950 shadow-xs transition-all">
+              ⭐ Solusi B: Best Compromise (Knee-Point)
+            </button>
+            <button onclick="window.MopsoService.selectSolution('comfort')" data-sol="comfort" class="mopso-sol-btn px-3.5 py-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:border-slate-300 transition-all">
+              ❄️ Solusi C: Ultra Comfort (Hemat 12,0%)
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid 2 Kolom: Scatter Plot Pareto (Col 8) & Detail Penjelasan Solusi (Col 4) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Scatter Plot Canvas (Col 8) -->
+          <div class="lg:col-span-8 bg-slate-50/70 p-4 rounded-xl border border-slate-200/80">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span class="font-mono">Grafik Multi-Objektif 2D: Sumbu X (Penghematan %) vs Sumbu Y (PPD Discomfort %)</span>
+              <span class="text-teal-700 font-bold font-mono">Titik Kuning = Posisi Terpilih</span>
+            </div>
+            
+            <div class="h-[380px] w-full pt-1">
+              <canvas id="mopsoParetoChart"></canvas>
+            </div>
+
+            <!-- Legend Penjelasan Visual di Bawah Grafik -->
+            <div class="mt-3 p-3 rounded-lg bg-white border border-slate-200/90 text-[11px] text-slate-600 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+                <span>Titik Abu-Abu: Partikel terdominasi (kalah di salah satu objektif)</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-teal-700"></span>
+                <span>Garis Hijau: Batas Pareto Front optimal (Non-dominated frontier)</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                <span>Titik Emas: Solusi terpilih yang siap dikirim ke hardware</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detail Card & Penjelasan Hasil Optimasi (Col 4) -->
+          <div class="lg:col-span-4 bg-gradient-to-br from-teal-50/50 via-white to-slate-50 p-5 rounded-xl border border-teal-200/90 shadow-2xs space-y-4">
+            <div>
+              <span id="mopso-sol-type" class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-900 font-mono block w-fit mb-1">Knee Point (Trade-off Optimal)</span>
+              <h3 id="mopso-sol-title" class="text-sm font-bold text-slate-900 leading-tight">Solusi B: Best Compromise (Rekomendasi Utama BEMS)</h3>
+            </div>
+
+            <!-- Metrik Angka Kunci -->
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <span class="text-slate-400 text-[10px] block">Energy Efficiency:</span>
+                <strong id="mopso-sol-savings" class="text-emerald-700 font-bold text-base block">24,2%</strong>
+              </div>
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <span class="text-slate-400 text-[10px] block">Ketidakpuasan PPD:</span>
+                <strong id="mopso-sol-ppd" class="text-blue-700 font-bold text-base block">5,2%</strong>
+              </div>
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <span class="text-slate-400 text-[10px] block">Prediksi PMV:</span>
+                <strong id="mopso-sol-pmv" class="text-teal-800 font-bold text-sm block">+0.10</strong>
+              </div>
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <span class="text-slate-400 text-[10px] block">Cahaya Meja Kerja:</span>
+                <strong id="mopso-sol-lux" class="text-amber-800 font-bold text-sm block">482 Lux</strong>
+              </div>
+            </div>
+
+            <!-- Parameter Konfigurasi Hardware -->
+            <div class="p-3 rounded-lg bg-white border border-slate-200 space-y-2 text-xs font-mono">
+              <span class="font-sans font-bold text-slate-700 block text-[11px]">Rekomendasi Aksi Aktuator:</span>
+              <div class="flex justify-between border-b border-slate-100 pb-1">
+                <span class="text-slate-500">HVAC Temp Setpoint:</span>
+                <strong id="mopso-sol-tset" class="text-blue-900">24.8 °C</strong>
+              </div>
+              <div class="flex justify-between border-b border-slate-100 pb-1">
+                <span class="text-slate-500">Kecepatan Fan:</span>
+                <strong id="mopso-sol-fan" class="text-slate-800">Auto</strong>
+              </div>
+              <div class="flex justify-between border-b border-slate-100 pb-1">
+                <span class="text-slate-500">Lampu Zona 1 (Jendela):</span>
+                <strong id="mopso-sol-z1" class="text-amber-800">40% PWM</strong>
+              </div>
+              <div class="flex justify-between border-b border-slate-100 pb-1">
+                <span class="text-slate-500">Lampu Zona 2 (Dalam):</span>
+                <strong id="mopso-sol-z2" class="text-teal-800">70% PWM</strong>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Estimasi Biaya:</span>
+                <strong id="mopso-sol-cost" class="text-slate-900">Rp 55.200 / hari</strong>
+              </div>
+            </div>
+
+            <!-- Penjelasan Teknis Mengapa Solusi Ini Optimal -->
+            <div>
+              <span class="text-[11px] font-bold text-slate-700 block mb-1">Penjelasan Hasil Optimasi:</span>
+              <p id="mopso-sol-desc" class="text-xs text-slate-600 leading-relaxed bg-white p-3 rounded-lg border border-slate-200">
+                Solusi ini berada di titik belokan (knee-point) kurva Pareto. Kenaikan efisiensi energi mencapai 24.2% dengan mempertahankan PPD hanya 5.2% (hampir tidak ada penghuni yang merasa gerah/dingin). Lampu Zona 1 diredupkan ke 40% untuk menyerap cahaya alami jendela barat.
+              </p>
+            </div>
+
+            <!-- Tombol Terapkan ke Ruangan -->
+            <button onclick="window.MopsoService.deployToLivingLab()" class="w-full py-2.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all">
+              <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Deploy MOPSO Solution to Living Lab
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── DUAL CHARTS: KONVERGENSI SWARM & PERBANDINGAN BASELINE ── -->
+      <section aria-label="Grafik Konvergensi dan Komparasi Baseline" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        <!-- Chart 1: Konvergensi Swarm (Hypervolume & GD) -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Progres Konvergensi Swarm (Generational Distance &amp; Hypervolume)</h3>
+              <p class="text-xs text-slate-400">Bukti komputasi bahwa kawanan partikel mencapai stabilitas konvergen pada iterasi ke-45</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 font-mono">120 Iterasi</span>
+          </div>
+
+          <div class="h-[280px] w-full pt-1">
+            <canvas id="mopsoConvergenceChart"></canvas>
+          </div>
+
+          <p class="text-xs text-slate-500 leading-relaxed pt-1 border-t border-slate-100">
+            Nilai <strong>Hypervolume (HV)</strong> naik stabil menuju 0.942, sementara <strong>Generational Distance (GD)</strong> turun mendekati 0.012, menandakan seluruh partikel telah menyelimuti front solusi optimal tanpa terjebak di lokal optimum.
+          </p>
+        </div>
+
+        <!-- Chart 2: Komparasi Baseline vs Solusi MOPSO -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Komparasi: Sebelum Optimasi (Baseline) vs Solusi MOPSO</h3>
+              <p class="text-xs text-slate-400">Comparison across 5 electrical power demand, comfort, and PPD performance metrics.</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200 font-mono">BEMS Impact</span>
+          </div>
+
+          <div class="h-[280px] w-full pt-1">
+            <canvas id="mopsoComparisonChart"></canvas>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono pt-1 border-t border-slate-100">
+            <span>Total Demand Reduced: <strong class="text-emerald-700 font-bold">-0.60 kW</strong></span>
+            <span>Penghematan Biaya: <strong class="text-emerald-700 font-bold">Rp 10.600 / hari</strong></span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── FORMULASI MATEMATIS OPTIMASI MULTI-OBJEKTIF MOPSO ── -->
+      <section aria-label="Formulasi Matematis MOPSO" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
+          <svg class="w-4 h-4 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <h2 class="text-sm font-bold text-slate-900">Formulasi Masalah Matematis &amp; Persamaan Update Swarm</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <strong class="font-sans font-bold text-slate-900 block">Objective 1: Energy Minimization (f₁)</strong>
+            <p class="text-slate-600 font-mono text-[11px] bg-white p-2 rounded border border-slate-200">
+              min f₁(x) = P_ac(T_set) + P_lamp(PWM₁, PWM₂)
+            </p>
+            <p class="text-[11px] font-sans text-slate-500">Minimizes total active demand of HVAC compressor and interior lighting.</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <strong class="font-sans font-bold text-slate-900 block">Objektif 2: Minimasi Ketidaknyamanan (f₂)</strong>
+            <p class="text-slate-600 font-mono text-[11px] bg-white p-2 rounded border border-slate-200">
+              min f₂(x) = PPD(PMV) + w_l · |E_avg - 480|
+            </p>
+            <p class="text-[11px] font-sans text-slate-500">Meminimalkan persentase ketidakpuasan termal ISO 7730 serta deviasi iluminansi terhadap target 480 Lux.</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <strong class="font-sans font-bold text-slate-900 block">Persamaan Kecepatan Partikel Swarm</strong>
+            <p class="text-slate-600 font-mono text-[11px] bg-white p-2 rounded border border-slate-200">
+              v_i^(t+1) = w·v_i^t + c₁·r₁·(pbest - x_i) + c₂·r₂·(gbest - x_i)
+            </p>
+            <p class="text-[11px] font-sans text-slate-500">Komponen kognitif (pbest) dan sosial (gbest dari arsip Pareto) membimbing pencarian kawanan partikel.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Footer ── -->
+      <footer class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/70 px-1 mt-6">
+        <div>
+          <p class="font-medium text-slate-600">BEMS Living Lab · Departemen Teknik Elektro FT UNS</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Multi-Objective Swarm Intelligence Optimization System (MOPSO) — BEMS Living Lab</p>
+        </div>
+        <p class="font-mono text-right text-[11px]">Algoritma: <span class="font-semibold text-slate-600">Archive-Guided MOPSO</span> · Hardware: <span class="font-semibold text-slate-600">Living Lab UNS</span></p>
+      </footer>
 
     </main>
   </div>
 </div>
+
+<!-- Scripts -->
 <script src="assets/js/config/app-config.js"></script>
 <script src="assets/js/core/session.js"></script>
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
 <script src="assets/js/components/layout.js"></script>
+<script src="assets/js/core/mqtt-client.js"></script>
+<script src="assets/js/services/mopso-service.js"></script>
 <script src="assets/js/pages/page-init.js"></script>
-<script>renderSidebar("mopso"); renderTopbar("MOPSO optimization", "Particle swarm run"); initPageData("mopso");</script>
+
+<script>
+  renderSidebar("mopso");
+  renderTopbar("MOPSO Optimization", "Multi-Objective Swarm Intelligence Optimization");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.MopsoService && typeof window.MopsoService.start === "function") {
+      window.MopsoService.start();
+    }
+  });
+</script>
 </body>
 </html>

@@ -1,165 +1,802 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Dashboard — BEMS Living Lab</title>
+<title>Operational & Environmental Monitoring Dashboard — BEMS Living Lab</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Real-time Building Energy Management System (BEMS) & Indoor Environmental Quality monitoring via MQTT." />
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="assets/css/style.css" />
+<link rel="stylesheet" href="assets/css/style.css?v=7" />
+<style>
+  /* SVG icon utilities */
+  .icon-sm { width: 17px; height: 17px; display: inline-block; vertical-align: -2px; }
+  .icon-md { width: 20px; height: 20px; display: inline-block; vertical-align: -3px; }
+  
+  /* Metric typography */
+  .metric-val {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-unit {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-left: 0.2rem;
+  }
+
+  /* Live value status classes */
+  .live-ok   { color: #047857 !important; }
+  .live-warn { color: #b45309 !important; font-weight: 700; }
+  .live-bad  { color: #be123c !important; font-weight: 800; }
+  .live-unknown { color: #94a3b8 !important; }
+</style>
 </head>
-<body class="app-body">
-<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
-<div class="app-layout flex">
+<body class="bg-[#f8fafc] text-slate-800 antialiased font-sans">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="app-layout flex min-h-screen bg-[#f8fafc]">
   <div id="sidebar-root"></div>
   <div class="app-content flex-1 min-w-0">
-    <div id="topbar-root"></div>
-    <main id="main-content" class="app-main p-6 space-y-6">
-      <section class="page-head">
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h2 class="page-title">Dashboard</h2>
-            <p class="page-subtitle">Ringkasan operasional bangunan, energi, dan kenyamanan dalam satu workspace.</p>
+    <div id="topbar-root" class="hidden"></div>
+    <main id="main-content" class="p-6 md:p-8 space-y-5 max-w-[1700px] mx-auto w-full">
+    <!-- ── Page Header ── -->
+    <section class="page-head">
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-1">
+        <div>
+          <h1 class="text-2xl lg:text-[1.75rem] font-bold text-slate-900 tracking-tight">Operational &amp; Environmental Monitoring Dashboard</h1>
+          <p class="text-xs text-slate-500 mt-1">
+            Building Energy Management &amp; Indoor Environmental Quality (BEMS) · Real-Time Living Lab Facility Telemetry
+          </p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-right">
+            <span class="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">LAST UPDATED</span>
+            <span id="mqtt-last-update-big" class="font-mono text-lg font-bold text-slate-800">21.05.00 (UTC+7)</span>
           </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor laporan</button>
+          <button class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Data
+          </button>
+        </div>
+      </div>
+      <!-- Hidden elements needed for JS telemetry updates -->
+      <div class="hidden">
+        <span id="mqtt-broker-status"></span>
+        <span id="mqtt-broker-text"></span>
+        <span id="mqtt-last-update"></span>
+      </div>
+    </section>
+
+    <!-- ── Executive KPI Summary Grid (6 Cards) ── -->
+    <section aria-label="Executive Summary">
+      <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3.5">
+
+        <!-- 1. Indoor Temperature -->
+        <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Indoor Temperature</span>
+            <svg class="w-4 h-4 text-teal-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+          </div>
+          <div class="mt-2">
+            <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="summary-avg-temp">28.4</span> <span class="text-sm font-normal text-slate-500 font-sans">°C</span></div>
+            <div class="mt-3">
+              <span id="summary-temp-status" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">Comfortably Warm</span>
+            </div>
+          </div>
+          <p id="summary-temp-range" class="text-[11px] text-slate-400 mt-2 font-medium">Min 27.3°C · Max 29.8°C</p>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
-            <button class="indoor-chip">Hari ini</button>
-            <button class="indoor-chip">Semua ruang</button>
+        <!-- 2. Indoor Humidity -->
+        <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Indoor Humidity</span>
+            <svg class="w-4 h-4 text-teal-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.5c-3.59 0-6.5-2.91-6.5-6.5 0-3.3 4.14-8.83 5.92-11.08.3-.38.86-.38 1.16 0 1.78 2.25 5.92 7.78 5.92 11.08 0 3.59-2.91 6.5-6.5 6.5z"/></svg>
           </div>
-          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+          <div class="mt-2">
+            <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="summary-avg-hum">39.9</span> <span class="text-sm font-normal text-slate-500 font-sans">%RH</span></div>
+            <div class="mt-3">
+              <span id="summary-hum-status" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">Standard Comfort</span>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2 font-medium">Relative Humidity (RH)</p>
+        </div>
+
+        <!-- 3. CO2 Air Quality -->
+        <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">CO₂ Air Quality</span>
+            <svg class="w-4 h-4 text-teal-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          </div>
+            <div class="mt-2">
+              <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="summary-co2">578</span> <span class="text-sm font-normal text-slate-500 font-sans">ppm</span></div>
+              <div class="mt-3">
+                <span id="summary-co2-status" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">Optimal (&lt;600)</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">CWT Sensor · Slave 17</p>
+          </div>
+
+          <!-- 4. Workplane Lux -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Workplane Lux</span>
+              <svg class="w-4 h-4 text-amber-500 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="text-3xl font-bold tracking-tight text-slate-900 font-mono"><span id="summary-avg-lux">169</span> <span class="text-sm font-normal text-slate-500 font-sans">lx</span></div>
+              <div class="mt-3">
+                <span id="summary-lux-status" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-amber-50 text-amber-800 border border-amber-200">Daylight Level</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">Average WB1–WB4</p>
+          </div>
+
+          <!-- 5. Outdoor Temperature -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Outdoor Temp</span>
+              <svg class="w-4 h-4 text-amber-500 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M7.05 16.95l-1.414 1.414M17.95 16.95l-1.414-1.414M7.05 7.05L5.636 5.636M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="flex items-baseline justify-between gap-1 whitespace-nowrap">
+                <div class="font-mono text-slate-900 tracking-tight"><span id="summary-out-temp" class="text-2xl xl:text-3xl font-bold">30.5</span> <span class="text-xs font-normal text-slate-500 font-sans">°C</span></div>
+                <span id="summary-out-hum" class="text-xs font-semibold text-teal-600 font-mono">46.6 %RH</span>
+              </div>
+              <div class="mt-3">
+                <span id="summary-delta-temp" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-amber-50 text-amber-800 border border-amber-200">Delta: +2.1°C</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">FS74-485 · Slave 10</p>
+          </div>
+
+          <!-- 6. Solar & Demand Load -->
+          <div class="kpi-card bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Solar &amp; Demand</span>
+              <svg class="w-4 h-4 text-teal-600 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div class="mt-2">
+              <div class="flex items-baseline justify-between gap-1 whitespace-nowrap">
+                <div class="font-mono text-slate-900 tracking-tight"><span id="summary-power" class="text-2xl xl:text-3xl font-bold">21.1</span> <span class="text-xs font-normal text-slate-500 font-sans">kW</span></div>
+                <span id="summary-irradiance" class="text-xs font-semibold text-teal-600 font-mono">20 W/m²</span>
+              </div>
+              <div class="mt-3">
+                <span id="summary-active-nodes" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">6 / 6 Active Nodes</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 font-medium">HLS-SI Pyranometer</p>
+          </div>
+
         </div>
       </section>
 
-      <div id="kpi-dashboard-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+      <!-- ── Snapshot Alert Banner ── -->
+      <section aria-label="Environmental Evaluation Alert">
+        <div class="rounded-xl border border-amber-200/90 bg-amber-50/90 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-amber-900 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-600 font-bold">ⓘ</span>
+            <span>Notice: Task illuminance alert. Average <strong id="alert-lux">169 lx</strong> against 500 lx target; Desk WB4 reading 0 lx. Average indoor temperature is within Comfortably Warm range (27–28.5°C).</span>
+          </div>
+          <div class="font-mono text-[11px] text-amber-700/80 shrink-0 font-medium">
+            SNAPSHOT <span id="alert-timestamp">21.05.00</span>
+          </div>
+        </div>
+      </section>
 
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <section class="card p-4 xl:col-span-2">
-          <div class="flex items-start justify-between gap-2 mb-2">
+      <!-- ── Indoor Temperature & Humidity Distribution ── -->
+      <section aria-label="Indoor Temperature & Humidity Distribution">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 tracking-tight">Indoor Temperature &amp; Humidity Distribution</h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+              ESP32-C3 Mesh Nodes · 6× SHT31 Sensor Units · I2C Telemetry at 1.1 m height (Sitting Zone) · 60s reporting interval
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="text-slate-500 font-medium">Modbus Gateway</span>
+            <span class="inline-flex items-center gap-1 text-teal-700 font-semibold">
+              <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Online
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3.5">
+
+          <!-- SHT-1 (G) -->
+          <div class="node-pro-card">
             <div>
-              <p class="widget-title">Profil energi bangunan</p>
-              <p class="text-sm text-slate-500 mt-1">Daya total · 06:00-14:30 WIB</p>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-900">SHT-1</span>
+                <span id="sht-sht-1-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Live
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2">WB1 · Window Side</p>
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">TEMP</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="sht-sht-1-temp" class="text-2xl font-bold tracking-tight text-slate-900 font-mono">29.8 °C</span>
+                  <span id="sht-sht-1-comfort" class="text-[11px] font-medium text-amber-700">Warm</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1 mt-1 overflow-hidden">
+                  <div id="sht-sht-1-temp-bar" class="bg-amber-500 h-1 rounded-full transition-all duration-500" style="width: 65%;"></div>
+                </div>
+              </div>
+              <div class="flex items-baseline justify-between mt-3 text-xs">
+                <span class="text-slate-500">Humidity</span>
+                <span id="sht-sht-1-hum" class="font-bold text-slate-900 font-mono">39.3 %RH</span>
+              </div>
             </div>
-            <span class="demo-badge" style="background:#e8f7f3;color:#1b8a6e;border-color:#cfeee4;">Di bawah baseline</span>
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono" id="sht-sht-1-ts">
+              21.05.00 (UTC+7)
+            </div>
           </div>
 
-          <div class="h-[235px] rounded-lg border border-slate-100 bg-white p-3">
-            <div class="flex items-center gap-5 text-xs mb-2">
-              <span class="text-teal-600">Aktual demo</span>
-              <span class="text-blue-500">Baseline</span>
+          <!-- SHT-2 (C) -->
+          <div class="node-pro-card">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-900">SHT-2</span>
+                <span id="sht-sht-2-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Live
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2">WB2 · Center Lab</p>
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">TEMP</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="sht-sht-2-temp" class="text-2xl font-bold tracking-tight text-slate-900 font-mono">28.4 °C</span>
+                  <span id="sht-sht-2-comfort" class="text-[11px] font-medium text-amber-700">Warm</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1 mt-1 overflow-hidden">
+                  <div id="sht-sht-2-temp-bar" class="bg-amber-500 h-1 rounded-full transition-all duration-500" style="width: 55%;"></div>
+                </div>
+              </div>
+              <div class="flex items-baseline justify-between mt-3 text-xs">
+                <span class="text-slate-500">Humidity</span>
+                <span id="sht-sht-2-hum" class="font-bold text-slate-900 font-mono">40.0 %RH</span>
+              </div>
             </div>
-            <svg viewBox="0 0 700 190" class="w-full h-[190px]" role="img" aria-label="Grafik profil energi bangunan">
-              <rect x="0" y="0" width="700" height="190" fill="#f9fcfd"/>
-              <line x1="40" y1="160" x2="680" y2="160" stroke="#e6eef3"/>
-              <line x1="40" y1="125" x2="680" y2="125" stroke="#e6eef3"/>
-              <line x1="40" y1="90" x2="680" y2="90" stroke="#e6eef3"/>
-              <line x1="40" y1="55" x2="680" y2="55" stroke="#e6eef3"/>
-              <polygon points="40,122 120,118 200,97 280,72 360,52 440,76 520,86 600,95 640,100 640,160 40,160" fill="#deefeb"/>
-              <polyline fill="none" stroke="#188b86" stroke-width="3" points="40,122 120,118 200,97 280,72 360,52 440,76 520,86 600,95 640,100"/>
-              <polyline fill="none" stroke="#4d78b1" stroke-width="3" stroke-dasharray="6 6" points="40,114 120,110 200,87 280,61 360,43 440,62 520,72 600,79 640,83"/>
-            </svg>
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono" id="sht-sht-2-ts">
+              21.05.00 (UTC+7)
+            </div>
+          </div>
+
+          <!-- SHT-3 (A) -->
+          <div class="node-pro-card">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-900">SHT-3</span>
+                <span id="sht-sht-3-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Live
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2">WB3 · Inner Zone</p>
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">TEMP</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="sht-sht-3-temp" class="text-2xl font-bold tracking-tight text-slate-900 font-mono">27.3 °C</span>
+                  <span id="sht-sht-3-comfort" class="text-[11px] font-medium text-amber-700">Warm</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1 mt-1 overflow-hidden">
+                  <div id="sht-sht-3-temp-bar" class="bg-amber-500 h-1 rounded-full transition-all duration-500" style="width: 48%;"></div>
+                </div>
+              </div>
+              <div class="flex items-baseline justify-between mt-3 text-xs">
+                <span class="text-slate-500">Humidity</span>
+                <span id="sht-sht-3-hum" class="font-bold text-slate-900 font-mono">38.8 %RH</span>
+              </div>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono" id="sht-sht-3-ts">
+              21.05.00 (UTC+7)
+            </div>
+          </div>
+
+          <!-- SHT-4 (D) -->
+          <div class="node-pro-card">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-900">SHT-4</span>
+                <span id="sht-sht-4-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Live
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2">WB4 · Right Side</p>
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">TEMP</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="sht-sht-4-temp" class="text-2xl font-bold tracking-tight text-slate-900 font-mono">29.0 °C</span>
+                  <span id="sht-sht-4-comfort" class="text-[11px] font-medium text-amber-700">Warm</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1 mt-1 overflow-hidden">
+                  <div id="sht-sht-4-temp-bar" class="bg-amber-500 h-1 rounded-full transition-all duration-500" style="width: 60%;"></div>
+                </div>
+              </div>
+              <div class="flex items-baseline justify-between mt-3 text-xs">
+                <span class="text-slate-500">Humidity</span>
+                <span id="sht-sht-4-hum" class="font-bold text-slate-900 font-mono">39.7 %RH</span>
+              </div>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono" id="sht-sht-4-ts">
+              21.05.00 (UTC+7)
+            </div>
+          </div>
+
+          <!-- SHT-5 (H) -->
+          <div class="node-pro-card">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-900">SHT-5</span>
+                <span id="sht-sht-5-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Live
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2">South Wall</p>
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">TEMP</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="sht-sht-5-temp" class="text-2xl font-bold tracking-tight text-slate-900 font-mono">28.0 °C</span>
+                  <span id="sht-sht-5-comfort" class="text-[11px] font-medium text-amber-700">Warm</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1 mt-1 overflow-hidden">
+                  <div id="sht-sht-5-temp-bar" class="bg-amber-500 h-1 rounded-full transition-all duration-500" style="width: 52%;"></div>
+                </div>
+              </div>
+              <div class="flex items-baseline justify-between mt-3 text-xs">
+                <span class="text-slate-500">Humidity</span>
+                <span id="sht-sht-5-hum" class="font-bold text-slate-900 font-mono">41.1 %RH</span>
+              </div>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono" id="sht-sht-5-ts">
+              21.05.00 (UTC+7)
+            </div>
+          </div>
+
+          <!-- SHT-6 (E) -->
+          <div class="node-pro-card">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-slate-900">SHT-6</span>
+                <span id="sht-sht-6-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Live
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-2">South Hub</p>
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">TEMP</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="sht-sht-6-temp" class="text-2xl font-bold tracking-tight text-slate-900 font-mono">27.7 °C</span>
+                  <span id="sht-sht-6-comfort" class="text-[11px] font-medium text-amber-700">Warm</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1 mt-1 overflow-hidden">
+                  <div id="sht-sht-6-temp-bar" class="bg-amber-500 h-1 rounded-full transition-all duration-500" style="width: 50%;"></div>
+                </div>
+              </div>
+              <div class="flex items-baseline justify-between mt-3 text-xs">
+                <span class="text-slate-500">Humidity</span>
+                <span id="sht-sht-6-hum" class="font-bold text-slate-900 font-mono">40.8 %RH</span>
+              </div>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono" id="sht-sht-6-ts">
+              21.05.00 (UTC+7)
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Middle Section: RS485 Indoor & Outdoor Weather ── -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+
+        <!-- Indoor RS485 Matrix (7 Columns Span) -->
+        <section aria-label="Indoor RS485 Environmental Sensors" class="xl:col-span-7">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 tracking-tight">Indoor Environmental Sensors</h2>
+              <p class="text-xs text-slate-500 mt-0.5">RS485 Modbus RTU · NNZN-TCP232-600 Gateway · Modbus Bus 4800 8N1 · 10s Polling</p>
+            </div>
+            <span class="text-xs font-mono text-slate-400">Slave 13–18</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            <!-- CO2 Sensor Panel -->
+            <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">CO₂ CONCENTRATION</span>
+                <div class="text-3xl font-bold tracking-tight text-slate-900 mt-2 font-mono">
+                  <span id="nnzn-co2">578</span> <span class="text-sm font-normal text-slate-500 font-sans">ppm</span>
+                </div>
+                <div class="mt-2.5">
+                  <span id="nnzn-co2-badge" class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">Optimal Quality (&lt;600 ppm)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
+                  <div id="nnzn-co2-bar" class="bg-teal-500 h-1.5 rounded-full transition-all duration-700" style="width: 45%;"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 font-medium mt-1 font-mono">
+                  <span>400 ppm</span>
+                  <span>Target &lt;800</span>
+                  <span>1000+ ppm</span>
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-3 font-medium">CWT Sensor (Slave 17) · Center Lab Zone</p>
+            </div>
+
+            <!-- Airflow Velocity Panel -->
+            <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">AIR VELOCITY</span>
+                <div class="text-3xl font-bold tracking-tight text-slate-900 mt-2 font-mono">
+                  <span id="nnzn-airflow">0.0</span> <span class="text-sm font-normal text-slate-500 font-sans">m/s</span>
+                </div>
+                <div class="mt-2.5">
+                  <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">Natural Draft</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs text-slate-600 mt-3 font-medium">
+                  <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                  <span>Stable airflow (&lt; 0.2 m/s)</span>
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-3 font-medium">Halisense HLS-TDAS (Slave 18) · 1.1 m Elevation</p>
+            </div>
+
+            <!-- Workstation Lux Summary / Distribution -->
+            <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">DESK LUX DISTRIBUTION</span>
+                  <span class="text-[10px] text-amber-700 font-medium">Target 500 lx</span>
+                </div>
+                <div class="space-y-2 mt-1">
+                  <!-- WB1 -->
+                  <div>
+                    <div class="flex justify-between text-xs font-medium text-slate-700">
+                      <span>Desk WB1</span>
+                      <span id="nnzn-lx1" class="font-bold font-mono">225 lx</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1 mt-0.5 overflow-hidden">
+                      <div id="nnzn-lx1-bar" class="bg-amber-500 h-1 rounded-full" style="width: 45%;"></div>
+                    </div>
+                  </div>
+                  <!-- WB2 -->
+                  <div>
+                    <div class="flex justify-between text-xs font-medium text-slate-700">
+                      <span>Desk WB2</span>
+                      <span id="nnzn-lx2" class="font-bold font-mono">131 lx</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1 mt-0.5 overflow-hidden">
+                      <div id="nnzn-lx2-bar" class="bg-amber-500 h-1 rounded-full" style="width: 26%;"></div>
+                    </div>
+                  </div>
+                  <!-- WB3 -->
+                  <div>
+                    <div class="flex justify-between text-xs font-medium text-slate-700">
+                      <span>Desk WB3</span>
+                      <span id="nnzn-lx3" class="font-bold font-mono">319 lx</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1 mt-0.5 overflow-hidden">
+                      <div id="nnzn-lx3-bar" class="bg-amber-500 h-1 rounded-full" style="width: 64%;"></div>
+                    </div>
+                  </div>
+                  <!-- WB4 -->
+                  <div>
+                    <div class="flex justify-between text-xs font-medium text-slate-700">
+                      <span>Desk WB4</span>
+                      <span id="nnzn-lx4" class="font-bold font-mono">0 lx</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1 mt-0.5 overflow-hidden">
+                      <div id="nnzn-lx4-bar" class="bg-slate-200 h-1 rounded-full" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2 font-medium">Desk Lux Sensors (Slave 13–16) · 0.8 m Elevation</p>
+            </div>
           </div>
         </section>
 
-        <aside class="card p-4">
-          <p class="widget-title">Kondisi bangunan</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">Rata-rata tertimbang · snapshot 14:30</p>
-
-          <div class="space-y-2 text-sm">
-            <div class="flex items-center justify-between"><span class="text-slate-500">Suhu indoor</span><strong class="text-slate-700">24,6 °C</strong></div>
-            <div class="flex items-center justify-between"><span class="text-slate-500">Kelembapan indoor</span><strong class="text-slate-700">56 %RH</strong></div>
-            <div class="flex items-center justify-between"><span class="text-slate-500">CO₂ rata-rata</span><strong class="text-slate-700">810 ppm</strong></div>
-            <div class="flex items-center justify-between"><span class="text-slate-500">Iluminansi</span><strong class="text-slate-700">458 lux</strong></div>
-            <div class="flex items-center justify-between"><span class="text-slate-500">Suhu outdoor</span><strong class="text-slate-700">31,2 °C</strong></div>
-            <div class="flex items-center justify-between"><span class="text-slate-500">AC / lampu aktif</span><strong class="text-slate-700">6 / 8 · 42 / 48</strong></div>
+        <!-- Outdoor Station (5 Columns Span) -->
+        <section aria-label="Outdoor Weather Station" class="xl:col-span-5">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 tracking-tight">Outdoor Weather Station</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Exterior Sensors · Living Lab Building</p>
+            </div>
+            <span class="text-xs font-mono text-slate-400">Slave 10–12</span>
           </div>
 
-          <div class="rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 mt-3">
-            <p class="text-sm font-semibold text-teal-700">Status demo: normal</p>
-            <p class="text-xs text-teal-700 mt-1">32 dari 34 sensor valid. 1 terlambat, 1 dalam perawatan.</p>
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 space-y-3.5">
+            <!-- Outdoor Temp & RH -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">OUTDOOR TEMP &amp; RH</span>
+                <svg class="w-4 h-4 text-amber-500 stroke-[1.8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M7.05 16.95l-1.414 1.414M17.95 16.95l-1.414-1.414M7.05 7.05L5.636 5.636M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <div>
+                  <span id="nnzn-th-temp" class="text-2xl font-bold text-slate-900 font-mono">30.5 °C</span>
+                  <span class="text-slate-400 mx-1">/</span>
+                  <span id="nnzn-th-hum" class="text-sm font-medium text-slate-600 font-mono">46.6 %RH</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">FS74-485</span>
+              </div>
+            </div>
+
+            <!-- Solar Irradiance -->
+            <div class="pt-2 border-t border-slate-100">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">SOLAR IRRADIANCE</span>
+                <span id="nnzn-irradiance" class="text-base font-bold text-slate-900 font-mono">20.0 W/m²</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
+                <div id="nnzn-irradiance-bar" class="bg-amber-500 h-1 rounded-full transition-all duration-700" style="width: 2%;"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+                <span>0 W/m²</span>
+                <span>Halisense HLS-SI</span>
+                <span>1000 W/m²</span>
+              </div>
+            </div>
+
+            <!-- Outdoor Lux & Airflow -->
+            <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+              <div>
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">OUTDOOR LUX</span>
+                <div class="mt-0.5">
+                  <span id="nnzn-lx-out" class="text-xl font-bold text-slate-900 font-mono">5 lx</span>
+                  <span class="text-[10px] text-slate-400 ml-1">· Slave 12</span>
+                </div>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">WIND SPEED</span>
+                <div class="mt-0.5">
+                  <span id="nnzn-airflow-out" class="text-xl font-bold text-slate-900 font-mono">0.0 m/s</span>
+                  <span class="text-[10px] text-slate-400 ml-1">· Slave 18</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ── Bottom Section: Continuous Live Telemetry Chart & Detailed Condition ── -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+
+        <!-- Real-Time Dynamic Telemetry Chart (7 Columns Span) -->
+        <section class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 xl:col-span-7 flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-900 tracking-tight">Real-Time Telemetry Trends &amp; Energy Profile</h2>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  Indoor vs outdoor temp vs solar irradiance · Continuous streaming telemetry
+                </p>
+              </div>
+              <div>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                  Continuous Stream
+                </span>
+              </div>
+            </div>
+
+            <!-- Legend Pills Row -->
+            <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600 mb-3">
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-0.5 bg-teal-600 inline-block"></span>
+                Average Indoor Temp (°C)
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-0.5 border-b-2 border-dashed border-sky-600 inline-block"></span>
+                Outdoor Temp (°C)
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-0.5 bg-amber-600 inline-block"></span>
+                Solar Irradiance (×10 W/m²)
+              </span>
+            </div>
+
+            <div class="w-full h-[255px] relative">
+              <canvas id="live-telemetry-chart"></canvas>
+            </div>
+
+            <div class="flex justify-between text-[11px] text-slate-400 font-mono mt-1 px-1">
+              <span>Stream Start</span>
+              <span>Updated <span id="chart-sub-time-header">21.05.00</span></span>
+            </div>
+
+            <!-- Note Box Below Chart -->
+            <div class="mt-3 p-3 rounded-lg bg-slate-50 border border-slate-100 text-[11px] text-slate-500 leading-relaxed font-mono">
+              <div>Temperature: latest telemetry snapshot <span id="chart-sub-time">21.05.00</span> · Solar: last recorded reading <span id="chart-sub-rad">20 W/m²</span>.</div>
+              <div>Solar reference: 0 &rarr; 20 W/m² · 20.58.38–20.59.00 (UTC+7) baseline window.</div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mt-3 pt-2.5 border-t border-slate-100 font-mono">
+            <span>X-Axis: Real-Time Timestamp (UTC+7)</span>
+            <span>Broker: 128.199.206.166:1883</span>
+          </div>
+        </section>
+
+        <!-- Condition Analysis & Building Summary (5 Columns Span) -->
+        <aside class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 xl:col-span-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+              <h2 class="text-base font-bold text-slate-900 tracking-tight">Building State Summary</h2>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Live
+              </span>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span class="text-slate-500">Average Indoor Temp</span>
+                <strong id="summary-avg-temp-2" class="text-slate-900 font-mono text-sm">28.4 °C</strong>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span class="text-slate-500">Indoor Relative Humidity</span>
+                <strong id="summary-avg-hum-2" class="text-slate-900 font-mono text-sm">39.9 %RH</strong>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span class="text-slate-500">Lab CO₂ Level</span>
+                <strong id="summary-co2-2" class="text-slate-900 font-mono text-sm">578 ppm</strong>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span class="text-slate-500">Average Illuminance</span>
+                <strong id="summary-avg-lux-2" class="text-slate-900 font-mono text-sm">169 lx</strong>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span class="text-slate-500">Outdoor Temperature</span>
+                <strong id="summary-out-temp-2" class="text-slate-900 font-mono text-sm">30.5 °C</strong>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span class="text-slate-500">Temperature Delta (Out - In)</span>
+                <strong id="summary-temp-delta" class="text-slate-900 font-mono text-sm">+2.1 °C</strong>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <div>
+                  <span class="text-slate-500 block">Dew Point</span>
+                  <span class="text-[10px] text-slate-400 font-mono">Reference 20.59.00 (UTC+7)</span>
+                </div>
+                <strong id="summary-dewpoint" class="text-slate-900 font-mono text-sm">13.3 °C</strong>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span class="text-slate-500">Thermal Comfort</span>
+                <strong id="summary-comfort-category" class="text-teal-700 font-semibold">Comfortably Warm (27–28.5°C)</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-teal-200/90 bg-teal-50/70 p-3 mt-4">
+            <div class="flex items-center gap-1.5 text-teal-800 font-semibold text-xs">
+              <span class="w-2 h-2 rounded-full bg-teal-600"></span>
+              Telemetry Stream Active
+            </div>
+            <p class="text-[11px] text-teal-700 mt-1 leading-relaxed">
+              All metrics are bound to the live MQTT WebSocket channel. Inbound readings from ESP32 mesh nodes and Modbus RTU gateways render reactively.
+            </p>
           </div>
         </aside>
+
       </div>
 
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <section class="card p-4 xl:col-span-2 overflow-x-auto">
-          <p class="widget-title">Ringkasan per ruang</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">Lingkungan indoor, okupansi, dan status kenyamanan</p>
-          <table class="w-full text-sm indoor-table">
-            <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Ruang</th><th>Orang</th><th>Suhu °C</th><th>CO₂ ppm</th><th>Status</th></tr></thead>
-            <tbody class="text-slate-600">
-              <tr class="border-b border-slate-100"><td class="py-2">Lab A</td><td>22 / 30</td><td>24,4</td><td>780</td><td>Nyaman</td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2">Lab B</td><td>18 / 24</td><td>25,1</td><td>1.040</td><td>Perhatian</td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2">Ruang Rapat</td><td>12 / 16</td><td>24,3</td><td>850</td><td>Nyaman</td></tr>
-              <tr><td class="py-2">Studio</td><td>16 / 20</td><td>24,7</td><td>810</td><td>Nyaman</td></tr>
-            </tbody>
-          </table>
-        </section>
-
-        <div class="space-y-4">
-          <section class="card p-4">
-            <div class="flex items-start justify-between gap-2 mb-2">
-              <p class="widget-title">Perlu perhatian</p>
-              <span class="demo-badge">2</span>
-            </div>
-
-            <div class="space-y-3 text-sm">
-              <div>
-                <p class="font-semibold text-slate-700">CO₂ Lab B melewati ambang</p>
-                <p class="text-slate-500">1.040 ppm · 14:15 WIB. Tinjau ventilasi sebelum perubahan setpoint.</p>
-              </div>
-              <div>
-                <p class="font-semibold text-slate-700">Sensor MRT Lounge terlambat</p>
-                <p class="text-slate-500">Data terakhir 14:00 WIB · gunakan nilai valid.</p>
-              </div>
-            </div>
-          </section>
-
-          <section class="card p-4">
-            <p class="widget-title">Distribusi konsumsi</p>
-            <p class="text-sm text-slate-500 mt-1 mb-3">Energi hari ini · kWh</p>
-
-            <div class="space-y-3 text-sm">
-              <div>
-                <div class="flex items-center justify-between"><span class="text-slate-600">HVAC</span><span class="text-slate-700">112,4 kWh</span></div>
-                <div class="indoor-progress mt-1"><i style="width: 61%;"></i></div>
-              </div>
-              <div>
-                <div class="flex items-center justify-between"><span class="text-slate-600">Lighting</span><span class="text-slate-700">38,2 kWh</span></div>
-                <div class="indoor-progress mt-1"><i style="width: 21%;"></i></div>
-              </div>
-              <div>
-                <div class="flex items-center justify-between"><span class="text-slate-600">Plug load</span><span class="text-slate-700">24,6 kWh</span></div>
-                <div class="indoor-progress mt-1"><i style="width: 13%;"></i></div>
-              </div>
-              <div>
-                <div class="flex items-center justify-between"><span class="text-slate-600">Lainnya</span><span class="text-slate-700">9,4 kWh</span></div>
-                <div class="indoor-progress mt-1"><i style="width: 5%;"></i></div>
-              </div>
-            </div>
-          </section>
+      <!-- ── Footer ── -->
+      <footer class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/70 px-1 mt-6">
+        <div>
+          <p class="font-medium text-slate-600">BEMS Living Lab · Department of Electrical &amp; Mechatronics Engineering, FT UNS</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Aggregate metrics reflect authoritative building management feeds. Reference snapshot timestamps ensure data integrity.</p>
         </div>
-      </div>
-
-      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
-        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
-        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
-      </div>
-
+        <p class="font-mono text-right text-[11px]">Broker: 128.199.206.166:9001 (WS Bridge) · Last Updated: <span id="mqtt-last-update-footer" class="font-semibold text-slate-600">21.05.00</span></p>
+      </footer>
     </main>
   </div>
 </div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-<script src="assets/js/config/app-config.js"></script>
-<script src="assets/js/core/session.js"></script>
-<script src="assets/js/core/api-client.js"></script>
-<script src="assets/js/mock/page-data.js"></script>
-<script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/components/layout.js"></script>
-<script src="assets/js/core/mqtt-client.js"></script>
-<script src="assets/js/pages/page-init.js"></script>
-<script>renderSidebar("dashboard"); renderTopbar("Dashboard", "Ringkasan operasional"); initPageData("dashboard");</script>
+<script src="assets/js/config/app-config.js?v=8"></script>
+<script src="assets/js/core/session.js?v=8"></script>
+<script src="assets/js/core/api-client.js?v=8"></script>
+<script src="assets/js/mock/page-data.js?v=8"></script>
+<script src="assets/js/services/page-data-service.js?v=8"></script>
+<script src="assets/js/components/layout.js?v=8"></script>
+<script src="assets/js/core/mqtt-client.js?v=8"></script>
+<script src="assets/js/pages/page-init.js?v=8"></script>
+<script>
+  renderSidebar("dashboard");
+  initPageData("dashboard");
+
+  // Inisialisasi Chart.js untuk Live Continuous Telemetry
+  document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.getElementById("live-telemetry-chart");
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+
+      // Gradient background for indoor temperature
+      const gradientTeal = ctx.createLinearGradient(0, 0, 0, 220);
+      gradientTeal.addColorStop(0, "rgba(13, 148, 136, 0.18)");
+      gradientTeal.addColorStop(1, "rgba(13, 148, 136, 0.0)");
+
+      window.liveTelemetryChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: ["", "", "", "", "", "", "", "", "", ""],
+          datasets: [
+            {
+              label: "Average Indoor Temp (°C)",
+              data: [27.5, 28.1, 28.3, 28.4, 28.4, 28.4, 28.4, 28.4, 28.4, 28.4],
+              borderColor: "#0d9488",
+              backgroundColor: gradientTeal,
+              borderWidth: 2,
+              tension: 0.2,
+              fill: true,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              pointBackgroundColor: "#0d9488",
+            },
+            {
+              label: "Outdoor Temp (°C)",
+              data: [null, 30.5, 30.5, 30.5, 30.5, 30.5, 30.5, 30.5, 30.5, 30.5],
+              borderColor: "#0284c7",
+              backgroundColor: "transparent",
+              borderWidth: 1.8,
+              borderDash: [4, 4],
+              tension: 0.2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              pointBackgroundColor: "#0284c7",
+            },
+            {
+              label: "Solar Irradiance (x10 W/m²)",
+              data: [null, null, null, null, null, null, null, null, null, 2.0],
+              borderColor: "#b45309",
+              backgroundColor: "transparent",
+              borderWidth: 1.8,
+              tension: 0.2,
+              pointRadius: 3.5,
+              pointHoverRadius: 5,
+              pointBackgroundColor: "#b45309",
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 300 },
+          interaction: { intersect: false, mode: "index" },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: "#0f172a",
+              titleFont: { size: 12, weight: "bold" },
+              bodyFont: { size: 12 },
+              padding: 10,
+              cornerRadius: 8,
+              boxPadding: 4,
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { display: false }
+            },
+            y: {
+              min: 0,
+              max: 35,
+              grid: { color: "#f1f5f9" },
+              ticks: { font: { size: 11 }, color: "#94a3b8", stepSize: 5 }
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>

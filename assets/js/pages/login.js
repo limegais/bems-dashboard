@@ -12,7 +12,7 @@ const submitBtn = document.getElementById("login-submit");
 passToggle.addEventListener("click", () => {
   const isHidden = passInput.type === "password";
   passInput.type = isHidden ? "text" : "password";
-  passToggle.textContent = isHidden ? "Sembunyi" : "Lihat";
+  passToggle.textContent = isHidden ? "Hide" : "Show";
 });
 
 form.addEventListener("submit", async (event) => {
@@ -25,7 +25,7 @@ form.addEventListener("submit", async (event) => {
     Session.save({ user: result.user, role: result.role, token: result.token, loginAt: new Date().toISOString() });
     window.location.href = APP_CONFIG.ROUTES.home;
   } catch (error) {
-    errorBox.textContent = error.status === 0 ? "Server tidak dapat dihubungi." : "Username atau password tidak valid.";
+    errorBox.textContent = error.status === 0 ? "Unable to connect to the server." : "Invalid username or password.";
     errorBox.classList.remove("hidden");
   } finally {
     submitBtn.disabled = false;

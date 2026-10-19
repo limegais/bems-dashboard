@@ -1,191 +1,438 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Prediction — BEMS Living Lab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <title>Load & Temperature Prediction — BEMS Living Lab</title>
+  <meta name="description" content="Compare 6 energy forecasting models: SARIMA, Seasonal Naive, Linear Regression, Random Forest, Gradient Boosting, and LSTM." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    .algo-btn {
+      border: 2px solid #e2e8f0;
+      background: #fff;
+      color: #475569;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.45rem 0.9rem;
+      border-radius: 0.65rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      letter-spacing: 0.01em;
+    }
+    .algo-btn:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .algo-selector-wrap {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1rem;
+      padding: 1.25rem 1.5rem;
+    }
+    .algo-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.18rem 0.55rem;
+      border-radius: 9999px;
+      letter-spacing: 0.05em;
+    }
+  </style>
 </head>
 <body class="app-body">
-<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="app-layout flex">
   <div id="sidebar-root"></div>
   <div class="app-content flex-1 min-w-0">
     <div id="topbar-root"></div>
     <main id="main-content" class="app-main p-6 space-y-6">
+
+      <!-- ── Page Header ── -->
       <section class="page-head">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 class="page-title">Prediction</h2>
-            <p class="page-subtitle">Prediksi beban energi dan kondisi lingkungan dengan rentang ketidakpastian yang transparan.</p>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wider font-mono">AI Predictive Intelligence</span>
+              <span class="text-slate-400 text-xs">·</span>
+              <span class="text-xs text-slate-500 font-medium">6 Kandidat Model — Pilih & Bandingkan</span>
+            </div>
+            <h1 class="page-title text-2xl font-bold text-slate-900 tracking-tight">AI Weather &amp; Electrical Load Forecasting</h1>
+            <p class="page-subtitle text-sm text-slate-500 mt-1">Pilih salah satu dari 6 algoritma prediksi. Setiap model akan memperbarui grafik, tabel, dan metrik secara langsung untuk perbandingan performa.</p>
           </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Riwayat model</button>
+
+          <div class="flex flex-wrap items-center gap-2.5">
+            <div id="active-algo-badge" class="bg-white px-3 py-1.5 rounded-xl border border-slate-200/90 shadow-2xs text-xs flex items-center gap-2">
+              <!-- diisi JS -->
+            </div>
+            <button id="btn-rerun-inference" onclick="window.PredictionService.reRunInference()" class="px-3.5 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-all">
+              <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Re-run Inference
+            </button>
+          </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
-            <button class="indoor-chip">Hari ini</button>
-            <button class="indoor-chip">Semua ruang</button>
+        <!-- Horizon Filter -->
+        <div class="mt-4 pt-3 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 shadow-2xs">
+            <button onclick="window.PredictionService.setHorizon('24h')" data-horizon="24h" class="pred-horizon-btn px-3.5 py-1.5 text-xs font-bold rounded-lg bg-teal-800 text-white shadow-2xs">24 Jam ke Depan (Hourly)</button>
+            <button onclick="window.PredictionService.setHorizon('7d')" data-horizon="7d" class="pred-horizon-btn px-3.5 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">7 Hari ke Depan (Daily)</button>
           </div>
-          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+          <div class="flex items-center gap-3 text-xs text-slate-500 font-mono">
+            <span>Data Training: <strong class="text-slate-800">90 Hari Riil IoT Lab</strong></span>
+            <span>·</span>
+            <span>Input Features: <strong class="text-slate-800">14 Parameters (Weather, Power, Occupancy, Calendar)</strong></span>
+          </div>
         </div>
       </section>
 
-      <div id="kpi-prediction-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
-
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div class="xl:col-span-2 space-y-4">
-          <section class="card p-4">
-            <div class="flex items-start justify-between gap-2 mb-2">
-              <div>
-                <p class="widget-title">Forecast daya bangunan</p>
-                <p class="text-sm text-slate-500 mt-1">Prediksi dari snapshot 14:30 · confidence interval 95%</p>
-              </div>
-              <span class="demo-badge">LSTM v2</span>
-            </div>
-            <div class="h-[190px] rounded-lg border border-slate-100 bg-white p-3">
-              <div class="flex items-center gap-5 text-xs mb-2">
-                <span class="text-teal-600">Prediksi daya</span>
-                <span class="text-slate-500">Baseline</span>
-                <span class="text-blue-500">Confidence 95%</span>
-              </div>
-              <svg viewBox="0 0 700 150" class="w-full h-[150px]" role="img" aria-label="Grafik forecast daya bangunan">
-                <rect x="0" y="0" width="700" height="150" fill="#f9fcfd"/>
-                <line x1="0" y1="115" x2="700" y2="115" stroke="#e6eef3"/>
-                <line x1="0" y1="80" x2="700" y2="80" stroke="#e6eef3"/>
-                <line x1="0" y1="45" x2="700" y2="45" stroke="#e6eef3"/>
-                <polygon points="20,56 150,50 270,61 380,84 500,100 620,105 620,117 500,112 380,97 270,75 150,63 20,70" fill="#deefeb"/>
-                <polyline fill="none" stroke="#5f8cc7" stroke-width="3" stroke-dasharray="6 6" points="20,62 150,56 270,67 380,89 500,104 620,109"/>
-              </svg>
-            </div>
-          </section>
-
-          <section class="card p-4">
-            <p class="widget-title">Forecast suhu indoor</p>
-            <p class="text-sm text-slate-500 mt-1 mb-3">Semua ruang · asumsi setpoint dan jadwal tidak berubah</p>
-            <div class="h-[190px] rounded-lg border border-slate-100 bg-white p-3">
-              <div class="flex items-center gap-5 text-xs mb-2">
-                <span class="text-teal-600">Suhu rata-rata</span>
-                <span class="text-blue-500">Confidence 95%</span>
-              </div>
-              <svg viewBox="0 0 700 150" class="w-full h-[150px]" role="img" aria-label="Grafik forecast suhu indoor">
-                <rect x="0" y="0" width="700" height="150" fill="#f9fcfd"/>
-                <line x1="0" y1="115" x2="700" y2="115" stroke="#e6eef3"/>
-                <line x1="0" y1="82" x2="700" y2="82" stroke="#e6eef3"/>
-                <line x1="0" y1="50" x2="700" y2="50" stroke="#e6eef3"/>
-                <polygon points="20,84 150,80 270,82 380,85 500,81 620,78 620,92 500,95 380,99 270,95 150,94 20,98" fill="#deefeb"/>
-                <polyline fill="none" stroke="#188b86" stroke-width="3" points="20,91 150,87 270,89 380,92 500,88 620,85"/>
-              </svg>
-            </div>
-          </section>
+      <!-- ── SELECTOR 6 ALGORITMA (PREMIUM CARD) ── -->
+      <section class="algo-selector-wrap" aria-label="Pilihan Algoritma Prediksi">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pilih Algoritma Prediksi</p>
+            <h2 class="text-base font-bold text-white">6 Candidate Energy Forecast Models</h2>
+          </div>
+          <div id="algo-description" class="text-[11px] text-slate-400 max-w-xs text-right leading-relaxed hidden lg:block">
+            <!-- diisi JS -->
+          </div>
         </div>
 
-        <aside class="card p-4">
-          <p class="widget-title">Model & pengaturan</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">Konfigurasi inferensi demonstrasi</p>
+        <!-- Tombol 6 Algoritma -->
+        <div class="flex flex-wrap gap-2.5" id="algo-btn-group">
+          <button class="algo-btn" data-algo="sarima" onclick="window.PredictionService.selectAlgorithm('sarima')">
+            <span class="algo-tag bg-violet-500/20 text-violet-300 mr-1.5">STAT</span>SARIMA
+          </button>
+          <button class="algo-btn" data-algo="seasonal_naive" onclick="window.PredictionService.selectAlgorithm('seasonal_naive')">
+            <span class="algo-tag bg-slate-500/20 text-slate-300 mr-1.5">BASE</span>Seasonal Naive
+          </button>
+          <button class="algo-btn" data-algo="xgboost" onclick="window.PredictionService.selectAlgorithm('xgboost')">
+            <span class="algo-tag bg-emerald-500/20 text-emerald-300 mr-1.5">ML</span>XGBoost
+          </button>
+          <button class="algo-btn" data-algo="lstm" onclick="window.PredictionService.selectAlgorithm('lstm')">
+            <span class="algo-tag bg-sky-500/20 text-sky-300 mr-1.5">DL</span>LSTM ★
+          </button>
+          <button class="algo-btn" data-algo="random_forest" onclick="window.PredictionService.selectAlgorithm('random_forest')">
+            <span class="algo-tag bg-amber-500/20 text-amber-300 mr-1.5">ML</span>Random Forest
+          </button>
+          <button class="algo-btn" data-algo="cnn" onclick="window.PredictionService.selectAlgorithm('cnn')">
+            <span class="algo-tag bg-pink-500/20 text-pink-300 mr-1.5">DL</span>CNN
+          </button>
+        </div>
 
-          <div class="space-y-3 text-sm">
-            <div>
-              <label for="pred-model-energy" class="text-xs text-slate-500 block mb-1">Model energi</label>
-              <select id="pred-model-energy" class="w-full tone-select py-2">
-                <option>LSTM v2 · multivariate</option>
-                <option>Temporal CNN · demo</option>
-              </select>
+        <!-- Description bawah mobile -->
+        <div id="algo-description" class="text-[11px] text-slate-400 leading-relaxed mt-3 lg:hidden">
+          <!-- diisi JS -->
+        </div>
+      </section>
+
+      <!-- ── 5 KPI Cards ── -->
+      <section aria-label="KPI Ringkasan Prediksi AI" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">24-Hour Energy Forecast Jam</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono">Total kWh</span>
             </div>
-
-            <div>
-              <label for="pred-model-env" class="text-xs text-slate-500 block mb-1">Model lingkungan</label>
-              <select id="pred-model-env" class="w-full tone-select py-2">
-                <option>XGBoost · indoor temperature</option>
-                <option>Hybrid GRU · demo</option>
-              </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label for="pred-horizon" class="text-xs text-slate-500 block mb-1">Horizon</label>
-                <select id="pred-horizon" class="w-full tone-select py-2">
-                  <option>6 jam</option>
-                  <option>12 jam</option>
-                </select>
-              </div>
-              <div>
-                <label for="pred-interval" class="text-xs text-slate-500 block mb-1">Interval</label>
-                <select id="pred-interval" class="w-full tone-select py-2">
-                  <option>15 menit</option>
-                  <option>30 menit</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label for="pred-confidence" class="text-xs text-slate-500 block mb-1">Confidence level</label>
-              <select id="pred-confidence" class="w-full tone-select py-2">
-                <option>95%</option>
-                <option>90%</option>
-              </select>
-            </div>
-
-            <div class="pt-1 space-y-1">
-              <div class="flex items-center justify-between"><span class="text-slate-500">Input fitur</span><strong class="text-slate-700">12 variabel</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Lookback</span><strong class="text-slate-700">24 jam</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Versi model</span><strong class="text-slate-700">demo-2026.10</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Data training demo</span><strong class="text-slate-700">01-30 Sep 2026</strong></div>
-            </div>
-
-            <p class="text-xs text-slate-500">Fitur: cuaca, okupansi, daya, suhu, dan jadwal. Hasil ilustratif bukan jaminan performa model nyata.</p>
-
-            <button class="bg-blue-600 hover:bg-blue-500 text-white text-sm rounded px-4 py-2 w-full" type="button">Jalankan prediksi demo</button>
+            <strong id="pred-kwh-val" class="text-2xl font-bold text-teal-900 font-mono tracking-tight block">-- kWh</strong>
+            <p class="text-xs text-emerald-700 font-medium mt-1">Estimasi hemat vs hari kemarin</p>
           </div>
-        </aside>
-      </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Estimasi Biaya:</span>
+            <strong id="pred-cost-val" class="text-slate-800 font-bold">--</strong>
+          </div>
+        </div>
 
-      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <section class="card p-4 overflow-x-auto">
-          <p class="widget-title">Ringkasan forecast</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">Estimasi titik pada horizon terpilih</p>
-          <table class="w-full text-sm indoor-table">
-            <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Waktu WIB</th><th>Daya kW</th><th>Indoor °C</th><th>RH %</th></tr></thead>
-            <tbody class="text-slate-600">
-              <tr class="border-b border-slate-100"><td class="py-2">15:30</td><td>19,8</td><td>24,8</td><td>56</td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2">16:30</td><td>18,6</td><td>24,8</td><td>57</td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2">18:30</td><td>11,0</td><td>24,8</td><td>58</td></tr>
-              <tr><td class="py-2">20:30</td><td>6,8</td><td>25,2</td><td>59</td></tr>
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-amber-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecasted Peak Demand</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 font-mono">Peak kW</span>
+            </div>
+            <strong id="pred-peak-val" class="text-2xl font-bold text-amber-900 font-mono tracking-tight block">-- kW</strong>
+            <p id="pred-peak-time" class="text-xs text-slate-500 mt-1 font-mono">--</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Demand Status:</span>
+            <span class="text-amber-700 font-bold">Aman (&lt; 3.2 kW)</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-rose-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecasted Peak Tempak</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 font-mono">Outdoor Ta</span>
+            </div>
+            <strong id="pred-weather-temp" class="text-2xl font-bold text-rose-900 font-mono tracking-tight block">-- °C</strong>
+            <p class="text-xs text-slate-400 mt-1">Kondisi: Terik Siang (Cerah Berawan)</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Cooling Demand:</span>
+            <strong class="text-rose-700 font-bold">Tinggi (12:00–14:30)</strong>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-yellow-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Radiasi Surya Maksimum</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-50 text-yellow-800 border border-yellow-200 font-mono">Solar G</span>
+            </div>
+            <strong id="pred-weather-solar" class="text-2xl font-bold text-amber-900 font-mono tracking-tight block">-- W/m²</strong>
+            <p class="text-xs text-slate-400 mt-1">Potensi Penetrasi Cahaya Fasad</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Daylight Harvest:</span>
+            <strong class="text-emerald-700 font-bold">Sangat Menguntungkan</strong>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-teal-50/70 via-white to-blue-50/50 rounded-2xl border border-teal-200/80 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-teal-800 uppercase tracking-wider">Akurasi Model Aktif</span>
+              <span id="pred-confidence-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-900 font-mono">Confidence</span>
+            </div>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-xs font-bold text-slate-400 font-mono">R² =</span>
+              <strong id="pred-model-r2" class="text-2xl font-bold text-teal-900 font-mono tracking-tight">--</strong>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Hasil evaluasi holdout test</p>
+          </div>
+          <div class="pt-3 border-t border-teal-100 mt-3 flex items-center justify-between text-xs text-slate-600 font-mono">
+            <span>MAPE: <strong id="pred-model-mape" class="text-teal-800 font-bold">--%</strong></span>
+            <span>RMSE: <strong id="pred-model-rmse" class="text-teal-800 font-bold">-- kW</strong></span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── GRAFIK PREDIKSI BEBAN LISTRIK ── -->
+      <section aria-label="BEMS Electrical Load Forecast" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="w-3 h-3 rounded-full bg-teal-600"></span>
+              <h2 class="text-base font-bold text-slate-900">Electrical Load Forecast Profile (Forecasting 24 Jam)</h2>
+            </div>
+            <p class="text-xs text-slate-500">Total building power forecast (kW) with 95% confidence intervals.</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200">⚡ Zona Jam Puncak Beban: 11:30 – 14:30 WIB</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3.5 text-xs font-medium text-slate-500 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
+          <span class="inline-flex items-center gap-1.5 text-teal-900 font-bold"><span class="w-3 h-3 rounded-full bg-teal-700"></span>Beban Aktual Historis (kW)</span>
+          <span class="inline-flex items-center gap-1.5 font-bold" id="legend-pred-color"><span class="w-3.5 h-0.5 border-t-2 border-dashed border-sky-600"></span>Prediksi Algoritma (kW)</span>
+          <span class="inline-flex items-center gap-1.5 text-indigo-800 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>Prediksi AC Ch-1 (kW)</span>
+          <span class="inline-flex items-center gap-1.5 text-amber-800 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Prediksi Lampu Ch-3 (kW)</span>
+          <span class="inline-flex items-center gap-1.5 text-slate-400 font-mono text-[11px]"><span class="w-3 h-2 rounded bg-slate-200"></span>Pita CI</span>
+        </div>
+
+        <div class="h-[340px] sm:h-[360px] w-full pt-1">
+          <canvas id="loadForecastChart"></canvas>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3 rounded-xl bg-blue-50/50 border border-blue-200/80 flex items-center justify-between text-xs font-mono">
+            <div>
+              <span class="text-blue-900 font-sans font-bold block">Air Conditioner (Ch-1)</span>
+              <span class="text-slate-500 text-[11px]">Compressor Cooling Load</span>
+            </div>
+            <div class="text-right">
+              <strong class="text-blue-900 font-bold text-sm block">33,1 kWh</strong>
+              <span class="text-blue-700 font-bold text-[11px]">68,1% Total</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-50/50 border border-emerald-200/80 flex items-center justify-between text-xs font-mono">
+            <div>
+              <span class="text-emerald-900 font-sans font-bold block">Stop Kontak (Ch-2)</span>
+              <span class="text-slate-500 text-[11px]">PC, Server, &amp; Instrumen</span>
+            </div>
+            <div class="text-right">
+              <strong class="text-emerald-900 font-bold text-sm block">10,7 kWh</strong>
+              <span class="text-emerald-700 font-bold text-[11px]">22,0% Total</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-amber-50/50 border border-amber-200/80 flex items-center justify-between text-xs font-mono">
+            <div>
+              <span class="text-amber-900 font-sans font-bold block">Lighting (Ch-3)</span>
+              <span class="text-slate-500 text-[11px]">4 Fixture LED 70W (2-Zona)</span>
+            </div>
+            <div class="text-right">
+              <strong class="text-amber-900 font-bold text-sm block">4,8 kWh</strong>
+              <span class="text-amber-700 font-bold text-[11px]">9,9% Total</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── GRAFIK CUACA ── -->
+      <section aria-label="Prediksi Cuaca Mikroklimat Outdoor" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="w-3 h-3 rounded-full bg-rose-600"></span>
+              <h2 class="text-base font-bold text-slate-900">Prakiraan Cuaca Mikroklimat Outdoor (Stasiun Cuaca NNZN &amp; Model AI)</h2>
+            </div>
+            <p class="text-xs text-slate-500">24-hour forecast of outdoor ambient temp (°C), solar irradiance (W/m²), and humidity.</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-rose-50 text-rose-700 border border-rose-200">Sumber: NNZN Weather Station</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
+          <span class="inline-flex items-center gap-1.5 text-rose-800 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span>Suhu Luar (°C) — Sumbu Kiri</span>
+          <span class="inline-flex items-center gap-1.5 text-amber-800 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Radiasi Matahari (W/m²) — Sumbu Kanan</span>
+          <span class="inline-flex items-center gap-1.5 text-sky-800 font-semibold"><span class="w-3.5 h-0.5 border-t-2 border-dashed border-sky-600"></span>Kelembapan Relatif (% RH)</span>
+        </div>
+        <div class="h-[320px] w-full pt-1">
+          <canvas id="weatherForecastChart"></canvas>
+        </div>
+      </section>
+
+      <!-- ── TABEL PREDIKSI ── -->
+      <section aria-label="Tabel Prakiraan Jam demi Jam" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Rangkuman Horison Prediksi Jam-demi-Jam &amp; Panduan Tindakan Otomasi</h2>
+            <p class="text-xs text-slate-500">Direct correlation between outdoor weather forecast and cooling load demand.</p>
+          </div>
+          <span class="text-xs font-mono text-slate-500">Interval Sampel: <strong class="text-slate-800">Per 3 Jam</strong></span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                <th class="py-2.5 px-3">Waktu Horison</th>
+                <th class="py-2.5 px-3">Forecasted Total Load</th>
+                <th class="py-2.5 px-3">HVAC Load</th>
+                <th class="py-2.5 px-3">Lighting Load</th>
+                <th class="py-2.5 px-3">Prakiraan Cuaca</th>
+                <th class="py-2.5 px-3">Radiasi Surya</th>
+                <th class="py-2.5 px-3">RH Luar</th>
+                <th class="py-2.5 px-3">Rekomendasi Tindakan BEMS</th>
+              </tr>
+            </thead>
+            <tbody id="forecast-table-tbody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
             </tbody>
           </table>
-        </section>
+        </div>
+      </section>
 
-        <section class="card p-4 overflow-x-auto">
-          <p class="widget-title">Performa model</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">Holdout demo: 27 Sep-03 Okt 2026</p>
-          <table class="w-full text-sm indoor-table">
-            <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Model / target</th><th>MAE</th><th>RMSE</th><th>MAPE</th></tr></thead>
-            <tbody class="text-slate-600">
-              <tr class="border-b border-slate-100"><td class="py-2">LSTM v2 / kW</td><td>0,84 kW</td><td>1,12 kW</td><td>6,2%</td></tr>
-              <tr class="border-b border-slate-100"><td class="py-2">XGBoost / °C</td><td>0,21 °C</td><td>0,29 °C</td><td>0,9%</td></tr>
-              <tr><td class="py-2">Baseline / kW</td><td>1,56 kW</td><td>2,04 kW</td><td>11,4%</td></tr>
-            </tbody>
-          </table>
-        </section>
-      </div>
+      <!-- ── BENCHMARK 6 ALGORITMA ── -->
+      <section aria-label="Benchmark dan Insight" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
-        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
-        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
-      </div>
+        <!-- Insight Prescriptive -->
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3.5">
+          <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
+            <svg class="w-4 h-4 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <h3 class="text-sm font-bold text-slate-900">Rekomendasi Preventif BEMS Berdasarkan Prediksi AI</h3>
+          </div>
+          <div class="space-y-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80 space-y-1">
+              <strong class="text-amber-950 font-bold flex items-center gap-1.5"><span>⚡</span> Peluang Peak Shaving Pukul 12:45 – 13:45 WIB</strong>
+              <p class="text-amber-900/90 leading-relaxed">The model predicts an afternoon peak demand surge driven by exterior heat gain."font-mono">2,68 kW</strong> pada 13:15 WIB akibat kombinasi radiasi matahari 885 W/m² dan tarikan kompresor AC. BEMS disarankan menaikkan setpoint AC sebesar <strong class="font-mono">+0,5 °C</strong> secara preventif pada 12:45 WIB untuk meratakan kurva tarikan daya PLN (menghemat hingga 18% beban puncak).</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-teal-50/70 border border-teal-200/80 space-y-1">
+              <strong class="text-teal-950 font-bold flex items-center gap-1.5"><span>☀️</span> Pemanfaatan Maksimal Daylight Harvesting (11:00 – 14:00 WIB)</strong>
+              <p class="text-teal-900/90 leading-relaxed">Western daylight harvesting penetration is projected to increase, enabling fixture dimming.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200/80 space-y-1">
+              <strong class="text-blue-950 font-bold flex items-center gap-1.5"><span>❄️</span> Rekomendasi Pre-Cooling Pagi Hari (07:15 – 07:45 WIB)</strong>
+              <p class="text-blue-900/90 leading-relaxed">Morning ambient temperatures are forecasted to remain cool, enabling natural pre-cooling.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benchmark Tabel 6 Algoritma -->
+        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3.5">
+          <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+            <h3 class="text-sm font-bold text-slate-900">Perbandingan Kinerja 6 Algoritma (Holdout Test)</h3>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 font-mono">Benchmark</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border-collapse font-mono">
+              <thead>
+                <tr class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                  <th class="py-2 px-2.5">Algoritma</th>
+                  <th class="py-2 px-2.5">Tipe</th>
+                  <th class="py-2 px-2.5">R²</th>
+                  <th class="py-2 px-2.5">MAPE</th>
+                  <th class="py-2 px-2.5">RMSE</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700" id="benchmark-table-body">
+                <!-- Populated by JS below -->
+              </tbody>
+            </table>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-[11px] text-slate-500 leading-relaxed">
+            Klik tombol algoritma di atas untuk mengganti model yang aktif dan melihat perubahan grafik secara langsung.
+          </div>
+        </div>
+
+      </section>
+
+      <footer class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/70 px-1 mt-6">
+        <div>
+          <p class="font-medium text-slate-600">BEMS Living Lab · Departemen Teknik Elektro FT UNS</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Intelligent Electrical Load & Weather Forecasting System — BEMS Living Lab</p>
+        </div>
+        <p class="font-mono text-right text-[11px]">Stasiun Cuaca: <span class="font-semibold text-slate-600">NNZN RS485</span> · Data: <span class="font-semibold text-slate-600">90 Hari IoT Lab</span></p>
+      </footer>
 
     </main>
   </div>
 </div>
+
+<!-- Scripts -->
 <script src="assets/js/config/app-config.js"></script>
 <script src="assets/js/core/session.js"></script>
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
 <script src="assets/js/components/layout.js"></script>
+<script src="assets/js/core/mqtt-client.js"></script>
+<script src="assets/js/services/prediction-service.js"></script>
 <script src="assets/js/pages/page-init.js"></script>
-<script>renderSidebar("prediction"); renderTopbar("Prediction", "Model forecasting"); initPageData("prediction");</script>
+
+<script>
+  renderSidebar("prediction");
+  renderTopbar("Prediction", "AI Weather & Electrical Load Forecasting");
+
+  // Render tabel benchmark dari definisi algoritma setelah service dimuat
+  function renderBenchmarkTable() {
+    const algos = window.PredictionService.getAlgorithms();
+    const tbody = document.getElementById("benchmark-table-body");
+    if (!tbody || !algos) return;
+    const order = ["lstm", "cnn", "xgboost", "random_forest", "sarima", "seasonal_naive"];
+    tbody.innerHTML = order.map(id => {
+      const a = algos[id];
+      const isActive = id === "lstm";
+      return `
+        <tr class="benchmark-row hover:bg-slate-50 cursor-pointer transition-colors" data-algo="${a.id}"
+            onclick="window.PredictionService.selectAlgorithm('${a.id}')">
+          <td class="py-2 px-2.5 font-sans font-bold">${a.label}</td>
+          <td class="py-2 px-2.5">
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold border ${a.badge}">${a.type}</span>
+          </td>
+          <td class="py-2 px-2.5" style="color:${a.color}">${a.r2.toFixed(3)}</td>
+          <td class="py-2 px-2.5">${a.mape.toFixed(1)}%</td>
+          <td class="py-2 px-2.5">${a.rmse.toFixed(2)} kW</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.PredictionService && typeof window.PredictionService.start === "function") {
+      window.PredictionService.start();
+      renderBenchmarkTable();
+    }
+  });
+</script>
 </body>
 </html>

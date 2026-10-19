@@ -1,166 +1,419 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Thermal & MRT Evaluation — BEMS Living Lab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <title>Thermal Comfort & MRT Evaluation — BEMS Living Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body class="app-body">
-<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="app-layout flex">
   <div id="sidebar-root"></div>
   <div class="app-content flex-1 min-w-0">
     <div id="topbar-root"></div>
     <main id="main-content" class="app-main p-6 space-y-6">
+
+      <!-- ── Page Header & Executive Strategy Bar ── -->
       <section class="page-head">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 class="page-title">Thermal Comfort & MRT Evaluation</h2>
-            <p class="page-subtitle">Evaluasi kenyamanan termal dengan PMV, PPD, dan mean radiant temperature (MRT).</p>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wider font-mono">Thermodynamic Standards</span>
+              <span class="text-slate-400 text-xs">·</span>
+              <span class="text-xs text-slate-500 font-medium">Standar Evaluasi Termal ISO 7730:2005, ISO 7726 &amp; ASHRAE 55-2023</span>
+            </div>
+            <h1 class="page-title text-2xl font-bold text-slate-900 tracking-tight">Thermal Comfort &amp; MRT Evaluation</h1>
+            <p class="page-subtitle text-sm text-slate-500 mt-1">Evaluasi kenyamanan termal komprehensif berbasis model Fanger (PMV/PPD), estimasi Mean Radiant Temperature (MRT) dari sensor bola radiasi (globe thermometer), suhu operatif (Top), dan pemetaan 6 titik node SHT31.</p>
           </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor laporan</button>
+
+          <!-- Aksi Ekspor Laporan & Status Kepatuhan -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono inline-flex items-center gap-1.5 shadow-2xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ISO 7730: Memenuhi Kategori I (Kelas A)
+            </span>
+            <button id="btn-export-thermal" class="px-3.5 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-all">
+              <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Export Thermal Report
+            </button>
+          </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
-            <button class="indoor-chip">Hari ini</button>
-            <button class="indoor-chip">Semua ruang</button>
+        <div class="mt-4 pt-3 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-mono">
+          <div>
+            <span>Model: <strong class="text-slate-800">Fanger Heat Balance (ISO 7730)</strong></span>
+            <span class="mx-2">·</span>
+            <span>Sensor Radiasi: <strong class="text-slate-800">Globe Thermometer D=0.15m (ε=0.95)</strong></span>
           </div>
-          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
+          <div>
+            <span>Target Nyaman: <strong class="text-teal-700 font-bold">-0.5 &le; PMV &le; +0.5 &middot; PPD &lt; 10%</strong></span>
+          </div>
         </div>
       </section>
 
-      <div id="kpi-thermal-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+      <!-- ── 5 Executive KPI Cards ── -->
+      <section aria-label="Thermal Comfort KPIs" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
 
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div class="xl:col-span-2 space-y-4">
-          <section class="card p-4">
-            <div class="flex items-start justify-between gap-2 mb-2">
-              <div>
-                <p class="widget-title">Posisi kenyamanan termal</p>
-                <p class="text-sm text-slate-500 mt-1">PMV +0,18 · sensasi rata-rata mendekati netral</p>
-              </div>
-              <span class="demo-badge" style="background:#e8f7f3;color:#1b8a6e;border-color:#cfeee4;">Dalam target</span>
+        <!-- Card 1: PMV (Predicted Mean Vote) -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Indeks Fanger PMV</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono">Sensasi</span>
             </div>
-
-            <div class="thermal-scale" role="img" aria-label="Skala PMV dari -3 hingga +3 dengan target -0,5 sampai +0,5">
-              <div>-3</div><div>-2</div><div>-1</div><div>0</div><div>1</div><div>2</div><div>3</div>
-              <i aria-hidden="true"></i>
-            </div>
-            <div class="flex items-center justify-between text-xs mt-2">
-              <span class="text-blue-500">Dingin</span>
-              <span class="text-teal-600">Target −0,5 ≤ PMV ≤ +0,5</span>
-              <span class="text-amber-600">Panas</span>
-            </div>
-
-            <div class="rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 mt-3">
-              <p class="text-sm font-semibold text-teal-700">Interpretasi: sensasi termal netral</p>
-              <p class="text-xs text-teal-700 mt-1">Hasil model tidak menggantikan feedback penghuni. Evaluasi rata-rata dapat menyembunyikan variasi di dalam ruang.</p>
-            </div>
-          </section>
-
-          <section class="card p-4">
-            <p class="widget-title">Hubungan PMV & PPD</p>
-            <p class="text-sm text-slate-500 mt-1 mb-3">Kurva teoritis Fanger · minimum PPD sekitar 5% pada PMV 0</p>
-            <div class="h-[220px] rounded-lg border border-slate-100 bg-white p-3">
-              <div class="text-xs text-teal-600 mb-2">Predicted percentage dissatisfied</div>
-              <svg viewBox="0 0 700 170" class="w-full h-[170px]" role="img" aria-label="Grafik hubungan PMV dan PPD">
-                <rect x="0" y="0" width="700" height="170" fill="#f9fcfd"/>
-                <line x1="40" y1="140" x2="680" y2="140" stroke="#e6eef3"/>
-                <line x1="40" y1="105" x2="680" y2="105" stroke="#e6eef3"/>
-                <line x1="40" y1="70" x2="680" y2="70" stroke="#e6eef3"/>
-                <line x1="40" y1="35" x2="680" y2="35" stroke="#e6eef3"/>
-                <polygon points="40,35 120,48 200,78 280,118 360,140 440,118 520,78 600,48 680,35 680,140 40,140" fill="#deefeb"/>
-                <polyline fill="none" stroke="#188b86" stroke-width="3" points="40,35 120,48 200,78 280,118 360,140 440,118 520,78 600,48 680,35"/>
-              </svg>
-            </div>
-          </section>
+            <strong id="kpi-thermal-pmv" class="text-2xl font-bold text-teal-900 font-mono tracking-tight block">+0.14</strong>
+            <p id="thermal-sensation-label" class="text-xs text-emerald-700 font-medium mt-1">Sensasi: Netral Nyaman (0)</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Ambang Ideal:</span>
+            <strong class="text-slate-800 font-bold">-0.5 s/d +0.5</strong>
+          </div>
         </div>
 
-        <div class="space-y-4">
-          <section class="card p-4">
-            <p class="widget-title">Input evaluasi</p>
-            <p class="text-sm text-slate-500 mt-1 mb-3">Rata-rata ruang · snapshot 14:30 WIB</p>
-
-            <div class="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <label for="thermal-ta" class="text-xs text-slate-500 block mb-1">Suhu udara</label>
-                <input id="thermal-ta" value="24,6 °C" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="thermal-mrt" class="text-xs text-slate-500 block mb-1">MRT</label>
-                <input id="thermal-mrt" value="25,1 °C" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="thermal-rh" class="text-xs text-slate-500 block mb-1">RH</label>
-                <input id="thermal-rh" value="56 %" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="thermal-va" class="text-xs text-slate-500 block mb-1">Air velocity</label>
-                <input id="thermal-va" value="0,12 m/s" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="thermal-met" class="text-xs text-slate-500 block mb-1">Metabolic rate</label>
-                <input id="thermal-met" value="1,1 met" class="w-full tone-select py-2" />
-              </div>
-              <div>
-                <label for="thermal-clo" class="text-xs text-slate-500 block mb-1">Clothing</label>
-                <input id="thermal-clo" value="0,6 clo" class="w-full tone-select py-2" />
-              </div>
+        <!-- Card 2: PPD (Predicted Percentage of Dissatisfied) -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-blue-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Prediksi Ketidakpuasan PPD</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono">&lt; 10% Ideal</span>
             </div>
-
-            <p class="text-xs text-slate-500 mt-3">Asumsi: aktivitas duduk / kerja ringan, pakaian kantor. Nilai met dan clo merupakan asumsi demo.</p>
-          </section>
-
-          <section class="card p-4">
-            <p class="widget-title">Metode MRT</p>
-            <p class="text-sm text-slate-500 mt-1 mb-3">Estimasi dari globe temperature</p>
-
-            <div class="space-y-1 text-sm">
-              <div class="flex items-center justify-between"><span class="text-slate-500">Diameter globe</span><strong class="text-slate-700">0,15 m</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Emisivitas</span><strong class="text-slate-700">0,95</strong></div>
-              <div class="flex items-center justify-between"><span class="text-slate-500">Referensi evaluasi</span><strong class="text-slate-700">ISO 7730 · demo</strong></div>
-            </div>
-
-            <p class="text-xs text-slate-500 mt-3">MRT memperhitungkan pengaruh radiasi permukaan, bukan hanya suhu udara.</p>
-          </section>
+            <strong id="kpi-thermal-ppd" class="text-2xl font-bold text-blue-900 font-mono tracking-tight block">5.4 %</strong>
+            <p class="text-xs text-slate-500 mt-1">Minimum teoritis Fanger adalah 5.0%</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Tingkat Kepuasan:</span>
+            <strong class="text-emerald-700 font-bold">94.6% Penghuni Puas</strong>
+          </div>
         </div>
-      </div>
 
-      <section class="card p-4 overflow-x-auto">
-        <p class="widget-title">Evaluasi per ruang</p>
-        <p class="text-sm text-slate-500 mt-1 mb-3">Input model demo · target |PMV| ≤ 0,5 dan PPD &lt; 10%</p>
-        <table class="w-full text-sm indoor-table">
-          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Ruang</th><th>Suhu °C</th><th>MRT °C</th><th>PMV</th><th>PPD %</th><th>Evaluasi</th><th>Kualitas data</th></tr></thead>
-          <tbody class="text-slate-600">
-            <tr class="border-b border-slate-100"><td class="py-2">Lab A</td><td>24,4</td><td>24,9</td><td>+0,10</td><td>5,2</td><td>Netral</td><td>Valid · 14:30</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">Lab B</td><td>25,1</td><td>25,7</td><td>+0,47</td><td>9,6</td><td>Agak hangat</td><td>Valid · 14:30</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">Ruang Rapat</td><td>24,3</td><td>24,6</td><td>−0,04</td><td>5,0</td><td>Netral</td><td>Valid · 14:30</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">Studio</td><td>24,7</td><td>25,3</td><td>+0,23</td><td>6,1</td><td>Netral</td><td>Valid · 14:30</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">Office</td><td>24,5</td><td>24,9</td><td>+0,08</td><td>5,1</td><td>Netral</td><td>Valid · 14:30</td></tr>
-            <tr><td class="py-2">Lounge</td><td>24,6</td><td>25,2</td><td>+0,26</td><td>6,4</td><td>Netral</td><td>Terlambat · 14:00</td></tr>
-          </tbody>
-        </table>
+        <!-- Card 3: Mean Radiant Temperature (MRT) -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-amber-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Radiant Temp (MRT - Tr)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 font-mono">ISO 7726</span>
+            </div>
+            <strong id="kpi-thermal-mrt" class="text-2xl font-bold text-amber-900 font-mono tracking-tight block">25.1 °C</strong>
+            <p id="thermal-delta-tr" class="text-xs text-slate-500 mt-1 font-mono">Δ(Tr - Ta): +0.90 °C</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Radiasi Dinding:</span>
+            <strong class="text-slate-800 font-bold">Asimetri Rendah (&lt;3°C)</strong>
+          </div>
+        </div>
+
+        <!-- Card 4: Operative Temperature (Top) -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-indigo-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Operative Temp (Top)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono">Ta &amp; Tr Blend</span>
+            </div>
+            <strong id="kpi-thermal-top" class="text-2xl font-bold text-indigo-900 font-mono tracking-tight block">24.65 °C</strong>
+            <p class="text-xs text-slate-500 mt-1">Bobot gabungan konveksi &amp; radiasi</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Rentang ASHRAE:</span>
+            <strong class="text-slate-800 font-bold">23.0 - 26.0 °C</strong>
+          </div>
+        </div>
+
+        <!-- Card 5: Kategori ISO 7730 / EN 16798-1 -->
+        <div class="bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/50 rounded-2xl border border-emerald-200/80 shadow-sm p-4 hover:border-emerald-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-emerald-800 uppercase tracking-wider">Kategori EN 16798-1</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 font-mono">Kelas Mutu</span>
+            </div>
+            <strong id="kpi-thermal-cat" class="text-xl font-bold text-emerald-900 font-mono tracking-tight block">Kategori I (Kelas A)</strong>
+            <p class="text-xs text-slate-500 mt-1">Highest Comfort Standard</p>
+          </div>
+          <div class="pt-3 border-t border-emerald-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Kepatuhan:</span>
+            <span id="kpi-thermal-cat-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">ISO 7730 Compliant</span>
+          </div>
+        </div>
+
       </section>
 
-      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
-        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
-        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
+      <!-- ── Visual PMV Scale Needle Continuum Gauge ── -->
+      <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span>Posisi Sensasi Termal Pada Skala Fanger PMV (-3 s/d +3)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 font-mono">Continuum Gauge</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">Penghuni merasakan netralitas termal jika jarum indikator berada di dalam zona hijau toska (-0.5 &le; PMV &le; +0.5).</p>
+          </div>
+          <div class="flex items-center gap-3 text-xs font-mono">
+            <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Dingin (-3)</span>
+            <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Zona Nyaman (0)</span>
+            <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span> Panas (+3)</span>
+          </div>
+        </div>
+
+        <!-- Scale Bar with Needle -->
+        <div class="relative pt-6 pb-2">
+          <!-- Jarum Penunjuk Indikator -->
+          <div id="pmv-gauge-needle" class="absolute top-0 -translate-x-1/2 transition-all duration-300 z-10 flex flex-col items-center pointer-events-none" style="left: 52.3%;">
+            <div class="px-2 py-0.5 bg-slate-900 text-white rounded text-[11px] font-mono font-bold shadow-md whitespace-nowrap">
+              PMV <span id="needle-val">+0.14</span>
+            </div>
+            <div class="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-slate-900"></div>
+          </div>
+
+          <!-- Batang Gradien Skala -->
+          <div class="h-6 rounded-xl overflow-hidden relative shadow-inner flex" style="background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 25%, #10b981 40%, #14b8a6 50%, #10b981 60%, #f59e0b 75%, #ef4444 100%);">
+            <!-- Shaded Safe Comfort Zone Overlay Outline -->
+            <div class="absolute inset-y-0 left-[41.66%] right-[41.66%] border-2 border-white/80 rounded-sm bg-white/10" title="Zona Nyaman Target: -0.5 s/d +0.5"></div>
+          </div>
+
+          <!-- Ticks & Labels -->
+          <div class="flex justify-between text-xs font-mono text-slate-500 mt-2 px-1">
+            <div class="text-left"><strong class="text-blue-700">-3</strong><br><span class="text-[10px] text-slate-400">Dingin</span></div>
+            <div class="text-center"><strong class="text-cyan-700">-2</strong><br><span class="text-[10px] text-slate-400">Sejuk</span></div>
+            <div class="text-center"><strong class="text-teal-700">-1</strong><br><span class="text-[10px] text-slate-400">Agak Sejuk</span></div>
+            <div class="text-center"><strong class="text-emerald-700 font-bold">0</strong><br><span class="text-[10px] text-emerald-700 font-bold">Neutral</span></div>
+            <div class="text-center"><strong class="text-amber-700">+1</strong><br><span class="text-[10px] text-slate-400">Agak Hangat</span></div>
+            <div class="text-center"><strong class="text-orange-700">+2</strong><br><span class="text-[10px] text-slate-400">Hangat</span></div>
+            <div class="text-right"><strong class="text-rose-700">+3</strong><br><span class="text-[10px] text-slate-400">Panas</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 2 Chart.js Master Widgets ── -->
+      <section class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+        <!-- Chart 1: Kurva Teoritis Fanger PMV vs PPD -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Kurva Teoritis Fanger PMV vs PPD (ISO 7730)</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Hubungan nonlinear antara sensasi termal (PMV) dan persentase ketidakpuasan penghuni (PPD).</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono">Bathtub Curve</span>
+          </div>
+
+          <div class="h-[300px] w-full mt-3">
+            <canvas id="chart-fanger-curve"></canvas>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Titik Minimum: <strong class="text-slate-800">PPD 5.0% pada PMV 0.0</strong></span>
+            <span>Titik Operasi Aktif: <strong class="text-teal-700">PPD 5.4% (PMV +0.14)</strong></span>
+          </div>
+        </div>
+
+        <!-- Chart 2: Perbandingan Suhu & PMV Multi-Zona (6 Node SHT31) -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Evaluasi Termal Multi-Zona (6 Titik Node SHT31)</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Distribusi suhu udara (Ta), radiasi (Tr), suhu operatif (Top), dan indeks PMV di seluruh area lab.</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono">Spatial Radar/Bar</span>
+          </div>
+
+          <div class="h-[300px] w-full mt-3">
+            <canvas id="chart-thermal-multizone"></canvas>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Variasi Top Antar-Zona: <strong class="text-slate-800">&plusmn;0.8 °C (Sangat Seragam)</strong></span>
+            <span>Warmest Node: <strong class="text-amber-700">Node G (Server Area)</strong></span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── Interactive Environmental Parameter Calculator ── -->
+      <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Kalkulator Termal Interaktif Model Fanger (ISO 7730)
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">Ubah parameter lingkungan di bawah untuk melihat kalkulasi ulang PMV, PPD, dan titik kerja pada grafik kurva secara langsung.</p>
+          </div>
+
+          <button id="btn-calc-reset" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold font-mono transition-all">
+            Reset ke Baseline Lab
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+          <!-- Input 1: Suhu Udara (Ta) -->
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80">
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="calc-ta" class="text-xs font-bold text-slate-700">Air Temperature (Ta)</label>
+              <span class="text-xs font-mono font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                <span id="calc-ta-val">24.2</span> °C
+              </span>
+            </div>
+            <input type="range" id="calc-ta" min="18.0" max="32.0" step="0.1" value="24.2" class="w-full accent-teal-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+              <span>18.0 °C</span>
+              <span>24.0 °C</span>
+              <span>32.0 °C</span>
+            </div>
+          </div>
+
+          <!-- Input 2: Suhu Globe (Tg) -->
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80">
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="calc-tg" class="text-xs font-bold text-slate-700">Globe Temperature (Tg / Tr)</label>
+              <span class="text-xs font-mono font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                <span id="calc-tg-val">24.9</span> °C
+              </span>
+            </div>
+            <input type="range" id="calc-tg" min="18.0" max="35.0" step="0.1" value="24.9" class="w-full accent-amber-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+              <span>18.0 °C</span>
+              <span>25.0 °C</span>
+              <span>35.0 °C</span>
+            </div>
+          </div>
+
+          <!-- Input 3: Kelembapan Relatif (RH) -->
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80">
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="calc-rh" class="text-xs font-bold text-slate-700">Relative Humidity (RH)</label>
+              <span class="text-xs font-mono font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                <span id="calc-rh-val">58</span> %
+              </span>
+            </div>
+            <input type="range" id="calc-rh" min="20" max="90" step="1" value="58" class="w-full accent-blue-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+              <span>20 %</span>
+              <span>55 %</span>
+              <span>90 %</span>
+            </div>
+          </div>
+
+          <!-- Input 4: Kecepatan Udara (Vel) -->
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80">
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="calc-vel" class="text-xs font-bold text-slate-700">Kecepatan Udara (va)</label>
+              <span class="text-xs font-mono font-bold text-cyan-800 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">
+                <span id="calc-vel-val">0.12</span> m/s
+              </span>
+            </div>
+            <input type="range" id="calc-vel" min="0.05" max="1.00" step="0.01" value="0.12" class="w-full accent-cyan-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+              <span>0.05 m/s</span>
+              <span>0.15 m/s</span>
+              <span>1.00 m/s</span>
+            </div>
+          </div>
+
+          <!-- Input 5: Metabolic Rate (Met) Preset -->
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80">
+            <label for="calc-met-select" class="text-xs font-bold text-slate-700 block mb-1.5">Laju Metabolik Penghuni (M)</label>
+            <select id="calc-met-select" class="w-full text-xs font-mono bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-teal-500">
+              <option value="0.8">0.8 met — Berbaring / Istirahat Total</option>
+              <option value="1.0">1.0 met — Duduk Santai Membaca</option>
+              <option value="1.1" selected>1.1 met — Bekerja di Meja / Mengetik (Standar Lab)</option>
+              <option value="1.2">1.2 met — Diskusi &amp; Rapat Ringan</option>
+              <option value="1.4">1.4 met — Berdiri / Presentasi</option>
+              <option value="1.8">1.8 met — Berjalan Lambat / Merakit Alat</option>
+            </select>
+            <p class="text-[10px] text-slate-400 mt-1.5">1.0 met = 58.15 W/m² luas permukaan tubuh</p>
+          </div>
+
+          <!-- Input 6: Clothing Insulation (Clo) Preset -->
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80">
+            <label for="calc-clo-select" class="text-xs font-bold text-slate-700 block mb-1.5">Isolasi Busana / Pakaian (Icl)</label>
+            <select id="calc-clo-select" class="w-full text-xs font-mono bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-teal-500">
+              <option value="0.35">0.35 clo — Kaos Pendek &amp; Celana Pendek (Santai)</option>
+              <option value="0.50" selected>0.50 clo — Kemeja Lengan Pendek / Lab Tropis</option>
+              <option value="0.65">0.65 clo — Kemeja Lengan Panjang &amp; Celana Panjang</option>
+              <option value="1.00">1.00 clo — Jas Formal Lengkap / Blazer Kantor</option>
+              <option value="1.20">1.20 clo — Warm Jacket / Rainwear</option>
+            </select>
+            <p class="text-[10px] text-slate-400 mt-1.5">1.0 clo = 0.155 m²·K/W resistansi insulasi</p>
+          </div>
+
+          <!-- Info Box: Standard Constants -->
+          <div class="sm:col-span-2 bg-gradient-to-br from-teal-50/60 to-slate-50 p-3.5 rounded-xl border border-teal-200/70 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-teal-900 block mb-1">Instrumen Fisik BEMS Living Lab</span>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                MRT dihitung via ISO 7726 menggunakan <strong>Black Globe Thermometer</strong> berdiameter <span class="font-mono font-semibold">150 mm</span> dengan nilai emisivitas permukaan <span class="font-mono font-semibold">ε = 0.95</span>. Model menggabungkan konveksi paksa dan alami secara simultan.
+              </p>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-mono text-teal-800 pt-2 border-t border-teal-100 mt-2">
+              <span>Globe: <strong>D = 0.15 m</strong></span>
+              <span>Emisivitas: <strong>0.95</strong></span>
+              <span>Koefisien Konveksi: <strong>hc max(free, forced)</strong></span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Multi-Zone Sensor Physical Nodes Table ── -->
+      <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Data Evaluasi Termal 6 Node Sensor Fisik SHT31 Living Lab</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Pemantauan distribusi spasial suhu udara, radiasi, dan kepatuhan standar kenyamanan ISO 7730 per workstation.</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-100 text-slate-700">
+            Interval Update: 10 Detik
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase font-mono">
+              <tr>
+                <th class="py-3 px-4">Workstation / Node ID</th>
+                <th class="py-3 px-4">Air Temp (Ta)</th>
+                <th class="py-3 px-4">Radiant Temp (Tr)</th>
+                <th class="py-3 px-4">Operative (Top)</th>
+                <th class="py-3 px-4">Fanger PMV</th>
+                <th class="py-3 px-4">PPD %</th>
+                <th class="py-3 px-4">Kategori ISO</th>
+                <th class="py-3 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody id="thermal-zone-tbody" class="divide-y divide-slate-100">
+              <!-- Populated dynamically by ThermalService -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 bg-slate-50/50 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-mono">
+          <span>*Catatan: Nilai PMV dihitung menggunakan parameter personal lab: 1.1 met dan 0.50 clo.</span>
+          <span>Standar: ISO 7730 / ASHRAE 55-2023</span>
+        </div>
+      </section>
+
+      <!-- ── Global Page Footer ── -->
+      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1 pt-2">
+        <p>BEMS / Living Lab · Gedung Smart Office &amp; IoT Laboratory</p>
+        <p class="font-mono">Live Telemetry &amp; Mathematical Engine Active · ISO 7730 Compliant</p>
       </div>
 
     </main>
   </div>
 </div>
+
 <script src="assets/js/config/app-config.js"></script>
 <script src="assets/js/core/session.js"></script>
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
 <script src="assets/js/components/layout.js"></script>
-<script src="assets/js/pages/page-init.js"></script>
-<script>renderSidebar("thermal-evaluation"); renderTopbar("Thermal evaluation", "PMV / MRT"); initPageData("thermal-evaluation");</script>
+<script src="assets/js/services/thermal-service.js"></script>
+<script>
+  renderSidebar("thermal-evaluation");
+  renderTopbar("Thermal & MRT Evaluation", "ISO 7730 / ASHRAE 55");
+</script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Login — BEMS Living Lab</title>
+<title>Sign In — BEMS Living Lab</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="assets/css/style.css" />
@@ -23,19 +23,19 @@
       <div class="login-panel-inner">
         <p class="login-overline">Authorized Access</p>
         <h1 class="login-title">Welcome to BEMS+</h1>
-        <p class="login-subtitle">We, the smart energy innovator for operational monitoring.</p>
+        <p class="login-subtitle">Smart energy and environmental monitoring platform.</p>
 
         <form id="login-form" class="login-form-stack">
           <div>
             <label class="login-label" for="login-user">Username</label>
-            <input id="login-user" type="text" class="login-input login-input-dark" placeholder="Masukkan username" autocomplete="username" required />
+            <input id="login-user" type="text" class="login-input login-input-dark" placeholder="Enter username" autocomplete="username" required />
           </div>
 
           <div>
             <label class="login-label" for="login-pass">Password</label>
             <div class="relative">
-              <input id="login-pass" type="password" class="login-input login-input-dark pr-20" placeholder="Masukkan password" autocomplete="current-password" required />
-              <button id="toggle-pass" type="button" class="login-pass-toggle">Lihat</button>
+              <input id="login-pass" type="password" class="login-input login-input-dark pr-20" placeholder="Enter password" autocomplete="current-password" required />
+              <button id="toggle-pass" type="button" class="login-pass-toggle">Show</button>
             </div>
           </div>
 
@@ -46,9 +46,9 @@
 
           <label class="login-check login-check-soft"><input type="checkbox" checked /> I have read and agreed to the Service Agreement</label>
 
-          <p id="login-error" class="text-xs text-red-300 hidden">Username atau password tidak valid.</p>
+          <p id="login-error" class="text-xs text-red-300 hidden">Invalid username or password.</p>
 
-          <button id="login-submit" type="submit" class="login-submit">Login</button>
+          <button id="login-submit" type="submit" class="login-submit">Sign In</button>
         </form>
 
         <div class="login-panel-foot">

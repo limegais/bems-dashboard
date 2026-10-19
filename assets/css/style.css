@@ -2,57 +2,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-main: #f3f6f8;
+  --bg-main: #f8fafc;
   --bg-main-top: #f8fafc;
-  --bg-main-bottom: #eef3f6;
+  --bg-main-bottom: #f1f5f9;
   --bg-surface: #ffffff;
-  --bg-soft: #ecf2f5;
-  --text-strong: #22343d;
-  --text-body: #3f5560;
-  --text-soft: #6d8292;
-  --border-soft: #d6e0e6;
-  --border-strong: #ccd8df;
-  --accent: #1c8f8e;
-  --accent-soft: #e5f4f3;
+  --bg-soft: #f8fafc;
+  --text-strong: #0f172a;
+  --text-body: #334155;
+  --text-soft: #64748b;
+  --border-soft: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --accent: #0d9488;
+  --accent-soft: #ccfbf1;
   --field-bg: #ffffff;
-  --ring: rgba(28, 143, 142, 0.22);
-  --card-shadow: 0 4px 14px rgba(20, 41, 56, 0.04);
+  --ring: rgba(13, 148, 136, 0.22);
+  --card-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 6px 18px -4px rgba(15, 23, 42, 0.06);
 }
 
-body[data-tone="neutral"] {
-  --bg-main: #f3f6f8;
-  --bg-main-top: #f8fafc;
-  --bg-main-bottom: #eef3f6;
-  --bg-surface: #ffffff;
-  --bg-soft: #ecf2f5;
-  --text-strong: #22343d;
-  --text-body: #3f5560;
-  --text-soft: #6d8292;
-  --border-soft: #d6e0e6;
-  --border-strong: #ccd8df;
-  --accent: #1c8f8e;
-  --accent-soft: #e5f4f3;
-  --field-bg: #ffffff;
-  --ring: rgba(28, 143, 142, 0.22);
-  --card-shadow: 0 4px 14px rgba(20, 41, 56, 0.04);
-}
-
+body[data-tone="neutral"],
 body[data-tone="corporate"] {
-  --bg-main: #f2f6f8;
-  --bg-main-top: #f8fbfd;
-  --bg-main-bottom: #edf2f5;
+  --bg-main: #f8fafc;
+  --bg-main-top: #f8fafc;
+  --bg-main-bottom: #f1f5f9;
   --bg-surface: #ffffff;
-  --bg-soft: #e8f0f2;
-  --text-strong: #1e3038;
-  --text-body: #3b5461;
-  --text-soft: #69818f;
-  --border-soft: #d0dde4;
-  --border-strong: #c6d5dd;
-  --accent: #167f84;
-  --accent-soft: #def1f1;
+  --bg-soft: #f8fafc;
+  --text-strong: #0f172a;
+  --text-body: #334155;
+  --text-soft: #64748b;
+  --border-soft: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --accent: #0d9488;
+  --accent-soft: #ccfbf1;
   --field-bg: #ffffff;
-  --ring: rgba(22, 127, 132, 0.24);
-  --card-shadow: 0 4px 16px rgba(20, 41, 56, 0.05);
+  --ring: rgba(13, 148, 136, 0.22);
+  --card-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 6px 18px -4px rgba(15, 23, 42, 0.06);
 }
 
 body[data-theme="dark"] {
@@ -74,7 +57,7 @@ body[data-theme="dark"] {
 }
 
 body {
-  background: linear-gradient(180deg, var(--bg-main-top) 0%, var(--bg-main-bottom) 100%);
+  background: #f8fafc;
   color: var(--text-body);
   font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
   line-height: 1.5;
@@ -85,8 +68,8 @@ h2,
 h3,
 h4 {
   font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
-  color: #243640;
-  letter-spacing: -0.01em;
+  color: #0f172a;
+  letter-spacing: -0.015em;
 }
 
 .page-head {
@@ -96,23 +79,131 @@ h4 {
 }
 
 .page-title {
-  font-size: 3rem;
-  line-height: 1;
+  font-size: 1.65rem;
+  line-height: 1.2;
   font-weight: 700;
-  color: #21343d;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-  color: #6f8594;
-  font-size: 0.95rem;
-  margin-top: 0.5rem;
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
 .widget-title {
-  font-size: 2rem;
-  line-height: 1.15;
-  color: #2a404b;
-  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: #0f172a;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ── Clean White Card Tokens (Exact match to reference) ── */
+.bems-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.bems-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+}
+
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.kpi-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+}
+
+/* SHT31 Node Card - Standalone Instrument Panels */
+.node-pro-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  padding: 0.9rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.node-pro-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+}
+
+/* Sub-panel cards inside section containers */
+.sub-panel {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s ease;
+}
+
+.sub-panel:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+/* Live flash micro-interaction when MQTT packet arrives */
+@keyframes liveMetricFlash {
+  0% {
+    background-color: rgba(16, 185, 129, 0.18);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+    border-radius: 4px;
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.data-flash {
+  animation: liveMetricFlash 0.8s ease-out;
+}
+
+.mqtt-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+.mqtt-pulse-dot--online {
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  animation: dotPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.mqtt-pulse-dot--connecting {
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+  animation: dotPulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.mqtt-pulse-dot--offline {
+  background-color: #ef4444;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
 }
 
 .app-body {

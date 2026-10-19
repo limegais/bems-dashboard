@@ -25,7 +25,7 @@ const ApiClient = {
         body: body === undefined ? undefined : JSON.stringify(body),
       });
     } catch (e) {
-      throw new ApiError("Server tidak dapat dihubungi", 0);
+      throw new ApiError("Unable to connect to server", 0);
     } finally {
       clearTimeout(timer);
     }

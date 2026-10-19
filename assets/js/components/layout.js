@@ -1,4 +1,4 @@
-// Navigasi bersama untuk semua halaman mockup BEMS/Living Lab Dashboard
+// Common navigation for all BEMS/Living Lab Dashboard pages
 const NAV_SECTIONS = [
   {
     label: "Overview",
@@ -16,10 +16,9 @@ const NAV_SECTIONS = [
   {
     label: "Control",
     items: [
-      { key: "ac-control", label: "AC Monitoring & Control", href: "ac-control.html" },
-      { key: "lighting-control", label: "Lighting Monitoring & Control", href: "lighting-control.html" },
+      { key: "ac-control", label: "AC Monitoring", href: "ac-control.html" },
+      { key: "lighting-control", label: "Lighting Monitoring", href: "lighting-control.html" },
       { key: "experiment-mode", label: "Operating / Experiment Mode", href: "experiment-mode.html" },
-      { key: "adaptive-control", label: "Adaptive Control", href: "adaptive-control.html" },
     ],
   },
   {
@@ -79,8 +78,8 @@ function renderSidebar(activeKey) {
     <aside id="sidebar-shell" class="mini-sidebar-shell shrink-0 h-screen sticky top-0 flex flex-col">
       <div class="mini-sidebar-brand" aria-label="BEMS Living Lab">B</div>
       <div class="mini-sidebar-logo">BEMS</div>
-      <nav class="mini-sidebar-nav" aria-label="Navigasi utama">${sections}</nav>
-      <div class="mini-sidebar-foot" title="Lingkungan demonstrasi">DEMO</div>
+      <nav class="mini-sidebar-nav" aria-label="Main Navigation">${sections}</nav>
+      <div class="mini-sidebar-foot" title="Demonstration Environment">DEMO</div>
     </aside>`;
 
   const groupNodes = root.querySelectorAll(".mini-nav-group");
@@ -126,8 +125,8 @@ function renderTopbar(title, subtitle) {
   Preferences.applyTheme(theme);
   Preferences.applyTone(tone);
   const now = new Date();
-  const dateText = now.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }).replace(/\./g, "");
-  const timeText = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  const dateText = now.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
+  const timeText = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
 
   root.innerHTML = `
     <header class="topbar-shell sticky top-0 z-10">
@@ -135,11 +134,13 @@ function renderTopbar(title, subtitle) {
         <div class="topbar-left">
           <p class="topbar-breadcrumb">Workspace / Monitoring / ${title}</p>
         </div>
-        <p class="topbar-project">Untitled</p>
-        <div class="topbar-right">
-          <span class="demo-badge">Data demo</span>
-          <span class="topbar-date">${dateText} · ${timeText} WIB</span>
-          <button id="logout-btn" class="topbar-link" aria-label="Keluar">Keluar</button>
+        <div class="topbar-right flex items-center gap-3">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Telemetry Live
+          </span>
+          <span class="topbar-date text-xs text-slate-500">${dateText} · ${timeText} (UTC+7)</span>
+          <button id="logout-btn" class="topbar-link text-xs hover:text-red-600 transition-colors" aria-label="Sign Out">Sign Out</button>
         </div>
       </div>
     </header>`;

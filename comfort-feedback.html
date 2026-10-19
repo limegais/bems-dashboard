@@ -1,195 +1,296 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Comfort Feedback — BEMS Living Lab</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <title>Comfort Feedback & Occupant Perception — BEMS Living Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body class="app-body">
-<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="app-layout flex">
   <div id="sidebar-root"></div>
   <div class="app-content flex-1 min-w-0">
     <div id="topbar-root"></div>
     <main id="main-content" class="app-main p-6 space-y-6">
+
+      <!-- ── Page Header & Executive Context Bar ── -->
       <section class="page-head">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 class="page-title">Thermal & Visual Comfort Feedback</h2>
-            <p class="page-subtitle">Hubungkan persepsi penghuni dengan pengukuran lingkungan ruang secara anonim.</p>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wider font-mono">Occupant-Centric BEMS</span>
+              <span class="text-slate-400 text-xs">·</span>
+              <span class="text-xs text-slate-500 font-medium">Occupant Thermal &amp; Visual Comfort Survey (ASHRAE 55 &amp; ISO 7730)</span>
+            </div>
+            <h1 class="page-title text-2xl font-bold text-slate-900 tracking-tight">Thermal &amp; Visual Comfort Feedback</h1>
+            <p class="page-subtitle text-sm text-slate-500 mt-1">Menjembatani pengukuran sensor fisik (suhu SHT31 &amp; lux meja) dengan persepsi psikologis penghuni nyata untuk menyelaraskan otomasi AC dan pencahayaan terhadap kepuasan pengguna.</p>
           </div>
-          <button class="tone-select text-sm px-4 py-2 font-semibold">Ekspor feedback</button>
-        </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <button class="indoor-chip indoor-chip-active">04 Okt 2026</button>
-            <button class="indoor-chip">Hari ini</button>
-            <button class="indoor-chip">Semua ruang</button>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono inline-flex items-center gap-1.5 shadow-2xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Standar ASHRAE 55: Memenuhi (&ge;80% Puas)
+            </span>
           </div>
-          <p class="text-xs text-slate-500">Snapshot demo · interval 15 menit</p>
         </div>
       </section>
 
-      <div id="kpi-comfort-main" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+      <!-- ── 5 Executive KPI Cards ── -->
+      <section aria-label="KPI Kepuasan Penghuni" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <section class="card p-4 xl:row-span-2">
-          <div class="flex items-start justify-between gap-2 mb-2">
-            <div>
-              <p class="widget-title">Berikan feedback</p>
-              <p class="text-sm text-slate-500 mt-1">Form contoh · tidak mengirim data</p>
+        <!-- Card 1: Total Submissions Received -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Submissions Received</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 font-mono">Hari Ini</span>
             </div>
-            <span class="demo-badge">Anonim</span>
+            <strong id="kpi-fb-total" class="text-2xl font-bold text-slate-900 font-mono tracking-tight block">58 Suara</strong>
+            <p class="text-xs text-slate-400 mt-1">4 Zona Meja Kerja Living Lab</p>
           </div>
-
-          <div class="space-y-3 text-sm">
-            <div>
-              <label for="comfort-room" class="text-xs text-slate-500 block mb-1">Ruang</label>
-              <select id="comfort-room" class="w-full tone-select py-2">
-                <option>Lab A</option>
-                <option>Lab B</option>
-                <option>Office</option>
-              </select>
-            </div>
-
-            <div>
-              <p class="text-xs text-slate-500 mb-1">Bagaimana sensasi termal Anda?</p>
-              <div class="comfort-vote-grid">
-                <button type="button" class="comfort-vote-btn">-3</button>
-                <button type="button" class="comfort-vote-btn">-2</button>
-                <button type="button" class="comfort-vote-btn">-1</button>
-                <button type="button" class="comfort-vote-btn comfort-vote-active">0</button>
-                <button type="button" class="comfort-vote-btn">+1</button>
-                <button type="button" class="comfort-vote-btn">+2</button>
-                <button type="button" class="comfort-vote-btn">+3</button>
-              </div>
-              <div class="flex justify-between text-xs text-slate-500 mt-1"><span>Sangat dingin</span><span>Netral</span><span>Sangat panas</span></div>
-            </div>
-
-            <div>
-              <label for="comfort-thermal-pref" class="text-xs text-slate-500 block mb-1">Preferensi termal</label>
-              <select id="comfort-thermal-pref" class="w-full tone-select py-2">
-                <option>Tidak perlu perubahan</option>
-                <option>Lebih dingin</option>
-                <option>Lebih hangat</option>
-              </select>
-            </div>
-
-            <div>
-              <p class="text-xs text-slate-500 mb-1">Kenyamanan visual</p>
-              <div class="light-segment light-segment-3" role="group" aria-label="Kenyamanan visual">
-                <button class="light-segment-item" type="button">Redup</button>
-                <button class="light-segment-item light-segment-active" type="button">Nyaman</button>
-                <button class="light-segment-item" type="button">Silau</button>
-              </div>
-            </div>
-
-            <div>
-              <label for="comfort-comment" class="text-xs text-slate-500 block mb-1">Komentar (opsional)</label>
-              <input id="comfort-comment" value="Suhu dan cahaya sudah nyaman." class="w-full tone-select py-2" />
-            </div>
-
-            <p class="text-xs text-slate-500">Konteks demo Lab A: 24,4 °C · 480 lux. Identitas penghuni tidak ditampilkan.</p>
-
-            <button class="bg-blue-600 hover:bg-blue-500 text-white text-sm rounded px-4 py-2 w-full" type="button">Kirim feedback demo</button>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Metode:</span>
+            <strong class="text-teal-700 font-bold">Survei Anonim Real-Time</strong>
           </div>
-        </section>
+        </div>
 
-        <section class="card p-4">
-          <p class="widget-title">Sensasi termal</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">48 respons · skala −3 hingga +3</p>
-
-          <div class="space-y-3 text-sm">
-            <div>
-              <div class="flex items-center justify-between text-slate-600"><span>Dingin (-3, -2)</span><span>3 respons</span></div>
-              <div class="indoor-progress mt-1"><i style="width: 8%;"></i></div>
+        <!-- Card 2: Thermal Satisfaction Rate -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-blue-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Thermal Satisfaction (Suhu)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono">ASHRAE 55</span>
             </div>
-            <div>
-              <div class="flex items-center justify-between text-slate-600"><span>Nyaman (-1, 0, +1)</span><span>41 respons</span></div>
-              <div class="indoor-progress mt-1"><i style="width: 85%;"></i></div>
-            </div>
-            <div>
-              <div class="flex items-center justify-between text-slate-600"><span>Hangat (+2, +3)</span><span>4 respons</span></div>
-              <div class="indoor-progress mt-1"><i style="width: 12%;"></i></div>
-            </div>
+            <strong id="kpi-fb-thermal" class="text-2xl font-bold text-teal-900 font-mono tracking-tight block">87,9%</strong>
+            <p class="text-xs text-emerald-700 font-medium mt-1">51 dari 58 Responden Puas (-1 s/d +1)</p>
           </div>
-        </section>
-
-        <section class="card p-4">
-          <p class="widget-title">Kenyamanan visual</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">48 respons · penilaian cahaya</p>
-
-          <div class="space-y-3 text-sm">
-            <div>
-              <div class="flex items-center justify-between text-slate-600"><span>Terlalu redup</span><span>2 respons</span></div>
-              <div class="indoor-progress comfort-progress-blue mt-1"><i style="width: 6%;"></i></div>
-            </div>
-            <div>
-              <div class="flex items-center justify-between text-slate-600"><span>Nyaman</span><span>43 respons</span></div>
-              <div class="indoor-progress comfort-progress-blue mt-1"><i style="width: 90%;"></i></div>
-            </div>
-            <div>
-              <div class="flex items-center justify-between text-slate-600"><span>Silau</span><span>3 respons</span></div>
-              <div class="indoor-progress comfort-progress-blue mt-1"><i style="width: 8%;"></i></div>
-            </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Ambang Target:</span>
+            <strong class="text-slate-800 font-bold">&ge; 80% (Standar Ideal)</strong>
           </div>
-        </section>
+        </div>
 
-        <section class="card p-4 xl:col-span-2">
-          <p class="widget-title">Tren kepuasan penghuni</p>
-          <p class="text-sm text-slate-500 mt-1 mb-3">7 hari terakhir · proporsi respons nyaman</p>
-          <div class="h-[190px] rounded-lg border border-slate-100 bg-white p-3">
-            <div class="flex items-center gap-5 text-xs mb-2">
-              <span class="text-teal-600">Thermal</span>
-              <span class="text-blue-500">Visual</span>
+        <!-- Card 3: Visual Satisfaction Rate -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-amber-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Visual Satisfaction (Cahaya)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 font-mono">SNI 03-6197</span>
             </div>
-            <svg viewBox="0 0 700 150" class="w-full h-[150px]" role="img" aria-label="Grafik tren kepuasan penghuni">
-              <rect x="0" y="0" width="700" height="150" fill="#f9fcfd"/>
-              <line x1="40" y1="120" x2="680" y2="120" stroke="#e6eef3"/>
-              <line x1="40" y1="90" x2="680" y2="90" stroke="#e6eef3"/>
-              <line x1="40" y1="60" x2="680" y2="60" stroke="#e6eef3"/>
-              <line x1="40" y1="30" x2="680" y2="30" stroke="#e6eef3"/>
-              <polygon points="40,92 140,86 240,89 340,79 440,76 540,70 640,74 640,120 40,120" fill="#deefeb"/>
-              <polyline fill="none" stroke="#188b86" stroke-width="3" points="40,92 140,86 240,89 340,79 440,76 540,70 640,74"/>
-              <polyline fill="none" stroke="#4d78b1" stroke-width="3" points="40,82 140,77 240,80 340,71 440,74 540,69 640,66"/>
-            </svg>
+            <strong id="kpi-fb-visual" class="text-2xl font-bold text-amber-900 font-mono tracking-tight block">91,4%</strong>
+            <p class="text-xs text-slate-500 mt-1">Tingkat Silau &amp; Keredupan Terkendali</p>
           </div>
-        </section>
-      </div>
+          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Rerata Iluminansi:</span>
+            <strong class="text-amber-800 font-bold">482 Lux (Sesuai SNI)</strong>
+          </div>
+        </div>
 
-      <section class="card p-4 overflow-x-auto">
-        <p class="widget-title">Feedback terbaru</p>
-        <p class="text-sm text-slate-500 mt-1 mb-3">Contoh respons anonim · 04 Oktober 2026</p>
-        <table class="w-full text-sm indoor-table">
-          <thead><tr class="text-slate-500 text-left border-b border-slate-200"><th class="py-2">Waktu (WIB)</th><th>Ruang</th><th>Thermal vote</th><th>Visual</th><th>Komentar</th></tr></thead>
-          <tbody class="text-slate-600">
-            <tr class="border-b border-slate-100"><td class="py-2">14:25</td><td>Lab A</td><td>0 · Netral</td><td>Nyaman</td><td>Suhu dan cahaya sudah nyaman.</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">14:20</td><td>Lab B</td><td>+1 · Agak hangat</td><td>Nyaman</td><td>Udara terasa agak pengap.</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">14:10</td><td>Studio</td><td>0 · Netral</td><td>Silau</td><td>Pantulan cahaya dekat jendela.</td></tr>
-            <tr class="border-b border-slate-100"><td class="py-2">13:55</td><td>Office</td><td>-1 · Agak sejuk</td><td>Nyaman</td><td>Tidak perlu perubahan.</td></tr>
-            <tr><td class="py-2">13:40</td><td>Ruang Rapat</td><td>0 · Netral</td><td>Nyaman</td><td>Kondisi nyaman untuk rapat.</td></tr>
-          </tbody>
-        </table>
+        <!-- Card 4: Indeks Gabungan (Combined Index) -->
+        <div class="bg-gradient-to-br from-teal-50/70 via-white to-blue-50/50 rounded-2xl border border-teal-200/80 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-teal-800 uppercase tracking-wider">Indeks Kenyamanan Gabungan</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-900 font-mono">Overall Score</span>
+            </div>
+            <strong id="kpi-fb-combined" class="text-2xl font-bold text-teal-900 font-mono tracking-tight block">89,6%</strong>
+            <p class="text-xs text-slate-500 mt-1">Bobot: Termal 60% · Visual 40%</p>
+          </div>
+          <div class="pt-3 border-t border-teal-100 mt-3 flex items-center justify-between text-xs text-slate-600 font-mono">
+            <span>Kategori Ruang:</span>
+            <strong class="text-emerald-700 font-bold">Sangat Nyaman (Optimum)</strong>
+          </div>
+        </div>
+
       </section>
 
-      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1">
-        <p>BEMS / Living Lab · Gedung Living Lab, Bandung</p>
-        <p>Data demo · Mockup statis · Tidak ada koneksi live</p>
-      </div>
+      <!-- ── FORM INPUT FEEDBACK INTERAKTIF & DUA GRAFIK DISTRIBUSI ── -->
+      <section aria-label="Form Umpan Balik dan Analisis Grafis" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Form Kirim Feedback Anonim (Col 5) -->
+        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+          <div class="pb-3 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Form Evaluasi Kenyamanan
+              </h2>
+              <p class="text-xs text-slate-400">Suara Anda langsung memengaruhi rekomendasi setpoint AI</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 font-mono">100% Anonim</span>
+          </div>
+
+          <form onsubmit="window.ComfortService.submitFeedback(event)" class="space-y-3.5 text-xs">
+            <!-- Pilihan Lokasi Ruang / Meja -->
+            <div>
+              <label for="fb-room" class="font-bold text-slate-700 block mb-1">Zona Lokasi Kerja Anda:</label>
+              <select id="fb-room" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono bg-white focus:outline-none focus:ring-2 focus:ring-teal-600">
+                <option value="Workbench 1 (Jendela)">Workbench 1 (Dekat Fasad Jendela Barat)</option>
+                <option value="Workbench 2 (Tengah)">Workbench 2 (Meja Kerja Tengah)</option>
+                <option value="Workbench 3 (Dalam)">Workbench 3 (Area Dalam / Core)</option>
+                <option value="Workbench 4 (Kanan)">Workbench 4 (Area Meja Sisi Kanan)</option>
+              </select>
+            </div>
+
+            <!-- ASHRAE 7-Point Thermal Sensation Vote -->
+            <div>
+              <label class="font-bold text-slate-700 block mb-1.5">Bagaimana Sensasi Suhu Udara Saat Ini? (TCV 7-Point):</label>
+              <div class="grid grid-cols-7 gap-1 text-center font-mono">
+                <button type="button" onclick="window.ComfortService.setTcvVote(-3)" data-val="-3" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">-3</button>
+                <button type="button" onclick="window.ComfortService.setTcvVote(-2)" data-val="-2" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">-2</button>
+                <button type="button" onclick="window.ComfortService.setTcvVote(-1)" data-val="-1" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">-1</button>
+                <button type="button" onclick="window.ComfortService.setTcvVote(0)" data-val="0" class="tcv-vote-btn active py-2.5 rounded-xl font-bold text-xs bg-teal-800 text-white shadow-2xs border-2 border-teal-600">0</button>
+                <button type="button" onclick="window.ComfortService.setTcvVote(1)" data-val="1" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">+1</button>
+                <button type="button" onclick="window.ComfortService.setTcvVote(2)" data-val="2" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">+2</button>
+                <button type="button" onclick="window.ComfortService.setTcvVote(3)" data-val="3" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">+3</button>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1 px-1">
+                <span class="text-blue-600">Sangat Dingin</span>
+                <span class="text-teal-700 font-bold">Netral Nyaman</span>
+                <span class="text-rose-600">Sangat Panas</span>
+              </div>
+            </div>
+
+            <!-- Preferensi Termal -->
+            <div>
+              <label for="fb-pref" class="font-bold text-slate-700 block mb-1">Preferensi Anda Terhadap Suhu:</label>
+              <select id="fb-pref" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-teal-600">
+                <option value="Tidak Berubah">Tidak Perlu Berubah (Sudah Nyaman)</option>
+                <option value="Lebih Dingin">Ingin Sedikit Lebih Dingin (Turunkan Suhu AC)</option>
+                <option value="Lebih Hangat">Ingin Lebih Hangat (Naikkan Suhu AC)</option>
+              </select>
+            </div>
+
+            <!-- Kenyamanan Visual (Cahaya) -->
+            <div>
+              <label class="font-bold text-slate-700 block mb-1.5">Kenyamanan Pencahayaan di Meja Anda:</label>
+              <div class="grid grid-cols-3 gap-1.5 text-center font-mono">
+                <button type="button" onclick="window.ComfortService.setVcvVote('Terlalu Redup')" data-val="Terlalu Redup" class="vcv-vote-btn px-4 py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">🌑 Terlalu Redup</button>
+                <button type="button" onclick="window.ComfortService.setVcvVote('Nyaman')" data-val="Nyaman" class="vcv-vote-btn active px-4 py-2 rounded-xl font-bold text-xs bg-amber-700 text-white shadow-2xs border-2 border-amber-600">💡 Nyaman (Ideal)</button>
+                <button type="button" onclick="window.ComfortService.setVcvVote('Silau')" data-val="Silau" class="vcv-vote-btn px-4 py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">⚡ Silau (Glare)</button>
+              </div>
+            </div>
+
+            <!-- Catatan Opsional -->
+            <div>
+              <label for="fb-comment" class="font-bold text-slate-700 block mb-1">Komentar / Keluhan (Opsional):</label>
+              <input type="text" id="fb-comment" placeholder="Contoh: Udara agak dingin di dekat jendela barat..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600" />
+            </div>
+
+            <!-- Tombol Kirim -->
+            <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all">
+              <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+              Kirim Feedback Anonim ke BEMS
+            </button>
+          </form>
+        </div>
+
+        <!-- Dua Grafik Analisis Feedback (Col 7) -->
+        <div class="lg:col-span-7 space-y-4">
+          
+          <!-- Grafik 1: Distribusi Suara ASHRAE 7-Point -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+            <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Distribusi Sensasi Termal Responden (ASHRAE 7-Point Vote)</h3>
+                <p class="text-xs text-slate-400">Persentase suara penghuni terhadap skala sensasi dingin s/d panas</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200 font-mono">58 Responden</span>
+            </div>
+
+            <div class="h-[210px] w-full pt-1">
+              <canvas id="comfortDistChart"></canvas>
+            </div>
+
+            <p class="text-[11px] text-slate-500 pt-1 border-t border-slate-100 leading-relaxed font-mono">
+              Mayoritas responden (58,6%) berada pada titik <strong class="text-teal-800">0 (Netral)</strong> dan total 87,9% berada dalam rentang toleransi nyaman [-1, +1], memenuhi kriteria keberhasilan ASHRAE 55.
+            </p>
+          </div>
+
+          <!-- Grafik 2: Korelasi Suhu Terukur vs Sensasi Penghuni -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+            <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Korelasi Suhu Terukur (Ta) vs Sensasi Termal Penghuni</h3>
+                <p class="text-xs text-slate-400">Titik netral (Vote = 0) tercapai pada suhu rata-rata 24.2 °C</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200 font-mono">Regresi Linear</span>
+            </div>
+
+            <div class="h-[210px] w-full pt-1">
+              <canvas id="comfortCorrelationChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ── LOG RESPON TERBARU PENGAWASAN BEMS ── -->
+      <section aria-label="Tabel Respon Terbaru" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+        <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Catatan Masukan Umpan Balik Terbaru (Real-Time Comfort Log)</h2>
+            <p class="text-xs text-slate-500">Daftar feedback penghuni yang diperbarui secara langsung saat pengiriman form</p>
+          </div>
+          <span class="text-xs font-mono text-slate-500">Pembaruan: <strong class="text-slate-800">Event-Driven Live</strong></span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                <th class="py-2.5 px-3">Waktu (WIB)</th>
+                <th class="py-2.5 px-3">Zona Kerja</th>
+                <th class="py-2.5 px-3">Suhu Terukur (Ta)</th>
+                <th class="py-2.5 px-3">Sensasi Termal (TCV)</th>
+                <th class="py-2.5 px-3">Preferensi</th>
+                <th class="py-2.5 px-3">Kenyamanan Visual</th>
+                <th class="py-2.5 px-3">Komentar Penghuni</th>
+              </tr>
+            </thead>
+            <tbody id="fb-recent-tbody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Footer ── -->
+      <footer class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/70 px-1 mt-6">
+        <div>
+          <p class="font-medium text-slate-600">BEMS Living Lab · Departemen Teknik Elektro FT UNS</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Sistem Integrasi Persepsi Manusia &amp; Otomasi Gedung (Occupant-Centric Control).</p>
+        </div>
+        <p class="font-mono text-right text-[11px]">Standar Evaluasi: <span class="font-semibold text-slate-600">ASHRAE 55 &amp; ISO 7730</span></p>
+      </footer>
 
     </main>
   </div>
 </div>
+
+<!-- Scripts -->
 <script src="assets/js/config/app-config.js"></script>
 <script src="assets/js/core/session.js"></script>
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
 <script src="assets/js/components/layout.js"></script>
+<script src="assets/js/core/mqtt-client.js"></script>
+<script src="assets/js/services/comfort-service.js"></script>
 <script src="assets/js/pages/page-init.js"></script>
-<script>renderSidebar("comfort-feedback"); renderTopbar("Comfort feedback", "Thermal & visual"); initPageData("comfort-feedback");</script>
+
+<script>
+  renderSidebar("comfort-feedback");
+  renderTopbar("Comfort Feedback", "Thermal & Visual Comfort Feedback");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.ComfortService && typeof window.ComfortService.start === "function") {
+      window.ComfortService.start();
+    }
+  });
+</script>
 </body>
 </html>

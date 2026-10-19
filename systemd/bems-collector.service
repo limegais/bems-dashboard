@@ -1,0 +1,23 @@
+[Unit]
+Description=BEMS Telemetry & Database Ingestion Collector
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=iotlab
+WorkingDirectory=/home/iotlab/bems-dashboard
+ExecStart=/home/iotlab/bems-dashboard/.venv/bin/python collector.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONUNBUFFERED=1
+Environment=PG_HOST=localhost
+Environment=PG_PORT=5432
+Environment=PG_DATABASE=bems_db
+Environment=PG_USER=bems_user
+Environment=PG_PASSWORD=bems_password_secure
+
+[Install]
+WantedBy=multi-user.target
