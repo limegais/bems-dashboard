@@ -788,12 +788,12 @@ COMMENT ON FUNCTION bems_core.calc_ppd IS 'ISO 7730 Annex B -- PPD (%) dari PMV'
 
 -- ============================================================================
 -- 11. SEED DATA AWAL
--- ============================================================================
 INSERT INTO bems_core.users (username, email, password_hash, full_name, role) VALUES
-('admin',      'admin@livinglab.uns.ac.id',      crypt('admin123',gen_salt('bf')),     'Super Administrator BEMS','superadmin'),
-('researcher', 'researcher@livinglab.uns.ac.id', crypt('research123',gen_salt('bf')), 'Tim Riset Living Lab FT', 'researcher'),
-('operator',   'operator@livinglab.uns.ac.id',   crypt('operator2024',gen_salt('bf')),'Operator Lab BEMS',       'operator')
-ON CONFLICT (username) DO NOTHING;
+('admin',      'admin@livinglab.uns.ac.id',      crypt('iotlabftuns2023',gen_salt('bf')), 'Super Administrator BEMS','superadmin'),
+('user',       'user@livinglab.uns.ac.id',       crypt('iotlabftuns2023',gen_salt('bf')), 'Living Lab User',        'occupant'),
+('researcher', 'researcher@livinglab.uns.ac.id', crypt('research123',gen_salt('bf')),     'Tim Riset Living Lab FT', 'researcher'),
+('operator',   'operator@livinglab.uns.ac.id',   crypt('operator2024',gen_salt('bf')),    'Operator Lab BEMS',       'operator')
+ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 INSERT INTO bems_core.buildings (code, name, address, latitude, longitude)
 VALUES ('FT_UNS_B2','Gedung B2 Fakultas Teknik UNS',

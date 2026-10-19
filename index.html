@@ -56,9 +56,9 @@
             <span class="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">LAST UPDATED</span>
             <span id="mqtt-last-update-big" class="font-mono text-lg font-bold text-slate-800">21.05.00 (UTC+7)</span>
           </div>
-          <button class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Export Data
+          <button id="btn-index-export" onclick="window.BemsExport ? window.BemsExport.openModal('integrated_all') : null" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export Dataset Lengkap (Sensor PostgreSQL & Energi MySQL)">
+            <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Data (CSV)
           </button>
         </div>
       </div>
@@ -703,6 +703,7 @@
 <script src="assets/js/core/api-client.js?v=8"></script>
 <script src="assets/js/mock/page-data.js?v=8"></script>
 <script src="assets/js/services/page-data-service.js?v=8"></script>
+<script src="assets/js/services/export-service.js?v=8"></script>
 <script src="assets/js/components/layout.js?v=8"></script>
 <script src="assets/js/core/mqtt-client.js?v=8"></script>
 <script src="assets/js/pages/page-init.js?v=8"></script>
