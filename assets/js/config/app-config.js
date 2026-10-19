@@ -20,10 +20,15 @@ const APP_CONFIG = {
 
   MQTT: {
     // Bridge WebSocket menghubungkan browser ke broker TCP 128.199.206.166:1883
-    // Menggunakan hostname dinamis (localhost atau IP LAN / remote host)
+    // Menggunakan port 9002 (port 9001 dicadangkan/dipakai docker)
     BROKER_URL: (function () {
       const host = (typeof window !== "undefined" && window.location && window.location.hostname) ? window.location.hostname : "localhost";
-      return `ws://${host}:9001`;
+      let wsPort = "9002";
+      if (typeof window !== "undefined" && window.location && window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("ws_port")) wsPort = params.get("ws_port");
+      }
+      return `ws://${host}:${wsPort}`;
     })(),
     OPTIONS: {
       clientId: "bems_dashboard_" + Math.random().toString(16).substr(2, 8),

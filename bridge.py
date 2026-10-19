@@ -1,9 +1,10 @@
+import os
 import asyncio
 import websockets
 
-MQTT_HOST = "128.199.206.166"
-MQTT_PORT = 1883
-WS_PORT = 9001
+MQTT_HOST = os.getenv("MQTT_HOST", "128.199.206.166")
+MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+WS_PORT = int(os.getenv("WS_PORT", 9002))
 
 async def forward_ws_to_tcp(websocket, writer):
     try:

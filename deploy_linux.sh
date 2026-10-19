@@ -89,6 +89,7 @@ RestartSec=5
 StandardOutput=journal
 StandardError=journal
 Environment=PYTHONUNBUFFERED=1
+Environment=WS_PORT=9002
 
 [Install]
 WantedBy=multi-user.target
@@ -131,7 +132,7 @@ After=network.target
 Type=simple
 User=$CURRENT_USER
 WorkingDirectory=$CURRENT_DIR
-ExecStart=/usr/bin/python3 -m http.server 3000 --bind 0.0.0.0
+ExecStart=/usr/bin/python3 -m http.server 3001 --bind 0.0.0.0
 Restart=always
 RestartSec=5
 StandardOutput=journal
@@ -151,7 +152,7 @@ echo -e "\n${BLUE}[6/6] Memeriksa Status Layanan...${NC}"
 sleep 2
 
 sudo systemctl is-active --quiet bems-bridge.service && \
-    echo -e "  [+] bems-bridge    : ${GREEN}RUNNING (Port 9001)${NC}" || \
+    echo -e "  [+] bems-bridge    : ${GREEN}RUNNING (Port 9002)${NC}" || \
     echo -e "  [-] bems-bridge    : ${RED}FAILED${NC}"
 
 sudo systemctl is-active --quiet bems-collector.service && \
@@ -159,7 +160,7 @@ sudo systemctl is-active --quiet bems-collector.service && \
     echo -e "  [-] bems-collector : ${RED}FAILED${NC}"
 
 sudo systemctl is-active --quiet bems-web.service && \
-    echo -e "  [+] bems-web       : ${GREEN}RUNNING (Port 3000)${NC}" || \
+    echo -e "  [+] bems-web       : ${GREEN}RUNNING (Port 3001)${NC}" || \
     echo -e "  [-] bems-web       : ${RED}FAILED${NC}"
 
 # Ambil IP address mesin
@@ -169,11 +170,11 @@ echo -e "\n${GREEN}${BOLD}======================================================
 echo "           DEPLOYMENT BEMS BERHASIL SELESAI!"
 echo "==================================================================${NC}"
 echo -e "Dashboard Web dapat diakses di:"
-echo -e "  > Lokal Mesin : ${CYAN}http://localhost:3000${NC}"
+echo -e "  > Lokal Mesin : ${CYAN}http://localhost:3001${NC}"
 if [ -n "$IP_ADDR" ]; then
-    echo -e "  > Jaringan LAN: ${CYAN}http://${IP_ADDR}:3000${NC}"
+    echo -e "  > Jaringan LAN: ${CYAN}http://${IP_ADDR}:3001${NC}"
 fi
-echo -e "  > WebSocket Bridge Port : ${CYAN}9001${NC}"
+echo -e "  > WebSocket Bridge Port : ${CYAN}9002${NC}"
 echo -e "  > PostgreSQL DB         : ${CYAN}localhost:5432 / bems_db${NC}"
 echo ""
 echo -e "${YELLOW}Perintah Berguna untuk Monitoring:${NC}"
