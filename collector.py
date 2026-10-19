@@ -94,36 +94,38 @@ class BemsDatabase:
 
     def connect(self):
         while running:
-            # 1. Koneksi langsung via Unix Domain Socket sebagai user Linux (iotlab)
-            try:
-                self.conn = psycopg2.connect(
-                    dbname=PG_DATABASE,
-                    user="iotlab",
-                    host="/var/run/postgresql",
-                    connect_timeout=5
-                )
-                self.conn.autocommit = True
-                logger.info("Database bems_db TERHUBUNG SUKSES via Unix Socket (user=iotlab)!")
-                return
-            except Exception as e_sock:
-                logger.debug(f"Koneksi socket iotlab ({e_sock}), mencoba TCP...")
+            # 1. Hubungkan ke Unix Domain Socket (PostgreSQL 18 aktif di port 5433)
+            for port in [5433, 5432]:
+                try:
+                    self.conn = psycopg2.connect(
+                        dbname=PG_DATABASE,
+                        port=port,
+                        connect_timeout=3
+                    )
+                    self.conn.autocommit = True
+                    logger.info(f"Database bems_db TERHUBUNG SUKSES via Unix Socket (port={port})!")
+                    return
+                except Exception:
+                    pass
 
-            # 2. Fallback via TCP
-            try:
-                self.conn = psycopg2.connect(
-                    dbname=PG_DATABASE,
-                    host="localhost",
-                    port=5432,
-                    user="bems_user",
-                    password="bems_password_secure",
-                    connect_timeout=5
-                )
-                self.conn.autocommit = True
-                logger.info("Database bems_db terhubung via TCP bems_user")
-                return
-            except Exception as e:
-                logger.warning(f"Koneksi DB gagal ({e}). Retry dalam 5 detik...")
-                time.sleep(5)
+            # 2. Fallback via TCP localhost
+            for port in [5433, 5432]:
+                try:
+                    self.conn = psycopg2.connect(
+                        dbname=PG_DATABASE,
+                        host="localhost",
+                        port=port,
+                        user="iotlab",
+                        connect_timeout=3
+                    )
+                    self.conn.autocommit = True
+                    logger.info(f"Database bems_db TERHUBUNG SUKSES via TCP (port={port})!")
+                    return
+                except Exception:
+                    pass
+
+            logger.warning("Koneksi ke PostgreSQL bems_db (port 5433/5432) belum terhubung. Retry dalam 5 detik...")
+            time.sleep(5)
 
     def load_metadata(self):
         with self.lock:
