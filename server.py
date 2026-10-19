@@ -125,9 +125,8 @@ def get_csv_config(query):
         delim = ";"
 
     buffer = io.StringIO()
-    # Jika pengguna memilih comma, tambahkan instruksi sep=, agar Excel otomatis memisahkan kolom
-    if delim == ",":
-        buffer.write("sep=,\r\n")
+    # Instruksi sep= agar Excel otomatis membagi data ke kolom A, B, C, D... tanpa tercampur
+    buffer.write(f"sep={delim}\r\n")
 
     writer = csv.writer(buffer, delimiter=delim, lineterminator="\r\n")
     return buffer, writer, delim
@@ -242,7 +241,7 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def handle_export_sensors_csv(self, query):
         """Export sensor telemetri dari PostgreSQL (bems_telemetry.sht31_readings / weather / occupancy)"""
-        limit = min(int(query.get("limit", [5000])[0]), 50000)
+        limit = min(int(query.get("limit", [50000])[0]), 100000)
         from_date = query.get("from", [""])[0].strip()
         to_date = query.get("to", [""])[0].strip()
         sensor_type = query.get("type", ["sht31"])[0]
@@ -265,13 +264,14 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     with conn.cursor() as cur:
                         where_sql, params = build_date_filter("time", from_date, to_date)
+                        order_dir = "ASC" if where_sql else "DESC"
                         sql = f"""
                             SELECT time, device_id, outdoor_temp_c, outdoor_rh_pct,
                                    solar_irradiance, outdoor_lux, lux_wb1, lux_wb2,
                                    lux_wb3, lux_wb4, co2_outdoor_ppm, airflow_speed_ms
                             FROM bems_telemetry.nnzn_weather
                             {where_sql}
-                            ORDER BY time DESC
+                            ORDER BY time {order_dir}
                             LIMIT %s;
                         """
                         params.append(limit)
@@ -312,7 +312,7 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         elif sensor_type == "occupancy":
             # Occupancy & Camera
-            writer.writerow(["Timestamp (WIB)", "Room_ID", "Person_Count", "Person_Detected", "Confidence", "Database_Source"])
+            writer.writerow(["Timestamp (WIB)", "Room_ID", "Headcount", "Motion_Detected", "Confidence", "Detection_Method", "Database_Source"])
             filename = f"bems_occupancy_postgresql_{today_str}.csv"
             rows_written = 0
 
@@ -320,11 +320,12 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     with conn.cursor() as cur:
                         where_sql, params = build_date_filter("time", from_date, to_date)
+                        order_dir = "ASC" if where_sql else "DESC"
                         sql = f"""
-                            SELECT time, room_id, person_count, person_detected, confidence
+                            SELECT time, room_id, headcount, motion_detected, detection_confidence, detection_method
                             FROM bems_telemetry.occupancy
                             {where_sql}
-                            ORDER BY time DESC
+                            ORDER BY time {order_dir}
                             LIMIT %s;
                         """
                         params.append(limit)
@@ -333,7 +334,7 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                         if len(rows) == 0 and where_sql:
                             cur.execute("""
-                                SELECT time, room_id, person_count, person_detected, confidence
+                                SELECT time, room_id, headcount, motion_detected, detection_confidence, detection_method
                                 FROM bems_telemetry.occupancy
                                 ORDER BY time DESC
                                 LIMIT %s;
@@ -343,7 +344,7 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
                         for r in rows:
                             ts = r[0].strftime("%Y-%m-%d %H:%M:%S") if hasattr(r[0], "strftime") else str(r[0])
                             writer.writerow([
-                                ts, r[1], r[2], "TRUE" if r[3] else "FALSE", r[4],
+                                ts, r[1], r[2], "TRUE" if r[3] else "FALSE", r[4], r[5],
                                 "PostgreSQL bems_db (bems_telemetry.occupancy)"
                             ])
                             rows_written += 1
@@ -354,7 +355,7 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             if rows_written == 0:
                 now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                writer.writerow([now_str, 1, 1, "TRUE", 0.95, "PostgreSQL Live Buffer (bems_telemetry.occupancy)"])
+                writer.writerow([now_str, 1, 1, "TRUE", 0.95, "camera_yolo", "PostgreSQL Live Buffer (bems_telemetry.occupancy)"])
 
         else:
             # SHT31 Workstation (6 Node Living Lab)
@@ -370,15 +371,16 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     with conn.cursor() as cur:
                         where_sql, params = build_date_filter("s.time", from_date, to_date)
+                        order_dir = "ASC" if where_sql else "DESC"
                         sql = f"""
                             SELECT s.time, COALESCE(w.code, 'SHT-' || s.workstation_id),
-                                   COALESCE(w.name, 'Workstation ' || s.workstation_id),
+                                   COALESCE(w.label, 'Workstation ' || s.workstation_id),
                                    s.air_temperature, s.relative_humidity,
                                    s.dew_point_c, s.heat_index_c, s.mqtt_topic
                             FROM bems_telemetry.sht31_readings s
                             LEFT JOIN bems_core.workstations w ON s.workstation_id = w.id
                             {where_sql}
-                            ORDER BY s.time DESC
+                            ORDER BY s.time {order_dir}
                             LIMIT %s;
                         """
                         params.append(limit)
@@ -390,7 +392,7 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
                             sys.stdout.write("[BEMS-Web] Filter tanggal kosong, mengambil telemetri SHT31 terbaru...\n")
                             cur.execute("""
                                 SELECT s.time, COALESCE(w.code, 'SHT-' || s.workstation_id),
-                                       COALESCE(w.name, 'Workstation ' || s.workstation_id),
+                                       COALESCE(w.label, 'Workstation ' || s.workstation_id),
                                        s.air_temperature, s.relative_humidity,
                                        s.dew_point_c, s.heat_index_c, s.mqtt_topic
                                 FROM bems_telemetry.sht31_readings s
@@ -574,7 +576,7 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
         """Export dataset gabungan lengkap: Sensor PostgreSQL + Energi MySQL"""
         from_date = query.get("from", [""])[0].strip()
         to_date = query.get("to", [""])[0].strip()
-        limit = min(int(query.get("limit", [3000])[0]), 10000)
+        limit = min(int(query.get("limit", [50000])[0]), 100000)
         today_str = datetime.now().strftime("%Y-%m-%d")
 
         csv_buffer, writer, delim = get_csv_config(query)
@@ -596,15 +598,16 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 with conn.cursor() as cur:
                     where_sql, params = build_date_filter("s.time", from_date, to_date)
+                    order_dir = "ASC" if where_sql else "DESC"
                     sql = f"""
                         SELECT 
                             s.time,
-                            ROUND(AVG(s.air_temperature), 2) as in_temp,
-                            ROUND(AVG(s.relative_humidity), 2) as in_rh
+                            ROUND(AVG(s.air_temperature)::numeric, 2) as in_temp,
+                            ROUND(AVG(s.relative_humidity)::numeric, 2) as in_rh
                         FROM bems_telemetry.sht31_readings s
                         {where_sql}
                         GROUP BY s.time
-                        ORDER BY s.time DESC
+                        ORDER BY s.time {order_dir}
                         LIMIT %s;
                     """
                     params.append(limit)
@@ -615,8 +618,8 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
                         cur.execute("""
                             SELECT 
                                 s.time,
-                                ROUND(AVG(s.air_temperature), 2) as in_temp,
-                                ROUND(AVG(s.relative_humidity), 2) as in_rh
+                                ROUND(AVG(s.air_temperature)::numeric, 2) as in_temp,
+                                ROUND(AVG(s.relative_humidity)::numeric, 2) as in_rh
                             FROM bems_telemetry.sht31_readings s
                             GROUP BY s.time
                             ORDER BY s.time DESC

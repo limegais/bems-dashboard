@@ -59,9 +59,8 @@
     ];
 
     const csvRows = [];
-    if (delimiter === ",") {
-      csvRows.push("sep=,");
-    }
+    // Instruksi sep= agar Excel otomatis memisahkan kolom
+    csvRows.push(`sep=${delimiter}`);
     csvRows.push(headers.join(delimiter));
 
     for (const ch of channelsToFetch) {
@@ -334,7 +333,7 @@
             type: "sht31",
             from: fromDate,
             to: toDate,
-            limit: 5000,
+            limit: 50000,
             delimiter: delimiter
           }, `bems_sensors_sht31_${fromDate}_to_${toDate}.csv`);
         } else if (selected === "sensors_weather") {
@@ -342,30 +341,32 @@
           await downloadFromServerApi("/api/export/weather.csv", {
             from: fromDate,
             to: toDate,
-            limit: 5000,
+            limit: 50000,
             delimiter: delimiter
           }, `bems_weather_rs485_${fromDate}_to_${toDate}.csv`);
         } else if (selected === "energy_all") {
           statusBox.textContent = "Querying MySQL Energy Database via api_energy.php (All Channels)...";
           try {
-            await downloadEnergyFromMySql("all", fromDate, toDate, 5000, delimiter);
+            await downloadEnergyFromMySql("all", fromDate, toDate, 50000, delimiter);
           } catch (e) {
             await downloadFromServerApi("/api/export/energy.csv", {
               channel: "all",
               from: fromDate,
               to: toDate,
+              limit: 50000,
               delimiter: delimiter
             }, `bems_energy_mysql_all_${fromDate}_to_${toDate}.csv`);
           }
         } else if (selected === "energy_ac") {
           statusBox.textContent = "Querying MySQL Energy Database via api_energy.php (Ch-1 AC)...";
           try {
-            await downloadEnergyFromMySql("1", fromDate, toDate, 5000, delimiter);
+            await downloadEnergyFromMySql("1", fromDate, toDate, 50000, delimiter);
           } catch (e) {
             await downloadFromServerApi("/api/export/energy.csv", {
               channel: "1",
               from: fromDate,
               to: toDate,
+              limit: 50000,
               delimiter: delimiter
             }, `bems_energy_mysql_ac_${fromDate}_to_${toDate}.csv`);
           }
@@ -374,7 +375,7 @@
           await downloadFromServerApi("/api/export/integrated.csv", {
             from: fromDate,
             to: toDate,
-            limit: 3000,
+            limit: 50000,
             delimiter: delimiter
           }, `bems_integrated_all_${fromDate}_to_${toDate}.csv`);
         }
