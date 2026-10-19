@@ -94,30 +94,32 @@ class BemsDatabase:
 
     def connect(self):
         while running:
-            # 1. Coba koneksi native Peer Unix Socket (standar tercepat di Ubuntu Linux)
+            # 1. Koneksi langsung via Unix Domain Socket sebagai user Linux (iotlab)
             try:
                 self.conn = psycopg2.connect(
-                    database=PG_DATABASE,
+                    dbname=PG_DATABASE,
+                    user="iotlab",
+                    host="/var/run/postgresql",
                     connect_timeout=5
                 )
                 self.conn.autocommit = True
-                logger.info(f"Database bems_db terhubung sukses via Unix Socket Peer Auth (db={PG_DATABASE})")
+                logger.info("Database bems_db TERHUBUNG SUKSES via Unix Socket (user=iotlab)!")
                 return
-            except Exception as e_peer:
-                logger.debug(f"Peer auth socket belum siap ({e_peer}), mencoba TCP...")
+            except Exception as e_sock:
+                logger.debug(f"Koneksi socket iotlab ({e_sock}), mencoba TCP...")
 
-            # 2. Fallback via TCP host/port/user/password
+            # 2. Fallback via TCP
             try:
                 self.conn = psycopg2.connect(
-                    host=PG_HOST or "localhost",
-                    port=PG_PORT,
-                    database=PG_DATABASE,
-                    user=PG_USER,
-                    password=PG_PASSWORD,
-                    connect_timeout=10
+                    dbname=PG_DATABASE,
+                    host="localhost",
+                    port=5432,
+                    user="bems_user",
+                    password="bems_password_secure",
+                    connect_timeout=5
                 )
                 self.conn.autocommit = True
-                logger.info(f"Database bems_db terhubung sukses via TCP {PG_USER}@{PG_HOST}:{PG_PORT}")
+                logger.info("Database bems_db terhubung via TCP bems_user")
                 return
             except Exception as e:
                 logger.warning(f"Koneksi DB gagal ({e}). Retry dalam 5 detik...")

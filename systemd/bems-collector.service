@@ -13,11 +13,7 @@ RestartSec=5
 StandardOutput=journal
 StandardError=journal
 Environment=PYTHONUNBUFFERED=1
-Environment=PG_HOST=localhost
-Environment=PG_PORT=5432
 Environment=PG_DATABASE=bems_db
-Environment=PG_USER=bems_user
-Environment=PG_PASSWORD=bems_password_secure
 
 [Install]
 WantedBy=multi-user.target
