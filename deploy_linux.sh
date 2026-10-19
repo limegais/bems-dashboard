@@ -55,7 +55,7 @@ sudo -u postgres psql -d bems_db -c "GRANT ALL ON SCHEMA public TO bems_user;"
 # Import Schema
 echo "Mengimpor skema database dari database/bems_schema_postgresql.sql..."
 if [ -f "$CURRENT_DIR/database/bems_schema_postgresql.sql" ]; then
-    sudo -u postgres psql -d bems_db -f "$CURRENT_DIR/database/bems_schema_postgresql.sql"
+    sudo -u postgres psql -d bems_db < "$CURRENT_DIR/database/bems_schema_postgresql.sql"
     echo -e "${GREEN}Skema bems_schema_postgresql.sql berhasil diimpor!${NC}"
 else
     echo -e "${RED}File database/bems_schema_postgresql.sql tidak ditemukan!${NC}"
