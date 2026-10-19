@@ -22,11 +22,17 @@ const APP_CONFIG = {
     // Bridge WebSocket menghubungkan browser ke broker TCP 128.199.206.166:1883
     // Menggunakan port 9002 (port 9001 dicadangkan/dipakai docker)
     BROKER_URL: (function () {
+      const isHttps = typeof window !== "undefined" && window.location && window.location.protocol === "https:";
       const host = (typeof window !== "undefined" && window.location && window.location.hostname) ? window.location.hostname : "localhost";
       let wsPort = "9002";
       if (typeof window !== "undefined" && window.location && window.location.search) {
         const params = new URLSearchParams(window.location.search);
+        if (params.get("ws_url")) return params.get("ws_url");
         if (params.get("ws_port")) wsPort = params.get("ws_port");
+      }
+      if (isHttps) {
+        // Jika website diakses via Cloudflare Tunnel (HTTPS), gunakan Secure WebSocket (WSS)
+        return `wss://${host}/ws`;
       }
       return `ws://${host}:${wsPort}`;
     })(),
