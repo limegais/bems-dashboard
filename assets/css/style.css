@@ -161,21 +161,26 @@ h4 {
   transform: translateY(-1px);
 }
 
-/* Live flash micro-interaction when MQTT packet arrives */
-@keyframes liveMetricFlash {
-  0% {
-    background-color: rgba(16, 185, 129, 0.18);
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
-    border-radius: 4px;
-  }
-  100% {
-    background-color: transparent;
-    box-shadow: none;
-  }
+/* Smooth transitions for metrics and telemetry (no green or harsh color flashes) */
+.data-flash {
+  animation: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
-.data-flash {
-  animation: liveMetricFlash 0.8s ease-out;
+/* Fluid transition for values across all cards and telemetry displays */
+.node-pro-card, .kpi-card, .sub-panel {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+span[id*="-temp"],
+span[id*="-hum"],
+span[id*="-ts"],
+span[id*="nnzn-"],
+span[id*="pzem-"],
+span[id*="mqtt-"],
+.kpi-value {
+  transition: color 0.25s ease, opacity 0.2s ease;
 }
 
 .mqtt-pulse-dot {

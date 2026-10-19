@@ -69,9 +69,6 @@ function setText(id, text) {
   const str = String(text);
   if (el.textContent !== str) {
     el.textContent = str;
-    el.classList.remove("data-flash");
-    void el.offsetWidth; // trigger reflow for smooth micro-flash
-    el.classList.add("data-flash");
   }
 }
 
