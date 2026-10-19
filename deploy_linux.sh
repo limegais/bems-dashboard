@@ -38,10 +38,11 @@ sudo apt install -y postgresql postgresql-contrib python3 python3-pip python3-ve
 echo -e "\n${BLUE}[3/6] Mengonfigurasi Database PostgreSQL (bems_db)...${NC}"
 sudo systemctl enable --now postgresql
 
-# Buat User bems_user jika belum ada
-echo "Membuat role bems_user di PostgreSQL..."
+# Buat User bems_user jika belum ada & pastikan password benar
+echo "Mengatur role dan password bems_user di PostgreSQL..."
 sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='bems_user'" | grep -q 1 || \
 sudo -u postgres psql -c "CREATE USER bems_user WITH PASSWORD 'bems_password_secure' CREATEDB;"
+sudo -u postgres psql -c "ALTER USER bems_user WITH PASSWORD 'bems_password_secure' SUPERUSER;"
 
 # Buat Database bems_db jika belum ada
 echo "Membuat database bems_db..."
