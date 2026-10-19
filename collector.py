@@ -94,9 +94,22 @@ class BemsDatabase:
 
     def connect(self):
         while running:
+            # 1. Coba koneksi native Peer Unix Socket (standar tercepat di Ubuntu Linux)
             try:
                 self.conn = psycopg2.connect(
-                    host=PG_HOST,
+                    database=PG_DATABASE,
+                    connect_timeout=5
+                )
+                self.conn.autocommit = True
+                logger.info(f"Database bems_db terhubung sukses via Unix Socket Peer Auth (db={PG_DATABASE})")
+                return
+            except Exception as e_peer:
+                logger.debug(f"Peer auth socket belum siap ({e_peer}), mencoba TCP...")
+
+            # 2. Fallback via TCP host/port/user/password
+            try:
+                self.conn = psycopg2.connect(
+                    host=PG_HOST or "localhost",
                     port=PG_PORT,
                     database=PG_DATABASE,
                     user=PG_USER,
@@ -104,7 +117,7 @@ class BemsDatabase:
                     connect_timeout=10
                 )
                 self.conn.autocommit = True
-                logger.info(f"Database bems_db terhubung via {PG_USER}@{PG_HOST}:{PG_PORT}")
+                logger.info(f"Database bems_db terhubung sukses via TCP {PG_USER}@{PG_HOST}:{PG_PORT}")
                 return
             except Exception as e:
                 logger.warning(f"Koneksi DB gagal ({e}). Retry dalam 5 detik...")
