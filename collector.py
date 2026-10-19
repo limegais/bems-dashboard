@@ -155,14 +155,15 @@ class BemsDatabase:
             logger.error(f"Error raw_log: {e}")
 
     def insert_batch_snapshots(self, sht_data, nnzn_data, pzem_data, occ_data):
-        """Menyimpan snapshot lengkap seluruh sensor ke database dalam 1 transaksi per 5 detik"""
+        """Menyimpan snapshot seluruh sensor ke database setiap 5 detik secara independen"""
         self.check_connection()
+        now = datetime.now(timezone.utc)
+        inserted_items = []
+
+        # 1. Simpan SHT31 (6 Workstations)
         try:
             with self.lock:
                 with self.conn.cursor() as cur:
-                    now = datetime.now(timezone.utc)
-
-                    # 1. Simpan SHT31 (6 Workstations)
                     for code, d in sht_data.items():
                         ws_id = self.ws_map.get(code)
                         if not ws_id:
@@ -182,9 +183,20 @@ class BemsDatabase:
                                  dew_point_c, heat_index_c, mqtt_topic)
                             VALUES (%s, %s, %s, %s, %s, %s, %s);
                         """, (now, ws_id, temp, rh, dp, hi, f"{code}/sensor/state"))
+            inserted_items.append("6 SHT31")
+        except Exception as e:
+            logger.error(f"Error insert SHT31 snapshot: {e}")
 
-                    # 2. Simpan NNZN Weather
-                    dev_id = self.device_map.get("NNZN_WEATHER", 4)
+        # 2. Simpan NNZN Weather
+        try:
+            dev_id = self.device_map.get("NNZN_WEATHER")
+            if not dev_id and self.device_map:
+                dev_id = list(self.device_map.values())[0]
+            if not dev_id:
+                dev_id = 4
+
+            with self.lock:
+                with self.conn.cursor() as cur:
                     cur.execute("""
                         INSERT INTO bems_telemetry.nnzn_weather
                             (time, device_id, outdoor_temp_c, outdoor_rh_pct, solar_irradiance,
@@ -198,15 +210,21 @@ class BemsDatabase:
                         nnzn_data.get("th_out_humidity", 65.0),
                         nnzn_data.get("g_out_irradiance", 350.0),
                         nnzn_data.get("lx_out_lux", 12000.0),
-                        nnzn_data.get("lx1_lux", 420.0),
-                        nnzn_data.get("lx2_lux", 410.0),
-                        nnzn_data.get("lx3_lux", 390.0),
-                        nnzn_data.get("lx4_lux", 430.0),
+                        nnzn_data.get("lux_wb1", 420.0),
+                        nnzn_data.get("lux_wb2", 410.0),
+                        nnzn_data.get("lux_wb3", 390.0),
+                        nnzn_data.get("lux_wb4", 430.0),
                         nnzn_data.get("co2_co2", 520.0),
                         nnzn_data.get("airflow_speed", 0.2)
                     ))
+            inserted_items.append("1 NNZN Weather")
+        except Exception as e:
+            logger.error(f"Error insert NNZN weather snapshot: {e}")
 
-                    # 3. Simpan PZEM Readings (CH1 AC, CH2 Socket, CH3 Lampu)
+        # 3. Simpan PZEM Readings (CH1 AC, CH2 Socket, CH3 Lampu)
+        try:
+            with self.lock:
+                with self.conn.cursor() as cur:
                     for ch_item in pzem_data:
                         ch_id = ch_item["channel_id"]
                         lbl = ch_item["channel_label"]
@@ -229,8 +247,14 @@ class BemsDatabase:
                             ch_item["active_power_w"], ch_item["power_factor"],
                             kwh, cost, co2
                         ))
+            inserted_items.append("3 PZEM Energy")
+        except Exception as e:
+            logger.error(f"Error insert PZEM readings snapshot: {e}")
 
-                    # 4. Simpan Occupancy
+        # 4. Simpan Occupancy
+        try:
+            with self.lock:
+                with self.conn.cursor() as cur:
                     cur.execute("""
                         INSERT INTO bems_telemetry.occupancy
                             (time, room_id, headcount, motion_detected, detection_method, detection_confidence)
@@ -241,9 +265,11 @@ class BemsDatabase:
                         occ_data.get("person_detected", True),
                         occ_data.get("confidence", 0.92)
                     ))
-
+            inserted_items.append("1 Occupancy")
         except Exception as e:
-            logger.error(f"Error insert batch snapshots: {e}")
+            logger.error(f"Error insert occupancy snapshot: {e}")
+
+        return inserted_items
 
 
 db = BemsDatabase()
