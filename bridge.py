@@ -29,7 +29,7 @@ async def forward_tcp_to_ws(reader, websocket):
     finally:
         await websocket.close()
 
-async def handler(websocket):
+async def handler(websocket, *args, **kwargs):
     print(f"[Bridge] New WebSocket client connected: {websocket.remote_address}")
     try:
         reader, writer = await asyncio.open_connection(MQTT_HOST, MQTT_PORT)
