@@ -7,6 +7,12 @@
  * 2. Data Energi Listrik Submetering (AC, Stop Kontak, Lampu, Total Demand)
  *    -> Mengambil dari Database MySQL 'iotlabun_sbms' via api_energy.php
  * 3. Dataset Terintegrasi Lengkap (Sensor PostgreSQL + Energi MySQL)
+ * 
+ * Format Kompatibilitas Excel:
+ * - Menggunakan Semicolon (;) secara default agar Excel Indonesia membagi data
+ *   ke kolom A, B, C, D... secara otomatis tanpa tercampur menjadi 1 kolom.
+ * - Menggunakan CRLF (\r\n) agar setiap data terpisah pada baris baru.
+ * - Menggunakan UTF-8 BOM (\ufeff) agar simbol derajat °C dan format angka presisi.
  */
 
 (function () {
@@ -33,7 +39,7 @@
   }
 
   // Unduh CSV dari MySQL Energy langsung dari browser (Client-Side Fetcher)
-  async function downloadEnergyFromMySql(channelId, fromDate, toDate, limit = 5000) {
+  async function downloadEnergyFromMySql(channelId, fromDate, toDate, limit = 5000, delimiter = ";") {
     const channelNames = {
       1: "AC_HVAC",
       2: "StopKontak_Outlets",
@@ -51,7 +57,12 @@
       "Apparent_Power_VA", "Power_Factor", "Energy_kWh",
       "Estimasi_Biaya_IDR", "Emisi_CO2_kg", "Database_Source"
     ];
-    const csvRows = [headers.join(",")];
+
+    const csvRows = [];
+    if (delimiter === ",") {
+      csvRows.push("sep=,");
+    }
+    csvRows.push(headers.join(delimiter));
 
     for (const ch of channelsToFetch) {
       const url = `${ENERGY_API_URL}?key=${ENERGY_API_KEY}&action=history&id_kwh=${ch}&from=${fromDate}&to=${toDate}&limit=${limit}`;
@@ -80,7 +91,7 @@
           cost,
           co2,
           `"MySQL Database (iotlabun_sbms via api_energy.php)"`
-        ].join(","));
+        ].join(delimiter));
       });
     }
 
@@ -88,7 +99,8 @@
       throw new Error(`Tidak ada baris data energi MySQL untuk rentang ${fromDate} s/d ${toDate}`);
     }
 
-    const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    // CRLF (\r\n) + UTF-8 BOM (\ufeff)
+    const blob = new Blob(["\ufeff" + csvRows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
     const blobUrl = URL.createObjectURL(blob);
     triggerDownload(blobUrl, filename);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
@@ -98,17 +110,6 @@
   async function downloadFromServerApi(apiPath, queryParams, fallbackFilename) {
     const searchParams = new URLSearchParams(queryParams);
     const downloadUrl = `${apiPath}?${searchParams.toString()}`;
-
-    // Coba trigger native download browser langsung dari server
-    try {
-      const resp = await fetch(downloadUrl, { method: "HEAD" });
-      if (resp.ok) {
-        window.location.href = downloadUrl;
-        return;
-      }
-    } catch (e) {
-      // Jika fetch HEAD gagal (misal CORS/mock), lakukan fetch GET
-    }
 
     // Direct window location trigger
     const link = document.createElement("a");
@@ -154,9 +155,9 @@
 
         <!-- Modal Body -->
         <div class="p-6 space-y-4 text-xs text-slate-600">
-          <!-- Pilihan Kategori Dataset -->
+          <!-- 1. Pilihan Kategori Dataset -->
           <div>
-            <label class="block font-bold text-slate-800 mb-1.5 uppercase tracking-wider text-[11px]">1. Pilih Dataset yang Diexport</label>
+            <label class="block font-bold text-slate-800 mb-1.5 uppercase tracking-wider text-[11px]">1. Pilih Dataset yang Ingin Diexport</label>
             <div class="space-y-2">
               <!-- Opsi Sensor PostgreSQL -->
               <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
@@ -218,7 +219,7 @@
             </div>
           </div>
 
-          <!-- Rentang Tanggal & Preset -->
+          <!-- 2. Rentang Tanggal & Preset -->
           <div>
             <div class="flex items-center justify-between mb-1.5">
               <label class="font-bold text-slate-800 uppercase tracking-wider text-[11px]">2. Rentang Tanggal Data</label>
@@ -241,16 +242,38 @@
             </div>
           </div>
 
+          <!-- 3. Pilihan Delimiter Excel -->
+          <div>
+            <label class="block font-bold text-slate-800 mb-1.5 uppercase tracking-wider text-[11px]">3. Format Pemisah Kolom (Excel Compatible)</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-teal-500 bg-teal-50/50 cursor-pointer font-semibold text-slate-800 transition-all has-checked:border-teal-600 has-checked:bg-teal-100/50">
+                <input type="radio" name="export-delim" value=";" checked class="text-teal-700 focus:ring-teal-500">
+                <div>
+                  <span class="block font-bold text-slate-800 text-[11px]">Semicolon (;) — Rekomendasi Excel</span>
+                  <span class="text-[10px] text-slate-500 font-normal">Otomatis terpisah kolom A, B, C, D di Excel Windows</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer text-slate-700 transition-all has-checked:border-teal-600 has-checked:bg-teal-100/50">
+                <input type="radio" name="export-delim" value="," class="text-teal-700 focus:ring-teal-500">
+                <div>
+                  <span class="block font-bold text-slate-800 text-[11px]">Comma (,) + sep=,</span>
+                  <span class="text-[10px] text-slate-500 font-normal">Untuk Google Sheets, Python &amp; Data Science</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
           <!-- Status Pesan / Feedback -->
           <div id="export-status-box" class="hidden p-3 rounded-xl text-xs font-mono"></div>
         </div>
 
         <!-- Modal Footer -->
         <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-          <span class="text-[11px] text-slate-400 font-mono">Format: IEEE RFC 4180 Standard CSV</span>
+          <span class="text-[11px] text-slate-400 font-mono">CRLF (\r\n) &middot; UTF-8 BOM Presisi</span>
           <div class="flex items-center gap-2">
-            <button id="bems-export-cancel" type="button" class="px-3.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors">Batal</button>
-            <button id="bems-export-submit" type="button" class="px-4 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2">
+            <button id="bems-export-cancel" type="button" class="px-3.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors cursor-pointer">Batal</button>
+            <button id="bems-export-submit" type="button" class="px-4 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer">
               <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
               <span>Download CSV</span>
             </button>
@@ -294,6 +317,7 @@
       const selected = modal.querySelector('input[name="export-category"]:checked')?.value || "sensors_sht31";
       const fromDate = modal.querySelector("#export-modal-from").value || todayStr;
       const toDate = modal.querySelector("#export-modal-to").value || todayStr;
+      const delimiter = modal.querySelector('input[name="export-delim"]:checked')?.value || ";";
       const btn = modal.querySelector("#bems-export-submit");
       const statusBox = modal.querySelector("#export-status-box");
 
@@ -306,28 +330,53 @@
       try {
         if (selected === "sensors_sht31") {
           statusBox.textContent = "Querying PostgreSQL bems_db: bems_telemetry.sht31_readings...";
-          await downloadFromServerApi("/api/export/sensors.csv", { type: "sht31", from: fromDate, to: toDate, limit: 5000 }, `bems_sensors_sht31_${fromDate}_to_${toDate}.csv`);
+          await downloadFromServerApi("/api/export/sensors.csv", {
+            type: "sht31",
+            from: fromDate,
+            to: toDate,
+            limit: 5000,
+            delimiter: delimiter
+          }, `bems_sensors_sht31_${fromDate}_to_${toDate}.csv`);
         } else if (selected === "sensors_weather") {
           statusBox.textContent = "Querying PostgreSQL bems_db: bems_telemetry.nnzn_weather...";
-          await downloadFromServerApi("/api/export/weather.csv", { from: fromDate, to: toDate, limit: 5000 }, `bems_weather_rs485_${fromDate}_to_${toDate}.csv`);
+          await downloadFromServerApi("/api/export/weather.csv", {
+            from: fromDate,
+            to: toDate,
+            limit: 5000,
+            delimiter: delimiter
+          }, `bems_weather_rs485_${fromDate}_to_${toDate}.csv`);
         } else if (selected === "energy_all") {
           statusBox.textContent = "Querying MySQL Energy Database via api_energy.php (All Channels)...";
           try {
-            await downloadEnergyFromMySql("all", fromDate, toDate, 5000);
+            await downloadEnergyFromMySql("all", fromDate, toDate, 5000, delimiter);
           } catch (e) {
-            // Fallback via server endpoint
-            await downloadFromServerApi("/api/export/energy.csv", { channel: "all", from: fromDate, to: toDate }, `bems_energy_mysql_all_${fromDate}_to_${toDate}.csv`);
+            await downloadFromServerApi("/api/export/energy.csv", {
+              channel: "all",
+              from: fromDate,
+              to: toDate,
+              delimiter: delimiter
+            }, `bems_energy_mysql_all_${fromDate}_to_${toDate}.csv`);
           }
         } else if (selected === "energy_ac") {
           statusBox.textContent = "Querying MySQL Energy Database via api_energy.php (Ch-1 AC)...";
           try {
-            await downloadEnergyFromMySql("1", fromDate, toDate, 5000);
+            await downloadEnergyFromMySql("1", fromDate, toDate, 5000, delimiter);
           } catch (e) {
-            await downloadFromServerApi("/api/export/energy.csv", { channel: "1", from: fromDate, to: toDate }, `bems_energy_mysql_ac_${fromDate}_to_${toDate}.csv`);
+            await downloadFromServerApi("/api/export/energy.csv", {
+              channel: "1",
+              from: fromDate,
+              to: toDate,
+              delimiter: delimiter
+            }, `bems_energy_mysql_ac_${fromDate}_to_${toDate}.csv`);
           }
         } else if (selected === "integrated_all") {
           statusBox.textContent = "Menggabungkan dataset: Sensor (PostgreSQL) + Energi (MySQL)...";
-          await downloadFromServerApi("/api/export/integrated.csv", { from: fromDate, to: toDate, limit: 3000 }, `bems_integrated_all_${fromDate}_to_${toDate}.csv`);
+          await downloadFromServerApi("/api/export/integrated.csv", {
+            from: fromDate,
+            to: toDate,
+            limit: 3000,
+            delimiter: delimiter
+          }, `bems_integrated_all_${fromDate}_to_${toDate}.csv`);
         }
 
         statusBox.className = "p-3 rounded-xl text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 block";
@@ -364,7 +413,6 @@
         el.setAttribute("data-bound-export", "true");
         el.addEventListener("click", (e) => {
           e.preventDefault();
-          // Tentukan kategori default berdasarkan halaman
           const path = window.location.pathname;
           let cat = "sensors_sht31";
           if (path.includes("indoor")) cat = "sensors_sht31";
@@ -383,7 +431,7 @@
   window.BemsExport = {
     openModal,
     downloadEnergy: downloadEnergyFromMySql,
-    downloadSensors: (type, from, to) => downloadFromServerApi("/api/export/sensors.csv", { type, from, to }),
+    downloadSensors: (type, from, to, delim) => downloadFromServerApi("/api/export/sensors.csv", { type, from, to, delimiter: delim || ";" }),
     autoBindButtons
   };
 
