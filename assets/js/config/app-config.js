@@ -31,7 +31,10 @@ const APP_CONFIG = {
         if (params.get("ws_port")) wsPort = params.get("ws_port");
       }
       if (isHttps) {
-        // Jika website diakses via Cloudflare Tunnel (HTTPS), gunakan Secure WebSocket (WSS)
+        // Jika diakses via https://bems.iotlab-uns.my.id, gunakan wss://ws-bems.iotlab-uns.my.id
+        if (host.includes("bems.iotlab-uns.my.id")) {
+          return "wss://ws-bems.iotlab-uns.my.id";
+        }
         return `wss://${host}/ws`;
       }
       return `ws://${host}:${wsPort}`;
