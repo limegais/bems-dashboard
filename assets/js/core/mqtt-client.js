@@ -383,7 +383,10 @@ function updateDom(changedNode, changedKey) {
 
   /* ── Update Timestamps ── */
   setText("mqtt-last-update", timeStr);
-  setText("mqtt-last-update-big", timeStr + " (UTC+7)");
+  setText("telemetry-last-sync-time", timeStr + " (UTC+7)");
+  if (window.BemsClock && typeof window.BemsClock.onDataReceived === "function") {
+    window.BemsClock.onDataReceived(timeStr + " (UTC+7)");
+  }
   setText("mqtt-last-update-footer", timeStr);
   setText("alert-timestamp", timeStr.split(" ")[0]);
   setText("chart-sub-time", timeStr.split(" ")[0]);

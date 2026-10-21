@@ -52,7 +52,7 @@
 
     const channelsToFetch = channelId === "all" ? [1, 2, 3] : [parseInt(channelId, 10)];
     const headers = [
-      "Timestamp", "Channel_ID", "Channel_Name", "Tegangan_V", "Arus_A",
+      "Timestamp", "Waktu_Detik", "Channel_ID", "Channel_Name", "Tegangan_V", "Arus_A",
       "Frekuensi_Hz", "Active_Power_kW", "Reactive_Power_VAR",
       "Apparent_Power_VA", "Power_Factor", "Energy_kWh",
       "Estimasi_Biaya_IDR", "Emisi_CO2_kg", "Database_Source"
@@ -75,8 +75,18 @@
         const co2 = (kwh * 0.85).toFixed(3);
         const name = channelNames[ch] || `Ch-${ch}`;
 
+        let ts = String(r.timestamp || "").trim();
+        if (ts && ts.length === 16) {
+          ts += ":00";
+        }
+        const timePart = ts.includes(" ") ? ts.split(" ")[1] : ts;
+        // Formula ="..." memaksa Excel menampilkan teks lengkap beserta detiknya tanpa terpotong format regional
+        const excelTs = `="${ts}"`;
+        const excelTime = `="${timePart}"`;
+
         csvRows.push([
-          `"${r.timestamp || ""}"`,
+          excelTs,
+          excelTime,
           ch,
           `"${name}"`,
           r.tegangan || 0,
@@ -144,7 +154,7 @@
             </div>
             <div>
               <h2 class="text-base font-bold tracking-tight">Export Dataset BEMS Living Lab (CSV)</h2>
-              <p class="text-xs text-teal-200/80">Sensor Telemetri (PostgreSQL) &amp; Monitoring Energi (MySQL)</p>
+              <p id="export-modal-subtitle" class="text-xs text-teal-200/80">Sensor Telemetri (PostgreSQL) &amp; Monitoring Energi (MySQL)</p>
             </div>
           </div>
           <button id="bems-export-close" class="text-teal-200 hover:text-white p-1 rounded-lg hover:bg-teal-700/50 transition-colors" title="Tutup">
@@ -159,7 +169,7 @@
             <label class="block font-bold text-slate-800 mb-1.5 uppercase tracking-wider text-[11px]">1. Pilih Dataset yang Ingin Diexport</label>
             <div class="space-y-2">
               <!-- Opsi Sensor PostgreSQL -->
-              <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
+              <label data-dataset="sensors_sht31" class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
                 <input type="radio" name="export-category" value="sensors_sht31" checked class="mt-0.5 text-teal-700 focus:ring-teal-500">
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
@@ -170,7 +180,7 @@
                 </div>
               </label>
 
-              <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
+              <label data-dataset="sensors_weather" class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
                 <input type="radio" name="export-category" value="sensors_weather" class="mt-0.5 text-teal-700 focus:ring-teal-500">
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
@@ -182,7 +192,7 @@
               </label>
 
               <!-- Opsi Energi MySQL -->
-              <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
+              <label data-dataset="energy_all" class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
                 <input type="radio" name="export-category" value="energy_all" class="mt-0.5 text-teal-700 focus:ring-teal-500">
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
@@ -193,7 +203,7 @@
                 </div>
               </label>
 
-              <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
+              <label data-dataset="energy_ac" class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
                 <input type="radio" name="export-category" value="energy_ac" class="mt-0.5 text-teal-700 focus:ring-teal-500">
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
@@ -205,7 +215,7 @@
               </label>
 
               <!-- Opsi Terintegrasi Lengkap -->
-              <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
+              <label data-dataset="integrated_all" class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
                 <input type="radio" name="export-category" value="integrated_all" class="mt-0.5 text-teal-700 focus:ring-teal-500">
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
@@ -398,11 +408,90 @@
     return modal;
   }
 
-  // Buka modal export dengan pilihan dataset tertentu
-  function openModal(category = "sensors_sht31") {
+  // Konfigurasi dataset per halaman
+  // Key: bagian dari pathname, Value: { defaultCategory, allowed: array nilai dataset yang ditampilkan }
+  const PAGE_EXPORT_CONFIG = {
+    "indoor":           { defaultCategory: "sensors_sht31",   allowed: ["sensors_sht31"] },
+    "outdoor":          { defaultCategory: "sensors_weather",  allowed: ["sensors_weather"] },
+    "energy":           { defaultCategory: "energy_all",       allowed: ["energy_all", "energy_ac"] },
+    "ac-control":       { defaultCategory: "energy_ac",        allowed: ["energy_ac"] },
+    "lighting-control": { defaultCategory: "energy_all",       allowed: ["energy_all", "energy_ac"] },
+    "occupancy":        { defaultCategory: "sensors_sht31",    allowed: ["sensors_sht31", "sensors_weather"] },
+    "thermal-evaluation": { defaultCategory: "sensors_sht31", allowed: ["sensors_sht31", "sensors_weather"] },
+    "prediction":       { defaultCategory: "sensors_sht31",   allowed: ["sensors_sht31", "sensors_weather"] },
+    "comfort-feedback": { defaultCategory: "sensors_sht31",   allowed: ["sensors_sht31"] },
+    "moga":             { defaultCategory: "integrated_all",  allowed: ["sensors_sht31", "energy_all", "integrated_all"] },
+    "mopso":            { defaultCategory: "integrated_all",  allowed: ["sensors_sht31", "energy_all", "integrated_all"] },
+    "historical":       { defaultCategory: "integrated_all",  allowed: ["sensors_sht31", "sensors_weather", "energy_all", "energy_ac", "integrated_all"] },
+    "index":            { defaultCategory: "integrated_all",  allowed: ["sensors_sht31", "sensors_weather", "energy_all", "energy_ac", "integrated_all"] },
+  };
+
+  // Dapatkan konfigurasi export untuk halaman saat ini
+  function getPageExportConfig() {
+    const path = window.location.pathname.toLowerCase();
+    for (const [key, cfg] of Object.entries(PAGE_EXPORT_CONFIG)) {
+      if (path.includes(key)) return cfg;
+    }
+    // Default: tampilkan semua
+    return { defaultCategory: "sensors_sht31", allowed: ["sensors_sht31", "sensors_weather", "energy_all", "energy_ac", "integrated_all"] };
+  }
+
+  // Terapkan filter dataset ke modal berdasarkan allowed list
+  function applyDatasetFilter(modal, allowedDatasets) {
+    const allOptions = modal.querySelectorAll("label[data-dataset]");
+    allOptions.forEach(label => {
+      const val = label.getAttribute("data-dataset");
+      if (allowedDatasets.includes(val)) {
+        label.style.display = "";
+      } else {
+        label.style.display = "none";
+        // Uncheck radio jika tersembunyi
+        const radio = label.querySelector("input[type='radio']");
+        if (radio) radio.checked = false;
+      }
+    });
+
+    // Update judul modal header subtitle sesuai halaman
+    const pageConfig = getPageExportConfig();
+    const subtitleEl = modal.querySelector("#export-modal-subtitle");
+    if (subtitleEl) {
+      const subtitleMap = {
+        "sensors_sht31":   "Sensor Telemetri Indoor (PostgreSQL)",
+        "sensors_weather": "Sensor Cuaca Outdoor (PostgreSQL)",
+        "energy_all":      "Monitoring Energi Submetering (MySQL)",
+        "energy_ac":       "Data Energi AC/HVAC (MySQL)",
+        "integrated_all":  "Dataset Terintegrasi Lengkap",
+      };
+      if (allowedDatasets.length === 1) {
+        subtitleEl.textContent = subtitleMap[allowedDatasets[0]] || "Data Export";
+      } else {
+        subtitleEl.textContent = allowedDatasets.map(k => subtitleMap[k] || k).join(" & ");
+      }
+    }
+  }
+
+  // Buka modal export dengan pilihan dataset tertentu, dengan filter per halaman
+  function openModal(category, allowedDatasets) {
     const modal = ensureModal();
-    const radio = modal.querySelector(`input[name="export-category"][value="${category}"]`);
-    if (radio) radio.checked = true;
+
+    // Tentukan allowed datasets: dari parameter, atau dari konfigurasi halaman
+    const pageCfg = getPageExportConfig();
+    const allowed = allowedDatasets || pageCfg.allowed;
+    const selectedCat = category || pageCfg.defaultCategory;
+
+    // Terapkan filter tampilan
+    applyDatasetFilter(modal, allowed);
+
+    // Set radio yang aktif
+    const radio = modal.querySelector(`input[name="export-category"][value="${selectedCat}"]`);
+    if (radio) {
+      radio.checked = true;
+    } else {
+      // Jika category tidak ada di allowed, pilih yang pertama
+      const firstVisible = modal.querySelector(`label[data-dataset]:not([style*='none']) input[type='radio']`);
+      if (firstVisible) firstVisible.checked = true;
+    }
+
     modal.classList.remove("hidden");
   }
 
@@ -414,15 +503,7 @@
         el.setAttribute("data-bound-export", "true");
         el.addEventListener("click", (e) => {
           e.preventDefault();
-          const path = window.location.pathname;
-          let cat = "sensors_sht31";
-          if (path.includes("indoor")) cat = "sensors_sht31";
-          else if (path.includes("outdoor")) cat = "sensors_weather";
-          else if (path.includes("energy")) cat = "energy_all";
-          else if (path.includes("historical")) cat = "integrated_all";
-          else cat = "sensors_sht31";
-
-          openModal(cat);
+          openModal(); // Akan otomatis pakai konfigurasi halaman saat ini
         });
       }
     });
@@ -433,7 +514,8 @@
     openModal,
     downloadEnergy: downloadEnergyFromMySql,
     downloadSensors: (type, from, to, delim) => downloadFromServerApi("/api/export/sensors.csv", { type, from, to, delimiter: delim || ";" }),
-    autoBindButtons
+    autoBindButtons,
+    getPageConfig: getPageExportConfig
   };
 
   document.addEventListener("DOMContentLoaded", () => {

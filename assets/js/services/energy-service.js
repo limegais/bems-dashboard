@@ -368,7 +368,9 @@
     // Update Header Clock & Last Update
     const timeStr = now.toLocaleTimeString("id-ID", { hour12: false }) + " WIB";
     setEl("energy-last-update-header", timeStr);
-    setEl("energy-last-update-big", timeStr);
+    if (window.BemsClock && typeof window.BemsClock.onDataReceived === "function") {
+      window.BemsClock.onDataReceived(timeStr);
+    }
   }
 
   // ── 3. Update Real-Time Charts ───────────────────────────────────────────────

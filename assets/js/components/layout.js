@@ -135,7 +135,7 @@ function renderTopbar(title, subtitle) {
   Preferences.applyTone(tone);
   const now = new Date();
   const dateText = now.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
-  const timeText = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+  const timeText = now.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour12: false }).replace(/:/g, ".");
 
   const currentUser = session.user || "admin";
   const currentRole = session.role || "Admin";
@@ -156,7 +156,7 @@ function renderTopbar(title, subtitle) {
             Telemetry Live
           </span>
           <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200" title="Akun Aktif">${currentUser} (${currentRole})</span>
-          <span class="topbar-date text-xs text-slate-500 hidden sm:inline">${dateText} · ${timeText} (UTC+7)</span>
+          <span id="topbar-live-clock" class="topbar-date text-xs text-slate-500 hidden sm:inline">${dateText} · ${timeText} (UTC+7)</span>
           <button id="logout-btn" class="topbar-link text-xs hover:text-red-600 transition-colors cursor-pointer" aria-label="Sign Out">Sign Out</button>
         </div>
       </div>
@@ -179,3 +179,130 @@ function renderTopbar(title, subtitle) {
     });
   }
 }
+
+// ─── Real-Time Live Clock & Refresh Countdown Manager (BemsClock) ─────────────
+window.BemsClock = {
+  intervalTimer: null,
+  refreshCycleSec: 5,        // Interval siklus auto-refresh default: 5 detik
+  secondsLeft: 5,            // Countdown waktu tersisa
+  lastDataSync: null,
+  isRefreshing: false,
+
+  init(options = {}) {
+    if (options.refreshCycleSec) {
+      this.refreshCycleSec = options.refreshCycleSec;
+      this.secondsLeft = options.refreshCycleSec;
+    }
+    this.tick();
+    if (this.intervalTimer) clearInterval(this.intervalTimer);
+    this.intervalTimer = setInterval(() => this.tick(), 1000);
+  },
+
+  getWibTime() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, "0");
+    const m = String(now.getMinutes()).padStart(2, "0");
+    const s = String(now.getSeconds()).padStart(2, "0");
+    return `${h}.${m}.${s}`;
+  },
+
+  getWibClockFull() {
+    return `${this.getWibTime()} (UTC+7)`;
+  },
+
+  tick() {
+    const fullTimeStr = this.getWibClockFull();
+    const timeOnly = this.getWibTime();
+    const now = new Date();
+    const dateText = now.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
+
+    // 1. Update Jam Besar di Header (detik jalan terus)
+    const bigClock = document.getElementById("mqtt-last-update-big");
+    if (bigClock) bigClock.textContent = fullTimeStr;
+
+    const energyBigClock = document.getElementById("energy-last-update-big");
+    if (energyBigClock) energyBigClock.textContent = fullTimeStr;
+
+    // 2. Update Topbar live clock
+    const topbarClock = document.getElementById("topbar-live-clock");
+    if (topbarClock) topbarClock.textContent = `${dateText} · ${fullTimeStr}`;
+
+    // 3. Update Camera time overlay jika ada
+    const camOverlay = document.getElementById("camera-time-overlay");
+    if (camOverlay) camOverlay.textContent = `${timeOnly} WIB`;
+
+    // 4. Hitung mundur auto-refresh data
+    if (!this.isRefreshing) {
+      this.secondsLeft--;
+      if (this.secondsLeft <= 0) {
+        this.triggerRefresh();
+      } else {
+        this.updateCountdownDom(this.secondsLeft, false);
+      }
+    }
+  },
+
+  updateCountdownDom(sec, isUpdating) {
+    const badges = document.querySelectorAll("#telemetry-countdown-val, .bems-refresh-countdown-val");
+    badges.forEach(el => {
+      el.textContent = isUpdating ? "Memperbarui..." : `${sec} detik`;
+    });
+
+    const badgeContainers = document.querySelectorAll("#telemetry-countdown-badge, .bems-refresh-countdown-badge");
+    badgeContainers.forEach(container => {
+      if (isUpdating) {
+        container.classList.add("bg-teal-100", "border-teal-400", "text-teal-900");
+        container.setAttribute("title", "Sedang memperbarui telemetri...");
+      } else {
+        container.classList.remove("bg-teal-100", "border-teal-400", "text-teal-900");
+        container.setAttribute("title", `Data selanjutnya akan direfresh dalam ${sec} detik (Klik untuk refresh sekarang)`);
+      }
+    });
+  },
+
+  triggerRefresh() {
+    this.isRefreshing = true;
+    this.updateCountdownDom(0, true);
+
+    // Panggil service refresh jika ada di halaman aktif
+    if (window.EnergyService && typeof window.EnergyService.refresh === "function") {
+      try { window.EnergyService.refresh(); } catch (e) {}
+    }
+
+    // Trigger event refresh BEMS
+    try {
+      window.dispatchEvent(new CustomEvent("bems:refresh-tick", { detail: { timestamp: Date.now() } }));
+    } catch (e) {}
+
+    // Setelah proses refresh, pulihkan hitungan mundur
+    setTimeout(() => {
+      this.isRefreshing = false;
+      this.secondsLeft = this.refreshCycleSec;
+      this.updateCountdownDom(this.secondsLeft, false);
+    }, 900);
+  },
+
+  onDataReceived(dataTimeStr) {
+    this.lastDataSync = dataTimeStr || this.getWibClockFull();
+    const lastSyncEl = document.getElementById("telemetry-last-sync-time");
+    if (lastSyncEl) {
+      lastSyncEl.textContent = this.lastDataSync;
+    }
+    // Sinkronkan countdown kembali penuh saat paket baru saja masuk
+    this.secondsLeft = this.refreshCycleSec;
+    this.updateCountdownDom(this.secondsLeft, false);
+  },
+
+  refreshNow() {
+    this.secondsLeft = 0;
+    this.triggerRefresh();
+  }
+};
+
+// Inisialisasi otomatis BemsClock saat script layout selesai dimuat
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => window.BemsClock.init());
+} else {
+  window.BemsClock.init();
+}
+

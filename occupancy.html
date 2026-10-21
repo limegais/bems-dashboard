@@ -48,9 +48,19 @@
             </p>
           </div>
           <div class="flex items-center gap-4">
-            <div class="text-right">
-              <span class="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">LAST UPDATED</span>
-              <span id="mqtt-last-update-big" class="font-mono text-lg font-bold text-slate-800">21.58.00 (UTC+7)</span>
+            <div class="text-right flex flex-col items-end">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Sistem Aktif (Live)"></span>
+                <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">WAKTU SISTEM (UTC+7)</span>
+              </div>
+              <span id="mqtt-last-update-big" class="font-mono text-lg font-bold text-slate-800 leading-tight">--.--.-- (UTC+7)</span>
+              <div class="flex items-center gap-1 mt-0.5 text-[11px] font-mono text-slate-500">
+                <span class="text-slate-400">Refresh data:</span>
+                <button type="button" id="telemetry-countdown-badge" onclick="window.BemsClock ? window.BemsClock.refreshNow() : null" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200/80 font-bold transition-all cursor-pointer shadow-2xs" title="Klik untuk refresh data sekarang">
+                  <svg class="w-3 h-3 text-teal-600 animate-spin" style="animation-duration: 3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  <span id="telemetry-countdown-val">5 detik</span>
+                </button>
+              </div>
             </div>
             <button onclick="toggleConfigModal()" class="px-3.5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -979,14 +989,10 @@
 
   /* ── Clock & Status Intervals ── */
   setInterval(() => {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour12: false }) + " WIB";
     const clkOverlay = document.getElementById("camera-time-overlay");
-    const luBig      = document.getElementById("mqtt-last-update-big");
-    const luFoot     = document.getElementById("mqtt-last-update-footer");
-    if (clkOverlay) clkOverlay.textContent = timeStr;
-    if (luBig)      luBig.textContent      = timeStr;
-    if (luFoot)     luFoot.textContent     = timeStr.replace(" WIB", "");
+    if (clkOverlay && window.BemsClock) {
+      clkOverlay.textContent = window.BemsClock.getWibTime() + " WIB";
+    }
   }, 1000);
 
   // Poll camera status API every 4 seconds

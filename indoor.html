@@ -39,9 +39,19 @@
             </p>
           </div>
           <div class="flex items-center gap-4">
-            <div class="text-right">
-              <span class="block text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">LAST UPDATED</span>
-              <span id="mqtt-last-update-big" class="font-mono text-lg font-bold text-slate-800">21.40.00 (UTC+7)</span>
+            <div class="text-right flex flex-col items-end">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Sistem Aktif (Live)"></span>
+                <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono">WAKTU SISTEM (UTC+7)</span>
+              </div>
+              <span id="mqtt-last-update-big" class="font-mono text-lg font-bold text-slate-800 leading-tight">--.--.-- (UTC+7)</span>
+              <div class="flex items-center gap-1 mt-0.5 text-[11px] font-mono text-slate-500">
+                <span class="text-slate-400">Refresh data:</span>
+                <button type="button" id="telemetry-countdown-badge" onclick="window.BemsClock ? window.BemsClock.refreshNow() : null" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200/80 font-bold transition-all cursor-pointer shadow-2xs" title="Klik untuk refresh data sekarang">
+                  <svg class="w-3 h-3 text-teal-600 animate-spin" style="animation-duration: 3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  <span id="telemetry-countdown-val">5 detik</span>
+                </button>
+              </div>
             </div>
             <button id="btn-indoor-export" onclick="window.BemsExport ? window.BemsExport.openModal('sensors_sht31') : null" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export Data Sensor SHT31 (PostgreSQL bems_db)">
               <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
@@ -653,10 +663,8 @@
 
     /* mirror update time */
     const lu  = document.getElementById("mqtt-last-update");
-    const luBig = document.getElementById("mqtt-last-update-big");
     const luFoot = document.getElementById("mqtt-last-update-footer");
     if (lu && lu.textContent && lu.textContent !== "—") {
-      if (luBig) luBig.textContent = lu.textContent + " WIB";
       if (luFoot) luFoot.textContent = lu.textContent;
     }
   }
