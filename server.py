@@ -201,8 +201,84 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_export_integrated_csv(query)
             return
 
+        # ── API Multi-Objective Optimization (MOGA & MOPSO) ───────────────────
+        if path == "/api/optimize":
+            self.handle_api_optimize(query)
+            return
+
         # Default static file handler
         super().do_GET()
+
+    def do_POST(self):
+        parsed = urllib.parse.urlparse(self.path)
+        path = parsed.path
+        if path == "/api/optimize":
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length) if content_length > 0 else b"{}"
+            try:
+                data = json.loads(body.decode("utf-8"))
+            except Exception:
+                data = {}
+            self.handle_api_optimize_post(data)
+            return
+        self.send_error(404, "Not Found")
+
+    def handle_api_optimize(self, query):
+        try:
+            import optimizer
+            mode = query.get("mode", ["all_moga"])[0]
+            ac = query.get("ac", [None])[0]
+            lamp = query.get("lamp", [None])[0]
+            pop = int(query.get("pop", [40])[0])
+            gen = int(query.get("gen", [40])[0])
+            tout = float(query.get("tout", [32.0])[0])
+
+            ctx = {"tOutdoor": tout, "rhIndoor": 55.0, "luxOutdoor": 1200.0, "headcount": 3}
+            params = {"popSize": pop, "generations": gen, "swarmSize": pop, "maxIter": gen}
+            res = optimizer.run_optimization(mode=mode, ac_method=ac, lamp_method=lamp, ctx=ctx, params=params)
+
+            resp_bytes = json.dumps(res, indent=2).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_cors_headers()
+            self.send_header("Content-Length", str(len(resp_bytes)))
+            self.end_headers()
+            self.wfile.write(resp_bytes)
+        except Exception as e:
+            err = json.dumps({"error": str(e)}).encode("utf-8")
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_cors_headers()
+            self.send_header("Content-Length", str(len(err)))
+            self.end_headers()
+            self.wfile.write(err)
+
+    def handle_api_optimize_post(self, data):
+        try:
+            import optimizer
+            mode = data.get("mode", "all_moga")
+            ac = data.get("ac") or data.get("acMethod")
+            lamp = data.get("lamp") or data.get("lampMethod")
+            params = data.get("params", {})
+            ctx = data.get("ctx", {"tOutdoor": 32.0, "rhIndoor": 55.0, "luxOutdoor": 1200.0, "headcount": 3})
+
+            res = optimizer.run_optimization(mode=mode, ac_method=ac, lamp_method=lamp, ctx=ctx, params=params)
+
+            resp_bytes = json.dumps(res, indent=2).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_cors_headers()
+            self.send_header("Content-Length", str(len(resp_bytes)))
+            self.end_headers()
+            self.wfile.write(resp_bytes)
+        except Exception as e:
+            err = json.dumps({"error": str(e)}).encode("utf-8")
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_cors_headers()
+            self.send_header("Content-Length", str(len(err)))
+            self.end_headers()
+            self.wfile.write(err)
 
     def handle_api_status(self):
         pg_conn = get_pg_connection()
