@@ -2,7 +2,7 @@
 (function autoLoadExportService() {
   if (typeof window !== "undefined" && !document.querySelector('script[src*="export-service.js"]')) {
     const s = document.createElement("script");
-    s.src = "assets/js/services/export-service.js?v=10";
+    s.src = "assets/js/services/export-service.js?v=15";
     s.async = false;
     document.head.appendChild(s);
   }
