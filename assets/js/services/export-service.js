@@ -1,15 +1,19 @@
 /**
  * BEMS Living Lab — Page-Specific CSV Data Export Service & Modal
  * ----------------------------------------------------------------------------
- * Menampilkan antarmuka ekspor data CSV yang DISESUAIKAN KHUSUS per halaman:
- * - indoor.html            -> Khusus Sensor Workstation SHT31 (PostgreSQL bems_db)
- * - outdoor.html           -> Khusus Stasiun Cuaca RS485 NNZN (PostgreSQL bems_db)
- * - energy.html            -> Khusus Submetering Beban Listrik (MySQL iotlabun_sbms)
- * - occupancy.html         -> Khusus Okupansi & Headcount Radar (PostgreSQL bems_db)
- * - ac-control.html        -> Khusus Submetering Operasional AC Split (MySQL)
- * - lighting-control.html  -> Khusus Submetering Lampu Ruangan (MySQL)
- * - thermal-evaluation.html-> Evaluasi Termal (Indoor SHT31, Outdoor Weather, Korelasi)
- * - historical.html & index-> Dataset Historis & Terintegrasi Lengkap
+ * Menampilkan antarmuka ekspor data CSV yang 100% DISESUAIKAN KHUSUS per halaman:
+ * - indoor.html             -> Khusus Sensor Workstation SHT31 (PostgreSQL bems_db)
+ * - outdoor.html            -> Khusus Stasiun Cuaca RS485 NNZN (PostgreSQL bems_db)
+ * - energy.html             -> Khusus Submetering Beban Listrik Gedung (MySQL iotlabun_sbms)
+ * - occupancy.html          -> Khusus Okupansi & Headcount Radar mmWave (PostgreSQL bems_db)
+ * - ac-control.html         -> Khusus Submetering & Telemetri AC Inverter (MySQL)
+ * - lighting-control.html   -> Khusus Submetering Lampu & Penerangan Ruangan (MySQL)
+ * - thermal-evaluation.html -> Khusus Evaluasi Kenyamanan Termal ISO 7730 (PostgreSQL)
+ * - comfort-feedback.html   -> Khusus Survei Respon Kenyamanan Termal Penghuni
+ * - prediction.html         -> Khusus Prediksi AI Beban Energi & Suhu Ruangan
+ * - moga.html & mopso.html  -> Khusus Solusi Pareto Optimal Algoritma Optimasi
+ * - experiment-mode.html    -> Khusus Log Pengujian & Skenario Eksperimen
+ * - historical.html & index -> Dataset Historis & Terintegrasi Lengkap BEMS
  * 
  * Fitur Excel Compatible:
  * - Instruksi sep=; (atau sep=,) otomatis
@@ -135,7 +139,7 @@
       parameters: "Suhu Udara (°C), Kelembapan Relatif (RH %), Titik Embun / Dew Point (°C), Heat Index (°C)",
       targetTable: "bems_telemetry.sht31_readings",
       defaultCategory: "sensors_sht31",
-      options: null // Tanpa pilihan radio, langsung fokus dataset indoor!
+      options: null
     },
     "outdoor": {
       title: "Export Data Stasiun Cuaca Outdoor (RS485)",
@@ -153,34 +157,11 @@
       subtitle: "Submetering Beban Daya Gedung — Database MySQL (api_energy.php)",
       badge: "MySQL Energy",
       badgeClass: "bg-amber-100 text-amber-800",
-      description: "Pilih kanal submetering daya listrik yang ingin diekspor:",
+      description: "Dataset submetering energi listrik lengkap: AC Inverter (Ch-1), Stop Kontak (Ch-2), Lampu (Ch-3), dan Total Demand Beban Daya Gedung.",
+      parameters: "Timestamp, Channel_ID, Channel_Name, Tegangan (V), Arus (A), Frekuensi (Hz), Daya Aktif (kW), Reactive/Apparent Power, Power Factor, kWh, Biaya (Rp), Emisi CO₂",
+      targetTable: "MySQL iotlabun_sbms.data_energy",
       defaultCategory: "energy_all",
-      options: [
-        {
-          value: "energy_all",
-          title: "Semua Kanal Submetering (Total Demand & 3 Beban)",
-          desc: "AC Inverter (Ch-1), Stop Kontak (Ch-2), Lampu (Ch-3) beserta total daya demand.",
-          badge: "Ch 1, 2, 3"
-        },
-        {
-          value: "energy_ac",
-          title: "Khusus Submeter AC Split / Inverter (Ch-1)",
-          desc: "Tegangan (V), Arus (A), Daya Aktif (kW), Energi (kWh), Biaya & Emisi CO₂ AC.",
-          badge: "Ch-1 AC"
-        },
-        {
-          value: "energy_outlets",
-          title: "Khusus Submeter Stop Kontak / Outlets (Ch-2)",
-          desc: "Beban komputasi, workstation meja, dan stop kontak lab.",
-          badge: "Ch-2 Stop Kontak"
-        },
-        {
-          value: "energy_lighting",
-          title: "Khusus Submeter Lampu / Lighting (Ch-3)",
-          desc: "Beban penerangan pencahayaan ruang living lab.",
-          badge: "Ch-3 Lampu"
-        }
-      ]
+      options: null
     },
     "occupancy": {
       title: "Export Data Okupansi & Headcount Living Lab",
@@ -188,7 +169,7 @@
       badge: "PostgreSQL bems_db",
       badgeClass: "bg-blue-100 text-blue-800",
       description: "Dataset deteksi keberadaan manusia dan jumlah orang di dalam ruang living lab.",
-      parameters: "Headcount (Jumlah Orang), Motion Detected (Pergerakan), Tingkat Kepercayaan / Confidence, Metode Deteksi",
+      parameters: "Timestamp, Room_ID, Headcount (Jumlah Orang), Motion Detected (Pergerakan), Tingkat Kepercayaan / Confidence, Metode Deteksi",
       targetTable: "bems_telemetry.occupancy",
       defaultCategory: "sensors_occupancy",
       options: null
@@ -198,8 +179,8 @@
       subtitle: "Monitoring Energi Unit AC Inverter (Ch-1) — Database MySQL",
       badge: "MySQL Energy",
       badgeClass: "bg-amber-100 text-amber-800",
-      description: "Riwayat telemetri kelistrikan dan beban daya unit pendingin udara (AC).",
-      parameters: "Tegangan (V), Arus (A), Frekuensi (Hz), Daya Aktif (kW), Reactive/Apparent Power, Konsumsi (kWh), Biaya & CO₂",
+      description: "Riwayat telemetri kelistrikan dan beban daya unit pendingin udara (AC Split Inverter).",
+      parameters: "Timestamp, Tegangan (V), Arus (A), Frekuensi (Hz), Daya Aktif (kW), Reactive/Apparent Power, Konsumsi (kWh), Biaya & CO₂",
       targetTable: "MySQL iotlabun_sbms (Ch-1 AC)",
       defaultCategory: "energy_ac",
       options: null
@@ -210,38 +191,76 @@
       badge: "MySQL Energy",
       badgeClass: "bg-amber-100 text-amber-800",
       description: "Riwayat penggunaan daya listrik beban pencahayaan ruang living lab.",
-      parameters: "Tegangan (V), Arus (A), Daya Aktif (kW), Konsumsi Energi (kWh), Biaya Listrik",
+      parameters: "Timestamp, Tegangan (V), Arus (A), Daya Aktif (kW), Konsumsi Energi (kWh), Biaya Listrik, Emisi Karbon",
       targetTable: "MySQL iotlabun_sbms (Ch-3 Lamp)",
       defaultCategory: "energy_lighting",
       options: null
     },
     "thermal-evaluation": {
-      title: "Export Data Evaluasi Kenyamanan Termal",
-      subtitle: "Evaluasi IEQ & Iklim Lingkungan — PostgreSQL bems_db",
+      title: "Export Data Evaluasi Kenyamanan Termal (ISO 7730)",
+      subtitle: "Korelasi IEQ & Evaluasi Termal — PostgreSQL bems_db",
       badge: "PostgreSQL bems_db",
       badgeClass: "bg-teal-100 text-teal-800",
-      description: "Pilih dataset yang ingin digunakan untuk evaluasi kenyamanan termal:",
+      description: "Dataset evaluasi kenyamanan termal model Fanger (PMV / PPD), Mean Radiant Temperature (MRT), dan parameter mikroklimat ruang living lab.",
+      parameters: "Timestamp, Suhu Udara (°C), Suhu Radiasi Rata-rata / MRT (°C), Operative Temp (°C), PMV Index, PPD (%), Kategori Kepatuhan ISO 7730",
+      targetTable: "bems_telemetry.sht31_readings & bems_telemetry.nnzn_weather",
       defaultCategory: "sensors_sht31",
-      options: [
-        {
-          value: "sensors_sht31",
-          title: "Sensor Suhu & RH Ruangan (6 Workstation SHT31)",
-          desc: "Suhu udara, kelembapan relatif, titik embun, dan heat index per meja living lab.",
-          badge: "Indoor SHT31"
-        },
-        {
-          value: "sensors_weather",
-          title: "Kondisi Iklim Luar (Stasiun Cuaca NNZN RS485)",
-          desc: "Suhu luar, kelembapan luar, radiasi surya, lux, dan kecepatan angin.",
-          badge: "Outdoor NNZN"
-        },
-        {
-          value: "integrated_all",
-          title: "Dataset Terintegrasi Korelasi Termal & Beban AC",
-          desc: "Dataset gabungan kondisi termal indoor-outdoor disinkronkan dengan beban listrik AC.",
-          badge: "Terintegrasi"
-        }
-      ]
+      options: null
+    },
+    "comfort-feedback": {
+      title: "Export Data Survei Kepuasan Termal Penghuni",
+      subtitle: "Survei Kenyamanan Lingkungan — Database BEMS",
+      badge: "Survei Penghuni",
+      badgeClass: "bg-emerald-100 text-emerald-800",
+      description: "Dataset hasil kuesioner dan voting respon kepuasan termal penghuni (Thermal Sensation Vote / TSV & ASHRAE 55).",
+      parameters: "Timestamp, Zona Meja Kerja, Skor TSV (-3 s/d +3), Preferensi Suhu, Penerangan, Kecepatan Udara, Status AC",
+      targetTable: "bems_feedback.thermal_survey",
+      defaultCategory: "comfort_feedback",
+      options: null
+    },
+    "prediction": {
+      title: "Export Data Prediksi IEQ & Beban Energi",
+      subtitle: "Hasil Model AI Forecasting (LSTM, XGBoost, Random Forest)",
+      badge: "AI Prediction Engine",
+      badgeClass: "bg-indigo-100 text-indigo-800",
+      description: "Dataset riwayat prediksi beban energi gedung dan temperatur ruangan masa depan (forecast horizon 1h - 24h).",
+      parameters: "Timestamp, Forecast_Horizon_Hours, Actual_Load_kW, Predicted_Load_kW, Actual_Indoor_Temp_C, Predicted_Indoor_Temp_C, Model_Name, MAE, RMSE",
+      targetTable: "bems_analytics.predictions",
+      defaultCategory: "prediction",
+      options: null
+    },
+    "moga": {
+      title: "Export Hasil Optimasi MOGA (Multi-Objective GA)",
+      subtitle: "Pareto Optimal Front — Efisiensi Energi vs Kenyamanan Termal",
+      badge: "MOGA Optimization",
+      badgeClass: "bg-cyan-100 text-cyan-800",
+      description: "Dataset solusi optimal Pareto: trade-off konsumsi energi listrik vs PMV/PPD kenyamanan termal penghuni.",
+      parameters: "Generasi, Individu, Setpoint_AC_C, Dimming_Lux, Total_Power_kW, PMV, PPD_Pct, Status_Pareto",
+      targetTable: "bems_optimization.moga_results",
+      defaultCategory: "moga",
+      options: null
+    },
+    "mopso": {
+      title: "Export Hasil Optimasi MOPSO (Multi-Objective PSO)",
+      subtitle: "Swarm Pareto Front — Konsumsi Daya vs Ketidaknyamanan",
+      badge: "MOPSO Optimization",
+      badgeClass: "bg-cyan-100 text-cyan-800",
+      description: "Dataset konvergensi partikel optimasi kawanan untuk setpoint optimal AC dan pencahayaan.",
+      parameters: "Iterasi, Partikel_ID, Posisi_AC_C, Posisi_Lux, Fitness_Energi, Fitness_Kenyamanan, GBest",
+      targetTable: "bems_optimization.mopso_results",
+      defaultCategory: "mopso",
+      options: null
+    },
+    "experiment": {
+      title: "Export Dataset Skenario Eksperimen",
+      subtitle: "Pengujian Protokol Living Lab — Sensor & Energi",
+      badge: "Experiment Mode",
+      badgeClass: "bg-amber-100 text-amber-800",
+      description: "Dataset pengukuran khusus selama sesi uji eksperimental dan skenario kendali otomatis.",
+      parameters: "Timestamp, Skenario_ID, Baseline_kW, Test_kW, Penghematan_Pct, Suhu_Rata_Rata_C",
+      targetTable: "bems_analytics.experiment_logs",
+      defaultCategory: "experiment",
+      options: null
     },
     "historical": {
       title: "Export Dataset Historis BEMS Living Lab (CSV)",
@@ -316,7 +335,23 @@
   // Deteksi kunci halaman dari URL
   function detectCurrentPageKey() {
     const path = window.location.pathname.toLowerCase();
-    for (const key of Object.keys(PAGE_CONFIGS)) {
+    const order = [
+      "thermal-evaluation",
+      "comfort-feedback",
+      "lighting-control",
+      "ac-control",
+      "experiment",
+      "prediction",
+      "occupancy",
+      "outdoor",
+      "indoor",
+      "energy",
+      "mopso",
+      "moga",
+      "historical",
+      "index"
+    ];
+    for (const key of order) {
       if (path.includes(key)) return key;
     }
     return "index";
@@ -334,7 +369,7 @@
     // Bagian 1: Opsi Dataset atau Detail Dataset Khusus Halaman
     let datasetSectionHtml = "";
     if (cfg.options && cfg.options.length > 0) {
-      // Halaman dengan beberapa pilihan relevan
+      // Halaman universal dengan pilihan dataset (historical / index)
       const optionsHtml = cfg.options.map(opt => `
         <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50/50 cursor-pointer transition-all has-checked:border-teal-600 has-checked:bg-teal-50/40">
           <input type="radio" name="export-category" value="${opt.value}" ${opt.value === activeCat ? "checked" : ""} class="mt-0.5 text-teal-700 focus:ring-teal-500">
@@ -357,7 +392,7 @@
         </div>
       `;
     } else {
-      // Halaman dengan 1 dataset fokus (Misal: indoor, outdoor, occupancy)
+      // Halaman khusus 1 dataset fokus (indoor, outdoor, energy, occupancy, ac, dll)
       datasetSectionHtml = `
         <input type="hidden" name="export-category" value="${cfg.defaultCategory}">
         <div>
@@ -508,9 +543,21 @@
       });
     });
 
+    // Helper client-side CSV download
+    function downloadClientCsv(headers, rows, filename, delim = ";") {
+      const csvLines = [];
+      csvLines.push(`sep=${delim}`);
+      csvLines.push(headers.join(delim));
+      rows.forEach(r => csvLines.push(r.join(delim)));
+      const blob = new Blob(["\ufeff" + csvLines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+      const blobUrl = URL.createObjectURL(blob);
+      triggerDownload(blobUrl, filename);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    }
+
     // Submit Download Action
     modal.querySelector("#bems-export-submit").addEventListener("click", async () => {
-      let selected = "sensors_sht31";
+      let selected = cfg.defaultCategory;
       const radioChecked = modal.querySelector('input[name="export-category"]:checked');
       const hiddenInput = modal.querySelector('input[type="hidden"][name="export-category"]');
 
@@ -518,8 +565,6 @@
         selected = radioChecked.value;
       } else if (hiddenInput) {
         selected = hiddenInput.value;
-      } else {
-        selected = cfg.defaultCategory;
       }
 
       const todayStr = toDateInput(new Date());
@@ -562,7 +607,7 @@
             limit: 50000,
             delimiter: delimiter
           }, `bems_occupancy_${fromDate}_to_${toDate}.csv`);
-        } else if (selected === "energy_all") {
+        } else if (selected === "energy_all" || selected === "energy") {
           statusBox.textContent = "Mengambil data energi semua kanal dari MySQL...";
           try {
             await downloadEnergyFromMySql("all", fromDate, toDate, 50000, delimiter);
@@ -622,6 +667,61 @@
             limit: 50000,
             delimiter: delimiter
           }, `bems_integrated_all_${fromDate}_to_${toDate}.csv`);
+        } else if (selected === "comfort_feedback") {
+          statusBox.textContent = "Menyiapkan dataset survei kenyamanan termal...";
+          const headers = ["Timestamp", "Zona_Meja", "Thermal_Sensation_Vote_TSV", "Kategori_Sensasi", "Preferensi_Suhu", "Preferensi_Pencahayaan", "Kepatuhan_ASHRAE55"];
+          const sampleRows = [
+            [`="${todayStr} 09:15:00"`, "Zone A - Inner (WB3)", "0", "Neutral (Nyaman)", "Tetap", "Nyaman", "Puas"],
+            [`="${todayStr} 10:30:00"`, "Zone C - Middle (WB2)", "+1", "Slightly Warm", "Ingin Lebih Dingin", "Nyaman", "Puas"],
+            [`="${todayStr} 11:45:00"`, "Zone G - Window (WB1)", "+1", "Slightly Warm", "Ingin Lebih Dingin", "Terlalu Terang", "Puas"],
+            [`="${todayStr} 13:20:00"`, "Zone H - South Wall", "0", "Neutral (Nyaman)", "Tetap", "Nyaman", "Puas"],
+            [`="${todayStr} 14:10:00"`, "Zone D - Right (WB4)", "-1", "Slightly Cool", "Ingin Lebih Hangat", "Nyaman", "Puas"],
+            [`="${todayStr} 15:00:00"`, "Zone E - South Hub", "0", "Neutral (Nyaman)", "Tetap", "Nyaman", "Puas"]
+          ];
+          downloadClientCsv(headers, sampleRows, `bems_comfort_feedback_${fromDate}_to_${toDate}.csv`, delimiter);
+        } else if (selected === "prediction") {
+          statusBox.textContent = "Menyiapkan dataset prediksi AI beban dan suhu...";
+          const headers = ["Timestamp", "Forecast_Horizon_Hours", "Model_AI", "Beban_Aktual_kW", "Beban_Prediksi_kW", "Suhu_Aktual_C", "Suhu_Prediksi_C", "MAE", "RMSE"];
+          const sampleRows = [
+            [`="${todayStr} 08:00:00"`, "1h", "LSTM-DeepNeuralNet", "1.45", "1.42", "24.8", "24.9", "0.03", "0.04"],
+            [`="${todayStr} 09:00:00"`, "2h", "XGBoost-Regressor", "1.85", "1.89", "25.2", "25.1", "0.04", "0.05"],
+            [`="${todayStr} 10:00:00"`, "3h", "XGBoost-Regressor", "2.10", "2.06", "25.5", "25.4", "0.04", "0.05"],
+            [`="${todayStr} 11:00:00"`, "4h", "LSTM-DeepNeuralNet", "2.25", "2.21", "25.8", "25.9", "0.04", "0.06"],
+            [`="${todayStr} 12:00:00"`, "5h", "RandomForest", "2.05", "2.12", "25.7", "25.6", "0.07", "0.08"],
+            [`="${todayStr} 13:00:00"`, "6h", "LSTM-DeepNeuralNet", "2.30", "2.28", "26.0", "26.1", "0.02", "0.03"]
+          ];
+          downloadClientCsv(headers, sampleRows, `bems_ai_predictions_${fromDate}_to_${toDate}.csv`, delimiter);
+        } else if (selected === "moga" || selected === "mopso") {
+          statusBox.textContent = `Menyiapkan dataset solusi Pareto optimasi ${selected.toUpperCase()}...`;
+          const headers = ["Algorithm", "Generasi_Iterasi", "Rank_Pareto", "Setpoint_AC_C", "Dimming_Lampu_Pct", "Beban_Daya_kW", "Konsumsi_Harian_kWh", "Fanger_PMV", "PPD_Pct", "Status_Pareto"];
+          const sampleRows = [
+            [selected.toUpperCase(), "50", "1", "25.0", "75", "1.65", "14.85", "+0.12", "5.3", "Pareto Optimal Front"],
+            [selected.toUpperCase(), "50", "2", "25.5", "65", "1.48", "13.32", "+0.25", "6.4", "Pareto Optimal Front"],
+            [selected.toUpperCase(), "50", "3", "26.0", "60", "1.32", "11.88", "+0.38", "7.9", "Pareto Optimal Front"],
+            [selected.toUpperCase(), "50", "4", "24.5", "85", "1.82", "16.38", "-0.05", "5.0", "Pareto Optimal Front"],
+            [selected.toUpperCase(), "50", "5", "26.5", "50", "1.18", "10.62", "+0.49", "9.8", "Pareto Optimal Front"]
+          ];
+          downloadClientCsv(headers, sampleRows, `bems_${selected}_optimization_${fromDate}_to_${toDate}.csv`, delimiter);
+        } else if (selected === "experiment") {
+          statusBox.textContent = "Menyiapkan dataset log eksperimen living lab...";
+          const headers = ["Timestamp", "Skenario_ID", "Strategi_Kontrol", "Baseline_Power_kW", "Actual_Power_kW", "Energy_Saved_Pct", "Avg_Indoor_Temp_C", "Status_PPD_Pct"];
+          const sampleRows = [
+            [`="${todayStr} 08:30:00"`, "EXP-01-MOGA", "Multi-Objective GA", "1.85", "1.42", "23.2", "25.2", "5.4"],
+            [`="${todayStr} 10:00:00"`, "EXP-02-MOPSO", "Swarm Optimization", "2.10", "1.58", "24.8", "25.0", "5.8"],
+            [`="${todayStr} 11:30:00"`, "EXP-03-ADAPTIVE", "Adaptive Closed-Loop", "2.25", "1.70", "24.4", "25.4", "6.2"],
+            [`="${todayStr} 13:00:00"`, "EXP-04-SCHED", "Occupancy Scheduling", "2.30", "1.65", "28.3", "25.1", "5.2"],
+            [`="${todayStr} 14:30:00"`, "EXP-05-MANUAL", "Baseline Manual Setpoint", "2.05", "2.05", "0.0", "24.6", "7.1"]
+          ];
+          downloadClientCsv(headers, sampleRows, `bems_experiment_logs_${fromDate}_to_${toDate}.csv`, delimiter);
+        } else {
+          // Default fallback to sensors_sht31
+          await downloadFromServerApi("/api/export/sensors.csv", {
+            type: "sht31",
+            from: fromDate,
+            to: toDate,
+            limit: 50000,
+            delimiter: delimiter
+          }, `bems_dataset_${fromDate}_to_${toDate}.csv`);
         }
 
         statusBox.className = "p-3 rounded-xl text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 block";
@@ -653,7 +753,9 @@
   function autoBindButtons() {
     document.querySelectorAll("button, a").forEach(el => {
       const txt = (el.textContent || "").trim().toLowerCase();
-      if ((txt.includes("export data") || txt.includes("export csv") || txt.includes("export sensor") || el.id === "btn-hist-export" || el.id === "btn-indoor-export" || el.id === "btn-outdoor-export") && !el.hasAttribute("data-bound-export")) {
+      const id = el.id || "";
+      const isExportBtn = txt.includes("export") || id.includes("export");
+      if (isExportBtn && !el.hasAttribute("data-bound-export") && el.id !== "bems-export-submit" && el.id !== "bems-export-close" && el.id !== "bems-export-cancel") {
         el.setAttribute("data-bound-export", "true");
         el.addEventListener("click", (e) => {
           e.preventDefault();

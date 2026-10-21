@@ -34,9 +34,9 @@
             <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono inline-flex items-center gap-1.5 shadow-2xs">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ISO 7730: Memenuhi Kategori I (Kelas A)
             </span>
-            <button id="btn-export-thermal" class="px-3.5 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-all">
-              <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              Export Thermal Report
+            <button id="btn-export-thermal" onclick="window.BemsExport ? window.BemsExport.openModal('sensors_sht31') : null" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export Evaluasi Kenyamanan Termal (ISO 7730)">
+              <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export Evaluasi Termal
             </button>
           </div>
         </div>
@@ -409,7 +409,8 @@
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/services/export-service.js?v=17"></script>
+<script src="assets/js/components/layout.js?v=17"></script>
 <script src="assets/js/services/thermal-service.js"></script>
 <script>
   renderSidebar("thermal-evaluation");

@@ -34,8 +34,8 @@
             <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono inline-flex items-center gap-1.5 shadow-2xs">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> DB Online: PostgreSQL (port 5433) &amp; MySQL
             </span>
-            <button id="btn-hist-export" onclick="window.BemsExport ? window.BemsExport.openModal('integrated_all') : null" class="px-3.5 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer">
-              <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <button id="btn-hist-export" onclick="window.BemsExport ? window.BemsExport.openModal('integrated_all') : null" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export Dataset Historis BEMS Living Lab">
+              <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
               Export CSV Dataset
             </button>
           </div>
@@ -280,8 +280,8 @@
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/services/export-service.js?v=15"></script>
-<script src="assets/js/components/layout.js?v=15"></script>
+<script src="assets/js/services/export-service.js?v=17"></script>
+<script src="assets/js/components/layout.js?v=17"></script>
 <script src="assets/js/services/historical-service.js"></script>
 <script>
   renderSidebar("historical");

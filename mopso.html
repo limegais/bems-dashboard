@@ -41,6 +41,10 @@
               <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               Re-Run Optimasi MOPSO
             </button>
+            <button id="btn-mopso-export" onclick="window.BemsExport ? window.BemsExport.openModal('mopso') : null" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export Hasil Optimasi MOPSO (Swarm Pareto)">
+              <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export Hasil MOPSO
+            </button>
           </div>
         </div>
 
@@ -366,7 +370,8 @@
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/services/export-service.js?v=17"></script>
+<script src="assets/js/components/layout.js?v=17"></script>
 <script src="assets/js/core/mqtt-client.js"></script>
 <script src="assets/js/services/mopso-service.js"></script>
 <script src="assets/js/pages/page-init.js"></script>

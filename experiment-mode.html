@@ -39,6 +39,10 @@
               <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
               Safety Override (E-Stop)
             </button>
+            <button id="btn-experiment-export" onclick="window.BemsExport ? window.BemsExport.openModal('experiment') : null" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export Log Eksperimen & Skenario Kendali">
+              <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export Data Eksperimen
+            </button>
           </div>
         </div>
 
@@ -827,7 +831,8 @@
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/components/layout.js"></script>
+<script src="assets/js/services/export-service.js?v=17"></script>
+<script src="assets/js/components/layout.js?v=17"></script>
 <script src="assets/js/core/mqtt-client.js"></script>
 <script src="assets/js/services/experiment-service.js"></script>
 <script src="assets/js/pages/page-init.js"></script>
