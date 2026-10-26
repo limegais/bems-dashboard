@@ -197,13 +197,15 @@
       options: [
         {
           value: "lighting_metrics",
-          label: "5 Parameter Iluminansi Pencahayaan (PostgreSQL bems_db)",
-          desc: "Tabel bems_telemetry.lighting_metrics: Eavg, U0, Emin, IC (%), VDI, Lux WB1-WB4, Target 450 Lux, Status SNI 03-6197."
+          title: "5 Parameter Iluminansi Pencahayaan (PostgreSQL bems_db)",
+          desc: "Tabel bems_telemetry.lighting_metrics: Eavg, U0, Emin, IC (%), VDI, Lux WB1-WB4, Target 450 Lux, Status SNI 03-6197.",
+          badge: "PostgreSQL bems_db"
         },
         {
           value: "energy_lighting",
-          label: "Submetering Energi Beban Lampu Ch-3 (MySQL iotlabun_sbms)",
-          desc: "Telemetri PZEM-004T: Daya Aktif (W/kW), Arus (A), Tegangan (V), Energi Kumulatif (kWh), Biaya & Emisi CO₂."
+          title: "Submetering Energi Beban Lampu Ch-3 (MySQL iotlabun_sbms)",
+          desc: "Telemetri PZEM-004T: Daya Aktif (W/kW), Arus (A), Tegangan (V), Energi Kumulatif (kWh), Biaya & Emisi CO₂.",
+          badge: "MySQL Energy"
         }
       ]
     },
@@ -386,8 +388,8 @@
           <input type="radio" name="export-category" value="${opt.value}" ${opt.value === activeCat ? "checked" : ""} class="mt-0.5 text-teal-700 focus:ring-teal-500">
           <div class="flex-1">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 text-xs">${opt.title}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 font-mono">${opt.badge}</span>
+              <span class="font-bold text-slate-800 text-xs">${opt.title || opt.label}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 font-mono">${opt.badge || "Dataset"}</span>
             </div>
             <p class="text-[11px] text-slate-500 mt-0.5">${opt.desc}</p>
           </div>
@@ -774,7 +776,7 @@
       const txt = (el.textContent || "").trim().toLowerCase();
       const id = el.id || "";
       const isExportBtn = txt.includes("export") || id.includes("export");
-      if (isExportBtn && !el.hasAttribute("data-bound-export") && el.id !== "bems-export-submit" && el.id !== "bems-export-close" && el.id !== "bems-export-cancel") {
+      if (isExportBtn && !el.hasAttribute("data-bound-export") && !el.getAttribute("onclick") && el.id !== "bems-export-submit" && el.id !== "bems-export-close" && el.id !== "bems-export-cancel") {
         el.setAttribute("data-bound-export", "true");
         el.addEventListener("click", (e) => {
           e.preventDefault();
