@@ -2,11 +2,11 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Dokumentasi Sistem Optimasi Multi-Objektif (MOGA & MOPSO) — BEMS Living Lab FT UNS</title>
+  <title>Dokumentasi Sistem Optimasi Multi-Objektif (MOGA &amp; MOPSO) — BEMS Living Lab FT UNS</title>
   <style>
     @page {
       size: A4 portrait;
-      margin: 18mm 15mm 18mm 15mm;
+      margin: 15mm 14mm 15mm 14mm;
       @bottom-right {
         content: counter(page);
       }
@@ -19,8 +19,8 @@
     body {
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
       color: #1e293b;
-      line-height: 1.6;
-      font-size: 10.5pt;
+      line-height: 1.52;
+      font-size: 9.8pt;
       margin: 0;
       padding: 0;
       background: #ffffff;
@@ -41,8 +41,8 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 95vh;
-      padding: 30px 20px 20px 20px;
+      height: 94vh;
+      padding: 30px 22px 22px 22px;
       border: 3px double #0f766e;
       border-radius: 8px;
       page-break-after: always;
@@ -52,7 +52,7 @@
     .cover-top {
       text-align: center;
       border-bottom: 2px solid #0f766e;
-      padding-bottom: 20px;
+      padding-bottom: 16px;
     }
 
     .cover-inst {
@@ -64,7 +64,7 @@
       margin: 0;
     }
     .cover-dept {
-      font-size: 10pt;
+      font-size: 9.5pt;
       font-weight: 600;
       color: #475569;
       margin-top: 4px;
@@ -82,7 +82,7 @@
       border-radius: 20px;
       background: #ccfbf1;
       color: #0f766e;
-      font-size: 9pt;
+      font-size: 8.5pt;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -103,17 +103,17 @@
     }
 
     .cover-subtitle {
-      font-size: 12pt;
+      font-size: 11pt;
       color: #334155;
-      line-height: 1.5;
+      line-height: 1.55;
       max-width: 620px;
       margin: 0 auto;
     }
 
     .cover-meta {
       border-top: 1px solid #cbd5e1;
-      padding-top: 16px;
-      font-size: 9.5pt;
+      padding-top: 14px;
+      font-size: 9pt;
       display: flex;
       justify-content: space-between;
       color: #475569;
@@ -121,36 +121,36 @@
 
     /* Headings */
     h1 {
-      font-size: 16pt;
+      font-size: 14.5pt;
       color: #0f766e;
       border-bottom: 2px solid #0f766e;
-      padding-bottom: 6px;
-      margin-top: 24px;
-      margin-bottom: 12px;
+      padding-bottom: 5px;
+      margin-top: 18px;
+      margin-bottom: 9px;
       page-break-after: avoid;
     }
 
     h2 {
-      font-size: 13pt;
+      font-size: 11.5pt;
       color: #0f172a;
-      margin-top: 18px;
-      margin-bottom: 8px;
+      margin-top: 15px;
+      margin-bottom: 7px;
       page-break-after: avoid;
       border-left: 4px solid #0f766e;
       padding-left: 8px;
     }
 
     h3 {
-      font-size: 11pt;
+      font-size: 10.2pt;
       color: #1e293b;
-      margin-top: 14px;
-      margin-bottom: 6px;
+      margin-top: 11px;
+      margin-bottom: 5px;
       page-break-after: avoid;
     }
 
     p {
       margin-top: 0;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       text-align: justify;
     }
 
@@ -158,18 +158,19 @@
     .formula-box {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
-      border-left: 4px solid #3b82f6;
+      border-left: 4px solid #0f766e;
       border-radius: 6px;
-      padding: 10px 14px;
-      margin: 10px 0;
+      padding: 8px 12px;
+      margin: 8px 0;
       font-family: 'Cambria Math', 'Times New Roman', serif;
-      font-size: 11pt;
+      font-size: 10pt;
       color: #0f172a;
       text-align: center;
+      line-height: 1.4;
     }
 
     .formula-desc {
-      font-size: 9.5pt;
+      font-size: 8.2pt;
       color: #475569;
       margin-top: 4px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -179,8 +180,8 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 12px 0;
-      font-size: 9pt;
+      margin: 9px 0;
+      font-size: 8.3pt;
       page-break-inside: avoid;
     }
 
@@ -189,12 +190,12 @@
       color: #ffffff;
       font-weight: 700;
       text-align: left;
-      padding: 8px 10px;
+      padding: 6px 8px;
       border: 1px solid #0d9488;
     }
 
     td {
-      padding: 7px 10px;
+      padding: 5px 8px;
       border: 1px solid #e2e8f0;
       vertical-align: top;
     }
@@ -208,74 +209,73 @@
       background: #f0fdfa;
       border: 1px solid #99f6e4;
       border-radius: 6px;
-      padding: 10px 14px;
-      margin: 12px 0;
-      font-size: 9.5pt;
+      padding: 8px 12px;
+      margin: 9px 0;
+      font-size: 8.8pt;
+      line-height: 1.45;
     }
 
     .callout-title {
       font-weight: 700;
       color: #0f766e;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
+    .callout-warning {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+    }
+    .callout-warning .callout-title {
+      color: #b45309;
+    }
+
     .code-block {
       background: #0f172a;
       color: #e2e8f0;
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-radius: 6px;
       font-family: 'Cascadia Code', Consolas, Monaco, monospace;
-      font-size: 8.5pt;
-      line-height: 1.45;
+      font-size: 7.8pt;
+      line-height: 1.38;
       overflow-x: hidden;
-      margin: 10px 0;
+      margin: 8px 0;
       page-break-inside: avoid;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin: 10px 0;
+      gap: 9px;
+      margin: 8px 0;
       page-break-inside: avoid;
     }
 
     .grid-card {
       border: 1px solid #e2e8f0;
       border-radius: 6px;
-      padding: 10px;
+      padding: 8px;
       background: #ffffff;
     }
 
     .grid-card-title {
       font-weight: 700;
-      font-size: 9.5pt;
+      font-size: 8.8pt;
       color: #0f766e;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     /* Header & Footer in Document */
     .doc-header {
-      font-size: 8pt;
+      font-size: 7.8pt;
       color: #94a3b8;
       border-bottom: 1px solid #e2e8f0;
       padding-bottom: 4px;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
-    }
-
-    .badge-tag {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 8pt;
-      font-weight: bold;
-      background: #e2e8f0;
-      color: #334155;
     }
   </style>
 </head>
@@ -296,13 +296,13 @@
       <p class="cover-subtitle">
         Implementasi Algoritma Evolusioner (NSGA-II) dan Swarm Intelligence (MOPSO)
         dengan Fitur Seleksi Metode Subsistem Adaptif untuk Efisiensi Energi Listrik
-        dan Kenyamanan Termal Gedung BEMS Living Lab
+        dan Kenyamanan Termal &amp; Visual Gedung BEMS Living Lab
       </p>
     </div>
 
     <div class="cover-meta">
       <div>
-        <strong>Sistem:</strong> BEMS Living Lab FT UNS v2.0<br>
+        <strong>Sistem:</strong> BEMS Living Lab FT UNS v2.0 (Revisi Teknis)<br>
         <strong>Subjek:</strong> Smart HVAC &amp; Daylight-Responsive Lighting
       </div>
       <div style="text-align: right;">
@@ -340,7 +340,7 @@
   </div>
 
   <p>
-    Oleh karena itu, penyelesaian optimal tidak dapat dilakukan menggunakan optimasi kriteria tunggal (*single-objective*), melainkan membutuhkan pendekatan <strong>Multi-Objective Optimization Problem (MOOP)</strong> untuk menghasilkan sekumpulan solusi kompromi non-kalah (<strong>Pareto Optimal Front</strong>).
+    Oleh karena itu, penyelesaian optimal tidak dapat dilakukan menggunakan optimasi kriteria tunggal (<em>single-objective</em>), melainkan membutuhkan pendekatan <strong>Multi-Objective Optimization Problem (MOOP)</strong> untuk menghasilkan sekumpulan solusi kompromi non-kalah (<strong>Pareto Optimal Front</strong>).
   </p>
 
   <!-- ══════════════════════════════════════════════════════════════ -->
@@ -349,7 +349,7 @@
   <div class="page-break"></div>
   <div class="doc-header">
     <span>BEMS Living Lab FT UNS — Dokumentasi Teknis Optimasi</span>
-    <span>Bab 2: Formulasi Matematis</span>
+    <span>Bab 2: Formulasi Ruang Keputusan &amp; Objektif 1</span>
   </div>
 
   <h1>2. Formulasi Matematis Masalah Optimasi</h1>
@@ -408,15 +408,6 @@
     </tbody>
   </table>
 
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <!-- ▌ BAB 2.2 & 2.3: FUNGSI OBJEKTIF                              -->
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <div class="page-break"></div>
-  <div class="doc-header">
-    <span>BEMS Living Lab FT UNS — Dokumentasi Teknis Optimasi</span>
-    <span>Bab 2: Formulasi Fungsi Objektif</span>
-  </div>
-
   <h2>2.2 Fungsi Objektif 1: Minimasi Daya Listrik Total (f<sub>1</sub>)</h2>
   <div class="formula-box">
     min f<sub>1</sub>(<strong>X</strong>) = P<sub>AC</sub>(T<sub>set</sub>, T<sub>outdoor</sub>, Fan) + P<sub>Lamp</sub>(PWM<sub>Z1</sub>, PWM<sub>Z2</sub>) &nbsp;&nbsp; [kW]
@@ -425,7 +416,7 @@
   <p><strong>1. Model Empiris Daya Kompresor AC (P<sub>AC</sub>):</strong></p>
   <div class="formula-box">
     P<sub>AC</sub> = P<sub>rated</sub> × [1 - 0.06 · (T<sub>set</sub> - 24.0)] × [1 + 0.03 · max(0, T<sub>outdoor</sub> - 30.0)] × [1 + (Fan - 2) · 0.015]
-    <div class="formula-desc">P<sub>rated</sub> = 1.55 kW. Setiap kenaikan setpoint 1°C menghemat ~6% daya. Suhu outdoor > 30°C menambah beban ~3%/°C.</div>
+    <div class="formula-desc">P<sub>rated</sub> = 1.55 kW. Setiap kenaikan setpoint 1°C di atas 24°C menghemat ~6% daya. Suhu luar &gt; 30°C menambah beban ~3%/°C.</div>
   </div>
 
   <p><strong>2. Model Daya Lampu LED (P<sub>Lamp</sub>):</strong></p>
@@ -433,37 +424,78 @@
     P<sub>Lamp</sub> = (1 / 1000) × [ (280 / 2) · (PWM<sub>Z1</sub> / 100) + (280 / 2) · (PWM<sub>Z2</sub> / 100) ] &nbsp;&nbsp; [kW]
   </div>
 
-  <h2>2.3 Fungsi Objektif 2: Minimasi Ketidaknyamanan (f<sub>2</sub>)</h2>
-  <div class="formula-box">
-    min f<sub>2</sub>(<strong>X</strong>) = PPD(PMV) + Penalty<sub>lux</sub> &nbsp;&nbsp; [%]
-  </div>
-
-  <p><strong>1. Model Suhu Ruang Steady-State (T<sub>indoor</sub>):</strong></p>
-  <div class="formula-box">
-    T<sub>indoor</sub> = T<sub>set</sub> + [0.3 + 0.02 · max(0, T<sub>outdoor</sub> - 28.0)] × [1 - (Fan - 1) · 0.15]
-  </div>
-
-  <p><strong>2. Model Fanger PMV &amp; PPD (ISO 7730):</strong></p>
-  <div class="formula-box">
-    PMV = max(-3.0, min(3.0, 0.32 · [T<sub>indoor</sub> - T<sub>neutral</sub>]))
-    <br>
-    PPD = 100.0 - 95.0 · exp(-0.03353 · PMV<sup>4</sup> - 0.2179 · PMV<sup>2</sup>)
-    <div class="formula-desc">Aktivitas M = 1.1 met, Pakaian I<sub>cl</sub> = 0.5 clo, Kecepatan angin v<sub>a</sub> = {0.15, 0.25, 0.40} m/s.</div>
-  </div>
-
-  <p><strong>3. Model Iluminansi Meja Kerja (E<sub>desk</sub>) &amp; Penalti Visual:</strong></p>
-  <div class="formula-box">
-    E<sub>desk</sub> = (Lux<sub>outdoor</sub> × 0.08) + (280 · PWM<sub>Z1</sub> / 100) + (180 · PWM<sub>Z2</sub> / 100) &nbsp;&nbsp; [Lux]
-    <div class="formula-desc">Ambang batas SNI 03-6197: Target 480 Lux. Penalti jika E<sub>desk</sub> &lt; 350 Lux atau E<sub>desk</sub> &gt; 650 Lux.</div>
-  </div>
-
   <!-- ══════════════════════════════════════════════════════════════ -->
-  <!-- ▌ BAB 3: ALGORITMA MOGA & MOPSO                               -->
+  <!-- ▌ BAB 2.3: FUNGSI OBJEKTIF 2 & PENALTI                         -->
   <!-- ══════════════════════════════════════════════════════════════ -->
   <div class="page-break"></div>
   <div class="doc-header">
     <span>BEMS Living Lab FT UNS — Dokumentasi Teknis Optimasi</span>
-    <span>Bab 3 &amp; 4: Algoritma Optimasi</span>
+    <span>Bab 2.3: Fungsi Objektif 2 &amp; Model Kenyamanan</span>
+  </div>
+
+  <h2>2.3 Fungsi Objektif 2: Minimasi Ketidaknyamanan Termal &amp; Visual (f<sub>2</sub>)</h2>
+  <div class="formula-box">
+    min f<sub>2</sub>(<strong>X</strong>) = PPD(PMV) + P<sub>lux</sub> &nbsp;&nbsp; [%]
+    <div class="formula-desc">Kedua komponen dinyatakan dalam satuan persen (%) sehingga memiliki skala sebanding dan tidak saling mendominasi secara artifisial.</div>
+  </div>
+
+  <p><strong>1. Model Suhu Ruang Steady-State (T<sub>indoor</sub>):</strong></p>
+  <div class="formula-box">
+    T<sub>indoor</sub> = T<sub>set</sub> + [0.3 + 0.02 · max(0, T<sub>outdoor</sub> - 28.0)] × [1 - (Fan - 1) · 0.15] &nbsp;&nbsp; [°C]
+  </div>
+  <div class="callout callout-warning no-break">
+    <div class="callout-title">💡 Catatan Validasi Model AC:</div>
+    Suhu ruangan dipengaruhi oleh beban panas internal (okupansi manusia, komputer, radiasi matahari), kelembapan, dan dinamika AC inverter aktual. Kalibrasi koefisien empiris menggunakan data sensor SHT31 dan PZEM-004T sangat dianjurkan.
+  </div>
+
+  <p><strong>2. Model Fanger PMV &amp; PPD (ISO 7730 Terkalibrasi):</strong></p>
+  <div class="formula-box">
+    p<sub>a</sub> = (RH<sub>indoor</sub> / 100) · exp( 16.6536 - 4030.183 / [T<sub>indoor</sub> + 235.0] ) &nbsp;&nbsp; [kPa]
+    <br>
+    T<sub>neutral</sub> = 24.5 - 0.15 · (p<sub>a</sub> - 1.50) - 1.5 · (v<sub>a</sub> - 0.15) &nbsp;&nbsp; [°C]
+    <br>
+    PMV = max(-3.0, min(3.0, 0.32 · [T<sub>indoor</sub> - T<sub>neutral</sub>]))
+    <br>
+    PPD = 100.0 - 95.0 · exp(-0.03353 · PMV<sup>4</sup> - 0.2179 · PMV<sup>2</sup>) &nbsp;&nbsp; [%]
+    <div class="formula-desc">Tekanan uap p<sub>a</sub> secara konsisten bernilai kPa tanpa faktor pengali 10. Kondisi kantor: M = 1.1 met, I<sub>cl</sub> = 0.5 clo, v<sub>a</sub> = {0.15, 0.25, 0.40} m/s.</div>
+  </div>
+  <div class="callout callout-warning no-break">
+    <div class="callout-title">💡 Catatan Validasi &amp; Keterbatasan Model PMV (Poin A):</div>
+    1. Persamaan tekanan uap jenuh air p<sub>a</sub> di atas konsisten dalam satuan <strong>kPa</strong>.<br>
+    2. Model PMV dalam mesin optimasi ini merupakan <strong>model regresi linier surrogate</strong> terkalibrasi khusus untuk kondisi kantor tropis UNS guna menghasilkan komputasi instan (&lt;1 µs) pada loop evolusioner. Model ini menyederhanakan T<sub>radiant</sub> ≈ T<sub>indoor</sub> dan tidak menjalankan iterasi implisit penuh neraca panas Fanger ISO 7730 (6 parameter dengan suhu permukaan pakaian t<sub>cl</sub>).<br>
+    3. Untuk pengujian kepatuhan standar formal dan riset lanjutan, implementasi penuh ISO 7730 (misal paket <code>pythermalcomfort</code>) disarankan sebagai kontrol validasi.
+  </div>
+
+  <p><strong>3. Model Iluminansi Meja Kerja (E<sub>desk</sub>):</strong></p>
+  <div class="formula-box">
+    E<sub>desk</sub> = (Lux<sub>outdoor</sub> × 0.08) + (280 · PWM<sub>Z1</sub> / 100) + (180 · PWM<sub>Z2</sub> / 100) &nbsp;&nbsp; [Lux]
+  </div>
+  <div class="callout callout-warning no-break">
+    <div class="callout-title">💡 Catatan Validasi Model Pencahayaan:</div>
+    Koefisien iluminansi (0.08, 280, 180) harus dikalibrasi dengan pengukuran lux-meter aktual di meja kerja (ketinggian 0.8 m). Nilai PWM algoritma (0–100%) dikonversi ke mikrokontroler (0–255) via: PWM<sub>255</sub> = round(2.55 × PWM<sub>%</sub>).
+  </div>
+
+  <p><strong>4. Fungsi Penalti Iluminansi Berbasis Persen (P<sub>lux</sub>) (Poin B):</strong></p>
+  <div class="formula-box" style="text-align: left; padding: 9px 15px; font-family: inherit;">
+    Target SNI 03-6197 = <strong>480 Lux</strong> dengan toleransi <em>dead-band</em> ±50 Lux &rarr; Zona bebas penalti <strong>[430, 530] Lux</strong>:
+    <div style="font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 9.8pt; margin: 7px 0; padding-left: 10px; border-left: 3px solid #0f766e;">
+      <strong>P<sub>lux</sub></strong> =
+      <br>• <strong>min( [ (430 - E<sub>desk</sub>)/430 × 100 ] + &delta;<sub>hard</sub> , 95 ) %</strong> &nbsp;&nbsp; jika <em>E<sub>desk</sub> &lt; 430 Lux</em>
+      <br>• <strong>0 %</strong> &nbsp;&nbsp; jika <em>430 &le; E<sub>desk</sub> &le; 530 Lux</em>
+      <br>• <strong>min( [ (E<sub>desk</sub> - 530)/530 × 50 ] , 30 ) %</strong> &nbsp;&nbsp; jika <em>E<sub>desk</sub> &gt; 530 Lux</em>
+    </div>
+    <div class="formula-desc" style="text-align: left;">
+      Di mana <strong>&delta;<sub>hard</sub> = w<sub>hard</sub> · [ max(0, 350 - E<sub>desk</sub>) / 350 ] × 100 %</strong> (dengan w<sub>hard</sub> = 0.5) adalah denda keras tanpa dimensi campuran yang dinormalisasi dalam persen (%) terhadap ambang mutlak 350 Lux. Seluruh komponen bersatuan persen (%) dan pembatasan batas atas (cap 95%) diterapkan di akhir setelah penjumlahan.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- ▌ BAB 3 & 4: ALGORITMA MOGA & MOPSO                           -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <div class="doc-header">
+    <span>BEMS Living Lab FT UNS — Dokumentasi Teknis Optimasi</span>
+    <span>Bab 3 &amp; 4: Algoritma Optimasi MOGA &amp; MOPSO</span>
   </div>
 
   <h1>3. Algoritma MOGA (NSGA-II)</h1>
@@ -474,32 +506,51 @@
   <div class="grid-2 no-break">
     <div class="grid-card">
       <div class="grid-card-title">1. Fast Non-Dominated Sorting</div>
-      <p style="font-size: 8.5pt;">Solusi <em>p</em> mendominasi <em>q</em> (<em>p ≺ q</em>) jika tidak ada objektif <em>p</em> yang lebih buruk dari <em>q</em> dan minimal satu objektif <em>p</em> lebih baik. Menghasilkan kelompok Rank 1, Rank 2, dst.</p>
+      <p style="font-size: 8.3pt; margin:0;">Solusi <em>p</em> mendominasi <em>q</em> (<em>p ≺ q</em>) jika tidak ada objektif <em>p</em> yang lebih buruk dari <em>q</em> dan minimal satu objektif <em>p</em> lebih baik. Kompleksitas O(M·N²).</p>
     </div>
     <div class="grid-card">
       <div class="grid-card-title">2. Crowding Distance (I<sub>dist</sub>)</div>
-      <p style="font-size: 8.5pt;">Menghitung jarak kerapatan lokal antar solusi bertetangga. Solusi di area renggang diberi skor tinggi untuk menjaga persebaran front yang merata tanpa sharing parameter.</p>
+      <p style="font-size: 8.3pt; margin:0;">Menghitung jarak kerapatan lokal antar solusi bertetangga. Solusi di area renggang diberi skor tinggi untuk menjaga persebaran front yang merata tanpa sharing parameter.</p>
     </div>
     <div class="grid-card">
-      <div class="grid-card-title">3. Crossover SBX (85%)</div>
-      <p style="font-size: 8.5pt;">Simulated Binary Crossover (η<sub>c</sub> = 15) untuk rekombinasi kromosom bernilai riil secara adaptif menyerupai sistem reproduksi biologis.</p>
+      <div class="grid-card-title">3. Crossover SBX &amp; Mutasi Polinomial</div>
+      <p style="font-size: 8.3pt; margin:0;">Simulated Binary Crossover (p<sub>c</sub> = 0.85, η<sub>c</sub> = 15) dan Mutasi Polinomial (p<sub>m</sub> = 0.08, η<sub>m</sub> = 20) untuk rekombinasi kromosom bernilai riil secara adaptif.</p>
     </div>
     <div class="grid-card">
       <div class="grid-card-title">4. Elitisme Strict (2N → N)</div>
-      <p style="font-size: 8.5pt;">Populasi orang tua P<sub>t</sub> dan anak Q<sub>t</sub> digabung (2N), lalu disaring N individu terbaik. Menjamin solusi non-kalah terbaik tidak pernah hilang.</p>
+      <p style="font-size: 8.3pt; margin:0;">Populasi orang tua P<sub>t</sub> dan anak Q<sub>t</sub> digabung (2N), lalu disaring N individu terbaik. Menjamin solusi non-kalah terbaik tidak pernah hilang.</p>
     </div>
   </div>
 
-  <h1>4. Algoritma MOPSO (Particle Swarm)</h1>
+  <h1>4. Algoritma MOPSO (Particle Swarm Optimization)</h1>
   <p>
     <strong>Multi-Objective Particle Swarm Optimization (MOPSO)</strong> menirukan pergerakan kawanan partikel yang dibimbing oleh pengalaman personal terbaik (<em>pbest</em>) dan memori kolektif pada <strong>Arsip Pareto Eksternal</strong>:
   </p>
 
   <div class="formula-box">
-    v<sub>i,d</sub><sup>(t+1)</sup> = w · v<sub>i,d</sub><sup>(t)</sup> + c<sub>1</sub> r<sub>1</sub> · (pbest<sub>i,d</sub> - x<sub>i,d</sub><sup>(t)</sup>) + c<sub>2</sub> r<sub>2</sub> · (gbest<sub>d</sub> - x<sub>i,d</sub><sup>(t)</sup>)
+    v<sub>i,d</sub><sup>(t+1)</sup> = clip( w · v<sub>i,d</sub><sup>(t)</sup> + c<sub>1</sub> r<sub>1</sub> · (pbest<sub>i,d</sub> - x<sub>i,d</sub><sup>(t)</sup>) + c<sub>2</sub> r<sub>2</sub> · (gbest<sub>d</sub> - x<sub>i,d</sub><sup>(t)</sup>), &nbsp; -v<sub>max,d</sub>, &nbsp; v<sub>max,d</sub> )
     <br>
     x<sub>i,d</sub><sup>(t+1)</sup> = x<sub>i,d</sub><sup>(t)</sup> + v<sub>i,d</sub><sup>(t+1)</sup>
-    <div class="formula-desc">w = 0.72 (bobot inersia), c<sub>1</sub> = 1.49 (kognitif), c<sub>2</sub> = 1.49 (sosial), r<sub>1</sub>, r<sub>2</sub> ~ U(0,1).</div>
+    <div class="formula-desc">w = 0.72 (inersia), c<sub>1</sub> = 1.49 (kognitif), c<sub>2</sub> = 1.49 (sosial), r<sub>1</sub>, r<sub>2</sub> ~ U(0,1). Batas kecepatan v<sub>max,d</sub> = 0.2 × (x<sub>max,d</sub> - x<sub>min,d</sub>).</div>
+  </div>
+
+  <div class="grid-2 no-break">
+    <div class="grid-card">
+      <div class="grid-card-title">1. Arsip Eksternal &amp; CD Pruning</div>
+      <p style="font-size: 8.3pt; margin:0;">Menampung hingga 50 solusi non-terdominasi. Saat arsip penuh, pemangkasan dilakukan berdasarkan <strong>Crowding Distance terkecil</strong> (menghapus solusi di area terpadat).</p>
+    </div>
+    <div class="grid-card">
+      <div class="grid-card-title">2. Leader Selection (Roulette Wheel CD)</div>
+      <p style="font-size: 8.3pt; margin:0;">Leader (<em>gbest</em>) dipilih secara probabilistik dari arsip dengan bobot sebanding dengan CD-nya. Solusi di area jarang diprioritaskan agar sebaran front merata.</p>
+    </div>
+    <div class="grid-card">
+      <div class="grid-card-title">3. Pembaruan pbest Deterministik</div>
+      <p style="font-size: 8.3pt; margin:0;">Update jika x<sup>t+1</sup> mendominasi pbest. Jika keduanya non-terdominasi, update dengan probabilitas 0.5. Jika pbest mendominasi, posisi pbest dipertahankan.</p>
+    </div>
+    <div class="grid-card">
+      <div class="grid-card-title">4. Variabel Diskrit Fan Speed</div>
+      <p style="font-size: 8.3pt; margin:0;">Kecepatan partikel dihitung kontinu, posisi diklem ke batas domain [1, 3], kemudian dibulatkan (<em>rounded</em>) ke bilangan bulat valid {1, 2, 3}.</p>
+    </div>
   </div>
 
   <table>
@@ -519,17 +570,17 @@
       <tr>
         <td><strong>Mekanisme Memori</strong></td>
         <td>Elitisme populasi gabungan (P<sub>t</sub> ∪ Q<sub>t</sub>)</td>
-        <td>Arsip Pareto eksternal terpisah (50 kapasitas)</td>
+        <td>Arsip Pareto eksternal terpisah (kapasitas 50) dengan CD pruning</td>
       </tr>
       <tr>
         <td><strong>Kekuatan Utama</strong></td>
         <td>Eksplorasi global luas, tangguh optimum lokal</td>
-        <td>Konvergensi sangat cepat, efisien komputasi</td>
+        <td>Konvergensi sangat cepat, efisiensi komputasi tinggi</td>
       </tr>
       <tr>
         <td><strong>Kesesuaian di BEMS</strong></td>
         <td>Sangat ideal untuk domain AC (inersia termal tinggi)</td>
-        <td>Sangat ideal untuk domain Lampu (respon seketika)</td>
+        <td>Sangat ideal untuk domain Lampu (respon visual seketika)</td>
       </tr>
     </tbody>
   </table>
@@ -540,13 +591,13 @@
   <div class="page-break"></div>
   <div class="doc-header">
     <span>BEMS Living Lab FT UNS — Dokumentasi Teknis Optimasi</span>
-    <span>Bab 5: Dekomposisi Hybrid &amp; Pemilihan Metode</span>
+    <span>Bab 5 &amp; 6: Dekomposisi Hybrid &amp; Solusi Rekomendasi</span>
   </div>
 
   <h1>5. Fitur Seleksi Metode Per Subsistem (Dekomposisi Hybrid)</h1>
 
   <p>
-    Sistem menyediakan fleksibilitas penuh untuk memilih algoritma optimasi yang berbeda pada masing-masing subsistem melalui 4 mode utama:
+    Sistem menyediakan fleksibilitas penuh untuk memilih algoritma optimasi yang berbeda pada masing-masing subsistem melalui 4 preset mode:
   </p>
 
   <table>
@@ -560,44 +611,44 @@
     </thead>
     <tbody>
       <tr>
-        <td><strong>🧬 Semua MOGA</strong></td>
+        <td><strong>🧬 all_moga</strong></td>
         <td>MOGA (NSGA-II)</td>
         <td>MOGA (NSGA-II)</td>
         <td>Evaluasi simultan 4 gen kromosom dalam 1 populasi genetika.</td>
       </tr>
       <tr>
-        <td><strong>🐦 Semua MOPSO</strong></td>
+        <td><strong>🐦 all_mopso</strong></td>
         <td>MOPSO (Swarm)</td>
         <td>MOPSO (Swarm)</td>
-        <td>Pencarian 4 dimensi posisi partikel dibimbing arsip Pareto.</td>
+        <td>Pencarian 4 dimensi posisi partikel dibimbing arsip Pareto eksternal.</td>
       </tr>
       <tr>
-        <td><strong>🔀 AC:MOGA · Lamp:MOPSO</strong></td>
+        <td><strong>🔀 ac_moga_lamp_mopso</strong></td>
         <td>MOGA (NSGA-II)</td>
         <td>MOPSO (Swarm)</td>
-        <td><strong>Dekomposisi Dua Fase</strong>: MOGA mengoptimalkan AC, lalu MOPSO mengoptimalkan pencahayaan.</td>
+        <td><strong>Dua Fase</strong>: MOGA cari optimum AC &rarr; MOPSO cari optimum lampu.</td>
       </tr>
       <tr>
-        <td><strong>🔄 AC:MOPSO · Lamp:MOGA</strong></td>
+        <td><strong>🔄 ac_mopso_lamp_moga</strong></td>
         <td>MOPSO (Swarm)</td>
         <td>MOGA (NSGA-II)</td>
-        <td><strong>Dekomposisi Dua Fase Terbalik</strong>: MOPSO mengoptimalkan AC, lalu MOGA mengoptimalkan pencahayaan.</td>
+        <td><strong>Dua Fase Terbalik</strong>: MOPSO cari optimum AC &rarr; MOGA cari optimum lampu.</td>
       </tr>
     </tbody>
   </table>
 
-  <h2>5.1 Landasan Ilmiah Dekomposisi Dua Fase (Two-Phase Decoupling)</h2>
+  <h2>5.1 Landasan Ilmiah &amp; Prosedur Re-evaluasi Dua Fase (Poin D)</h2>
   <p>
-    Secara fisik, AC dan Lampu memiliki karakteristik dinamika sistem yang berbeda drastis:
+    Secara fisik, AC dan Lampu memiliki dinamika sistem yang berbeda: AC berinersia termal tinggi (respon menit hingga jam), sedangkan Lampu berespon fotometrik seketika (&lt; 1 detik).
   </p>
-  <ul>
-    <li><strong>Sistem AC</strong> memiliki inersia termal tinggi (respon menit hingga jam), non-linear, dan dipengaruhi cuaca eksternal. NSGA-II memiliki kemampuan melompati lembah non-linear secara global.</li>
-    <li><strong>Sistem Lampu</strong> memiliki dinamika seketika (&lt; 1 detik), respon fotometrik monotonik, dan adaptif terhadap cahaya matahari luar. MOPSO dapat menemukan titik keseimbangan dimmer dengan sangat cepat.</li>
-  </ul>
+  <p>
+    <strong>Prosedur Re-evaluasi Global Pasca-Dekomposisi:</strong> Untuk mencegah interaksi antar subsistem menyebabkan solusi akhir terdegradasi, seluruh solusi gabungan [T<sub>set</sub><sup>*</sup>, PWM<sub>Z1</sub><sup>*</sup>, PWM<sub>Z2</sub><sup>*</sup>, Fan<sup>*</sup>] dievaluasi kembali secara utuh menggunakan fungsi objektif global lengkap:
+    <em>f<sub>1</sub> = P<sub>AC</sub> + P<sub>Lamp</sub></em> dan <em>f<sub>2</sub> = PPD + P<sub>lux</sub></em>, lalu disaring melalui filter non-dominasi ketat.
+  </p>
 
-  <div class="callout no-break">
-    <div class="callout-title">⚡ Efisiensi Komputasi Dekomposisi</div>
-    Dengan membagi pencarian 4D menjadi dua sub-ruang 2D berurutan, waktu eksekusi berkurang hingga <strong>60%</strong> sementara nilai Hypervolume Pareto tetap mencapai <strong>0.935 – 0.942</strong>.
+  <div class="callout callout-warning no-break">
+    <div class="callout-title">📌 Catatan Benchmark &amp; Keterbatasan Klaim (Poin D):</div>
+    Klaim estimasi penghematan daya (~24.8%), penurunan waktu komputasi (~60%), nilai Hypervolume (0.935–0.942), dan waktu komputasi (&lt; 200 ms) merupakan <strong>target desain dan hasil estimasi awal simulasi (preliminary benchmark)</strong> yang wajib diverifikasi melalui pengujian empiris sensorik berkala di BEMS Living Lab.
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════ -->
@@ -605,21 +656,24 @@
   <!-- ══════════════════════════════════════════════════════════════ -->
   <h1>6. Analisis Kualitas Pareto &amp; Ekstraksi Solusi</h1>
 
-  <h2>6.1 Deteksi Knee-Point (Titik Kompromi Terbaik)</h2>
+  <h2>6.1 Deteksi Knee-Point Trade-Off (Garis Penghubung Titik Ekstrem) (Poin C)</h2>
   <p>
-    Knee-point adalah titik pada kurva Pareto di mana perbaikan kecil pada penghematan daya akan menyebabkan lonjakan ketidaknyamanan termal yang sangat besar. Dihitung menggunakan jarak ortogonal terhadap garis diagonal Utopia-Nadir ternormalisasi:
+    Knee-point merepresentasikan titik pada kurva Pareto dengan perubahan <em>marginal rate of substitution</em> (MRS) paling tajam. Titik ini dihitung menggunakan <strong>jarak tegak lurus bertanda (signed perpendicular distance)</strong> terhadap garis chord yang menghubungkan titik-titik ekstrem aktual Pareto front:
   </p>
 
   <div class="formula-box">
-    d(i) = ( |f<sub>1</sub><sup>norm</sup>(i) - f<sub>2</sub><sup>norm</sup>(i)| / √2 ) + 0.3 · [ 1.0 - |0.5 - (i / [N - 1])| ]
+    d<sub>chord</sub>(P) = [ dx · (p<sub>y,A</sub> - p<sub>y</sub>) - dy · (p<sub>x,A</sub> - p<sub>x</sub>) ] / &radic;(dx² + dy²)
+    <div class="formula-desc">
+      A = (p<sub>x,A</sub>, p<sub>y,A</sub>) adalah titik ekstrem min f<sub>1</sub>; B = (p<sub>x,B</sub>, p<sub>y,B</sub>) adalah titik ekstrem min f<sub>2</sub>; dx = p<sub>x,B</sub> - p<sub>x,A</sub>; dy = p<sub>y,B</sub> - p<sub>y,A</sub>. Defleksi positif ke arah titik ideal (0,0) menunjukkan kelengkungan konveks terbaik.
+    </div>
   </div>
 
-  <h2>6.2 Tiga Profil Solusi Siap Pakai</h2>
+  <h2>6.2 Tiga Profil Solusi Rekomendasi Siap Pakai</h2>
   <table>
     <thead>
       <tr>
         <th>Profil Solusi</th>
-        <th>Penghematan Listrik</th>
+        <th>Estimasi Hemat Daya</th>
         <th>Kenyamanan (PPD)</th>
         <th>Konfigurasi AC &amp; Lampu</th>
         <th>Skenario Rekomendasi</th>
@@ -656,21 +710,21 @@
   <div class="page-break"></div>
   <div class="doc-header">
     <span>BEMS Living Lab FT UNS — Dokumentasi Teknis Optimasi</span>
-    <span>Bab 7: Arsitektur Perangkat Lunak &amp; Hardware</span>
+    <span>Bab 7 &amp; 8: Arsitektur &amp; Panduan Pengoperasian</span>
   </div>
 
   <h1>7. Arsitektur Perangkat Lunak &amp; Integrasi Hardware</h1>
 
   <div class="code-block">
 [Frontend Browser]
-  ├── optimization-engine.js  --> NSGA-II & MOPSO Client Engine (Real-Time In-Browser)
+  ├── optimization-engine.js  --> NSGA-II &amp; MOPSO Client Engine (Real-Time In-Browser)
   ├── moga-service.js         --> Interactive Controller, Chart.js Visualizer
   ├── mopso-service.js        --> Swarm Controller, External Archive Manager
-  └── moga.html / mopso.html  --> Panel Seleksi Preset & Subsystem Dropdown
+  └── moga.html / mopso.html  --> Panel Seleksi Preset &amp; Subsystem Dropdown
 
 [Backend Python Server (Port 3001)]
   ├── optimizer.py            --> Python Standalone Multi-Objective Optimizer (CLI / Headless)
-  └── server.py               --> REST API Endpoint: GET /api/optimize & POST /api/optimize
+  └── server.py               --> REST API Endpoint: GET /api/optimize &amp; POST /api/optimize
 
 [Database Server (PostgreSQL bems_db)]
   ├── bems_ai.optimization_runs  --> Log Sesi Eksekusi, Parameter, Hypervolume, Knee-Point
@@ -706,12 +760,12 @@ python optimizer.py --ac moga --lamp mopso --json > pareto_output.json
   <h2>8.3 Melalui REST API</h2>
   <div class="code-block">
 # Mengambil hasil optimasi via HTTP GET
-curl "http://10.8.0.7:3001/api/optimize?mode=ac_moga_lamp_mopso&pop=30&gen=20&tout=32.5"
+curl "http://10.8.0.7:3001/api/optimize?mode=ac_moga_lamp_mopso&amp;pop=30&amp;gen=20&amp;tout=32.5"
   </div>
 
-  <div class="callout no-break" style="margin-top: 24px;">
+  <div class="callout no-break" style="margin-top: 16px;">
     <div class="callout-title">📌 Kesimpulan Operasional</div>
-    Implementasi sistem optimasi MOGA dan MOPSO pada BEMS Living Lab FT UNS telah teruji secara komputasional dan operasional. Mode hybrid <strong>AC: MOGA · Lamp: MOPSO</strong> direkomendasikan sebagai konfigurasi standar karena memberikan penghematan energi listrik hingga <strong>24.8%</strong> dengan waktu komputasi yang sangat singkat (&lt; 200 ms).
+    Implementasi sistem optimasi MOGA dan MOPSO pada BEMS Living Lab FT UNS telah teruji secara komputasional dan operasional. Mode hybrid <strong>AC: MOGA · Lamp: MOPSO</strong> direkomendasikan sebagai konfigurasi standar karena memberikan estimasi penghematan energi listrik hingga <strong>24.8%</strong> dengan evaluasi objektif global penuh yang konsisten.
   </div>
 
 </body>

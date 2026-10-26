@@ -34,17 +34,25 @@
           <div class="flex flex-wrap items-center gap-2">
             <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200/90 shadow-2xs text-xs">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span class="text-slate-600 font-medium">MQTT Broker: <strong class="font-mono text-slate-800">128.199.206.166</strong></span>
+              <span class="text-slate-600 font-medium">MQTT: <strong class="font-mono text-slate-800">128.199.206.166</strong></span>
+            </div>
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200/90 shadow-2xs text-xs">
+              <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+              <span class="text-slate-600 font-medium">PostgreSQL: <strong class="font-mono text-teal-800">bems_db (lighting_metrics)</strong></span>
             </div>
             <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200/90 shadow-2xs text-xs">
               <span class="w-2 h-2 rounded-full bg-amber-500"></span>
               <span class="text-slate-600 font-medium">MySQL DB: <strong class="font-mono text-slate-800">iotlabun_sbms (Ch-3)</strong></span>
             </div>
-            <button id="btn-lighting-export" onclick="window.BemsExport ? window.BemsExport.openModal('energy_lighting') : null" class="px-4 py-2 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export Telemetri Penerangan (MySQL)">
+            <button id="btn-export-lighting-metrics" onclick="window.BemsExport ? window.BemsExport.openModal('lighting_metrics') : null" class="px-3.5 py-1.5 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 hover:shadow cursor-pointer" title="Export 5 Parameter Iluminansi (PostgreSQL)">
               <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              <span>Export Penerangan (MySQL)</span>
+              <span>Export 5 Parameter Lux (CSV)</span>
             </button>
-            <button onclick="window.LightingService.refresh()" class="px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-2xs flex items-center gap-1.5 transition-all">
+            <button id="btn-lighting-export" onclick="window.BemsExport ? window.BemsExport.openModal('energy_lighting') : null" class="px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer" title="Export Submeter Listrik (MySQL)">
+              <svg class="w-3.5 h-3.5 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Export Listrik (MySQL)</span>
+            </button>
+            <button onclick="window.LightingService.refresh()" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs flex items-center gap-1.5 transition-all">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               Refresh
             </button>
@@ -61,102 +69,236 @@
           <div class="flex items-center gap-3 text-xs text-slate-500 font-mono">
             <span>Interval Telemetri: <strong class="text-slate-800">3.5 detik (Real-Time)</strong></span>
             <span>·</span>
-            <span>Fixture: <strong class="text-slate-800">4x LED 70W (2 Zona PWM) · Max 280W</strong></span>
+            <span>PostgreSQL: <strong class="text-teal-800">bems_telemetry.lighting_metrics</strong></span>
+            <span>·</span>
+            <span>Fixture: <strong class="text-slate-800">4x LED 70W (2 Zona PWM)</strong></span>
           </div>
         </div>
       </section>
 
-      <!-- ── 5 Executive KPI Cards ── -->
-      <section aria-label="Lighting Monitoring Executive Summary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        
-        <!-- Card 1: Lighting Load Status -->
-        <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-amber-300 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Lighting Load Status</span>
+      <!-- ── 5 Parameter Iluminansi (Lux Monitoring Indicators) ── -->
+      <section aria-label="5 Parameter Iluminansi Pencahayaan Living Lab" class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-[#0f6b64]"></div>
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">5 Parameter Iluminansi Pencahayaan (SNI 03-6197 &amp; Living Lab)</h2>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
+            <span>Tersimpan Otomatis di Database PostgreSQL</span>
+            <button onclick="window.BemsExport ? window.BemsExport.openModal('lighting_metrics') : null" class="text-teal-700 hover:text-teal-900 font-bold underline cursor-pointer">Export CSV &rarr;</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          
+          <!-- Indikator 1: Average Illuminance (E_avg) -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-400 hover:shadow transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">1. Average Illuminance (E<sub>avg</sub>)</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-teal-50 text-teal-800 border border-teal-200">∑E<sub>i</sub> / n</span>
+              </div>
+              <strong id="light-eavg" class="text-2xl font-bold text-teal-800 font-mono tracking-tight block">-- Lux</strong>
+              <p class="text-xs text-slate-400 mt-1">Rata-rata pencahayaan meja kerja (lux)</p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span>Status SNI:</span>
+              <span id="light-eavg-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">Optimal (350–550 Lux)</span>
+            </div>
+          </div>
+
+          <!-- Indikator 2: Illuminance Uniformity (U_0) -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-emerald-400 hover:shadow transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">2. Uniformity (U<sub>0</sub>)</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">E<sub>min</sub> / E<sub>avg</sub></span>
+              </div>
+              <strong id="light-u0" class="text-2xl font-bold text-emerald-800 font-mono tracking-tight block">--</strong>
+              <p class="text-xs text-slate-400 mt-1">Keseragaman pencahayaan meja kerja</p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span>Standar:</span>
+              <span id="light-u0-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">Merata (SNI ≥ 0.60)</span>
+            </div>
+          </div>
+
+          <!-- Indikator 3: Minimum Illuminance (E_min) -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-blue-400 hover:shadow transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">3. Min Illuminance (E<sub>min</sub>)</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-800 border border-blue-200">min(E<sub>1</sub>..E<sub>4</sub>)</span>
+              </div>
+              <strong id="light-emin" class="text-2xl font-bold text-blue-900 font-mono tracking-tight block">-- Lux</strong>
+              <p class="text-xs text-slate-400 mt-1">Mendeteksi workstation paling gelap</p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span>Workstation:</span>
+              <span id="light-emin-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono">Tergelap: WB3</span>
+            </div>
+          </div>
+
+          <!-- Indikator 4: Illuminance Compliance (IC) -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-indigo-400 hover:shadow transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">4. Compliance Rate (IC)</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">N<sub>comp</sub> / N<sub>valid</sub></span>
+              </div>
+              <strong id="light-ic" class="text-2xl font-bold text-indigo-900 font-mono tracking-tight block">--%</strong>
+              <p class="text-xs text-slate-400 mt-1">% sensor sesuai target (350–550 Lux)</p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span>Kepatuhan:</span>
+              <span id="light-ic-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">4/4 Meja Sesuai</span>
+            </div>
+          </div>
+
+          <!-- Indikator 5: Visual Discomfort Index (VDI) -->
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-cyan-400 hover:shadow transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">5. Visual Discomfort (VDI)</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-50 text-cyan-800 border border-cyan-200">¼ ∑ |E<sub>i</sub>-E<sub>t</sub>|/E<sub>t</sub></span>
+              </div>
+              <strong id="light-vdi" class="text-2xl font-bold text-cyan-900 font-mono tracking-tight block">--</strong>
+              <p class="text-xs text-slate-400 mt-1">Deviasi relatif thd target 450 Lux</p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span>Kenyamanan:</span>
+              <span id="light-vdi-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">Sangat Nyaman (≤0.10)</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Submeter Listrik (PZEM-004T Ch-3) & Daylight Harvesting Status Strip -->
+        <div class="bg-slate-50/80 rounded-xl border border-slate-200/90 p-3.5 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500 font-semibold uppercase">Status Submeter 3:</span>
               <span id="light-operational-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 inline-flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> 4 Fixture Aktif
               </span>
             </div>
-            <strong id="light-live-power" class="text-2xl font-bold text-amber-900 font-mono tracking-tight block">-- W</strong>
-            <p class="text-xs text-slate-400 mt-1">Lighting Submeter Active Power (PZEM-004T)</p>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Daya Aktif:</span>
+              <strong id="light-live-power" class="text-amber-900 font-bold">-- W</strong>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Arus:</span>
+              <strong id="light-live-current" class="text-slate-800 font-semibold">-- A</strong>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Tegangan:</span>
+              <strong id="light-live-volt" class="text-slate-800 font-semibold">-- V</strong>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Total Energi:</span>
+              <strong id="light-total-kwh" class="text-blue-900 font-bold">--</strong> <span class="text-slate-500">kWh</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Biaya:</span>
+              <strong id="light-est-cost" class="text-slate-800 font-bold">Rp --</strong>
+            </div>
           </div>
-          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
-            <span>Arus: <strong id="light-live-current" class="text-slate-800 font-semibold">-- A</strong></span>
-            <span>Volt: <strong id="light-live-volt" class="text-slate-800 font-semibold">-- V</strong></span>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5 text-amber-800">
+              <span class="text-slate-500">Daylight Savings:</span>
+              <strong id="light-daylight-saving" class="font-bold text-amber-900">38.5%</strong>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Lux Outdoor:</span>
+              <strong id="light-outdoor-lux" class="text-amber-800 font-semibold">-- Lux</strong>
+            </div>
           </div>
         </div>
+      </section>
 
-        <!-- Card 2: Iluminansi Rerata Meja Kerja (E_avg) -->
-        <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+      <!-- ── Tabel Referensi & Matriks 5 Parameter Iluminansi (BEMS Standards) ── -->
+      <section aria-label="Tabel Referensi 5 Parameter Iluminansi" class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Iluminansi Meja Kerja</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono">Target: 480 Lux</span>
-            </div>
-            <strong id="light-avg-lux" class="text-2xl font-bold text-teal-800 font-mono tracking-tight block">-- Lux</strong>
-            <p class="text-xs text-slate-400 mt-1">Rerata 4 Sensor Lux Meja Kerja</p>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Matriks &amp; Rumus 5 Parameter Iluminansi Pencahayaan
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Dihitung otomatis oleh daemon collector dari 4 sensor lux meja kerja (E<sub>1</sub>..E<sub>4</sub>), disimpan di database PostgreSQL, dan siap diexport ke CSV.</p>
           </div>
-          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
-            <span>Status SNI 03-6197:</span>
-            <span id="light-sni-badge" class="text-emerald-700 font-bold">Optimal (350–500 Lux)</span>
-          </div>
-        </div>
-
-        <!-- Card 3: Konsumsi Energi Pencahayaan -->
-        <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-amber-300 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Lighting Energy</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono">Submeter Ch-3</span>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-              <strong id="light-total-kwh" class="text-2xl font-bold text-blue-900 font-mono tracking-tight">--</strong>
-              <span class="text-xs font-semibold text-slate-500">kWh</span>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">Akumulasi Sejak Pemasangan Sensor</p>
-          </div>
-          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
-            <span>Estimasi Biaya:</span>
-            <strong id="light-est-cost" class="text-slate-800 font-bold">Rp --</strong>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-teal-50 text-teal-800 border border-teal-200">
+              PostgreSQL: bems_telemetry.lighting_metrics
+            </span>
+            <button onclick="window.BemsExport ? window.BemsExport.openModal('lighting_metrics') : null" class="px-3 py-1.5 rounded-lg bg-[#0f6b64] hover:bg-[#0b544e] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export CSV Dataset
+            </button>
           </div>
         </div>
 
-        <!-- Card 4: Kerataan Pencahayaan (Uniformity U0) -->
-        <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 hover:border-emerald-300 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kerataan Cahaya (U₀)</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">SNI ≥ 0.60</span>
-            </div>
-            <strong id="light-uniformity-val" class="text-2xl font-bold text-emerald-800 font-mono tracking-tight block">--</strong>
-            <p class="text-xs text-slate-400 mt-1">Rasio Emin / Eavg (Distribusi Rata)</p>
-          </div>
-          <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
-            <span>Kualitas Visual:</span>
-            <strong id="light-uniformity-badge" class="text-emerald-700 font-bold">Nyaman &amp; Merata</strong>
-          </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border border-slate-200 rounded-lg overflow-hidden">
+            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase tracking-wider text-[11px]">
+              <tr>
+                <th class="py-2.5 px-3">No</th>
+                <th class="py-2.5 px-3">Indikator</th>
+                <th class="py-2.5 px-3">Rumus Matematis</th>
+                <th class="py-2.5 px-3">Fungsi &amp; Penjelasan</th>
+                <th class="py-2.5 px-3">Nilai Real-Time</th>
+                <th class="py-2.5 px-3">Standar / Rekomendasi</th>
+                <th class="py-2.5 px-3">Database Target</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium text-slate-600">
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="py-2.5 px-3 font-bold text-slate-800">1</td>
+                <td class="py-2.5 px-3 font-semibold text-teal-900">Average Illuminance (E<sub>avg</sub>)</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-slate-900">∑E<sub>i</sub> / n</td>
+                <td class="py-2.5 px-3">Rata-rata pencahayaan meja kerja (lux) dari 4 sensor workbench</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-teal-700" id="light-avg-lux-metric">468 Lux</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-bold">SNI 03-6197: 350 – 550 Lux</span></td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">avg_illuminance</td>
+              </tr>
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="py-2.5 px-3 font-bold text-slate-800">2</td>
+                <td class="py-2.5 px-3 font-semibold text-emerald-900">Illuminance Uniformity (U<sub>0</sub>)</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-slate-900">E<sub>min</sub> / E<sub>avg</sub></td>
+                <td class="py-2.5 px-3">Keseragaman pencahayaan untuk mencegah kelelahan mata akibat kontras tajam</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-emerald-700" id="light-uniformity-val">0.96</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-bold">SNI 03-6197: ≥ 0.60 (CIE 0.70)</span></td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">illuminance_uniformity</td>
+              </tr>
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="py-2.5 px-3 font-bold text-slate-800">3</td>
+                <td class="py-2.5 px-3 font-semibold text-blue-900">Minimum Illuminance (E<sub>min</sub>)</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-slate-900">min(E<sub>1</sub>, ..., E<sub>4</sub>)</td>
+                <td class="py-2.5 px-3">Mendeteksi workstation paling gelap untuk identifikasi zona remang/kurang cahaya</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-blue-700" id="light-min-lux">448 Lux</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-mono text-[11px] font-bold">Batas Bawah ≥ 350 Lux</span></td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">min_illuminance</td>
+              </tr>
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="py-2.5 px-3 font-bold text-slate-800">4</td>
+                <td class="py-2.5 px-3 font-semibold text-indigo-900">Illuminance Compliance (IC)</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-slate-900">(N<sub>compliant</sub> / N<sub>valid</sub>) × 100%</td>
+                <td class="py-2.5 px-3">Persentase pengukuran yang memenuhi target pencahayaan (350–550 Lux)</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-indigo-700">100.0%</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-bold">Target Ideal: ≥ 80.0%</span></td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">compliance_pct</td>
+              </tr>
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="py-2.5 px-3 font-bold text-slate-800">5</td>
+                <td class="py-2.5 px-3 font-semibold text-cyan-900">Visual Discomfort Index (VDI)</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-slate-900">¼ ∑ |E<sub>i</sub> − E<sub>target,i</sub>| / E<sub>target,i</sub></td>
+                <td class="py-2.5 px-3">Mengukur penyimpangan relatif terhadap target lux (E<sub>target</sub> = 450 Lux)</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-cyan-700">0.0406</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-bold">VDI ≤ 0.10 (Sangat Nyaman)</span></td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">visual_discomfort_idx</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-        <!-- Card 5: Daylight Harvesting Savings Harvesting -->
-        <div class="bg-gradient-to-br from-amber-50/70 via-white to-yellow-50/50 rounded-xl border border-amber-200/80 shadow-sm p-4 hover:border-amber-300 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-amber-800 uppercase tracking-wider flex items-center gap-1">
-                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                Daylight Harvest
-              </span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 font-mono">Jendela Barat</span>
-            </div>
-            <strong id="light-daylight-saving" class="text-2xl font-bold text-amber-900 font-mono tracking-tight block">38,5%</strong>
-            <p class="text-xs text-slate-500 mt-1">Kontribusi Cahaya Alami Matahari</p>
-          </div>
-          <div class="pt-3 border-t border-amber-100 mt-3 flex items-center justify-between text-xs text-slate-600 font-mono">
-            <span>Lux Outdoor:</span>
-            <strong id="light-outdoor-lux" class="text-amber-800 font-bold">-- Lux</strong>
-          </div>
-        </div>
-
       </section>
 
       <!-- ── Multi-Zone Lighting & Illuminance Map (Living Lab Layout) ── -->

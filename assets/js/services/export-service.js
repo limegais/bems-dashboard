@@ -186,15 +186,26 @@
       options: null
     },
     "lighting-control": {
-      title: "Export Riwayat Konsumsi Listrik Penerangan",
-      subtitle: "Submetering Lampu Ruangan (Ch-3) — Database MySQL",
-      badge: "MySQL Energy",
+      title: "Export Telemetri & Parameter Iluminansi Pencahayaan",
+      subtitle: "Pilihan Dataset: 5 Parameter Lux (PostgreSQL) atau Submetering Daya (MySQL)",
+      badge: "Lighting Dataset",
       badgeClass: "bg-amber-100 text-amber-800",
-      description: "Riwayat penggunaan daya listrik beban pencahayaan ruang living lab.",
-      parameters: "Timestamp, Tegangan (V), Arus (A), Daya Aktif (kW), Konsumsi Energi (kWh), Biaya Listrik, Emisi Karbon",
-      targetTable: "MySQL iotlabun_sbms (Ch-3 Lamp)",
-      defaultCategory: "energy_lighting",
-      options: null
+      description: "Dataset komprehensif sistem pencahayaan living lab: 5 parameter evaluasi iluminansi visual (Eavg, U0, Emin, IC, VDI) dari PostgreSQL atau telemetri kelistrikan submeter Ch-3 dari MySQL.",
+      parameters: "Eavg (Lux), Uniformity (U0), Emin (Lux), Compliance IC (%), Discomfort VDI, Tegangan, Arus, Daya (W), Energi (kWh)",
+      targetTable: "bems_telemetry.lighting_metrics & MySQL iotlabun_sbms (Ch-3)",
+      defaultCategory: "lighting_metrics",
+      options: [
+        {
+          value: "lighting_metrics",
+          label: "5 Parameter Iluminansi Pencahayaan (PostgreSQL bems_db)",
+          desc: "Tabel bems_telemetry.lighting_metrics: Eavg, U0, Emin, IC (%), VDI, Lux WB1-WB4, Target 450 Lux, Status SNI 03-6197."
+        },
+        {
+          value: "energy_lighting",
+          label: "Submetering Energi Beban Lampu Ch-3 (MySQL iotlabun_sbms)",
+          desc: "Telemetri PZEM-004T: Daya Aktif (W/kW), Arus (A), Tegangan (V), Energi Kumulatif (kWh), Biaya & Emisi CO₂."
+        }
+      ]
     },
     "thermal-evaluation": {
       title: "Export Data Evaluasi Kenyamanan Termal (ISO 7730)",
@@ -646,6 +657,14 @@
               delimiter: delimiter
             }, `bems_energy_mysql_outlets_${fromDate}_to_${toDate}.csv`);
           }
+        } else if (selected === "lighting_metrics") {
+          statusBox.textContent = "Querying PostgreSQL bems_db: bems_telemetry.lighting_metrics...";
+          await downloadFromServerApi("/api/export/lighting_metrics.csv", {
+            from: fromDate,
+            to: toDate,
+            limit: 50000,
+            delimiter: delimiter
+          }, `bems_lighting_metrics_${fromDate}_to_${toDate}.csv`);
         } else if (selected === "energy_lighting") {
           statusBox.textContent = "Mengambil data submeter Lampu (Ch-3) dari MySQL...";
           try {

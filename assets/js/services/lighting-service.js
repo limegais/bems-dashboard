@@ -160,17 +160,36 @@
     const lxOut = nnzn["lx_out_lux"] && nnzn["lx_out_lux"].value !== null ? parseFloat(nnzn["lx_out_lux"].value) : 1420;
     const solar = nnzn["g_out_irradiance"] && nnzn["g_out_irradiance"].value !== null ? parseFloat(nnzn["g_out_irradiance"].value) : 185;
 
-    const deskLuxList = [lx1, lx2, lx3, lx4];
-    const avgLux = deskLuxList.reduce((a, b) => a + b, 0) / deskLuxList.length;
-    const minLux = Math.min(...deskLuxList);
-    const maxLux = Math.max(...deskLuxList);
+    const deskLuxList = [
+      { id: "WB1", name: "Meja 1 (Window)", val: lx1 },
+      { id: "WB2", name: "Meja 2 (Middle)", val: lx2 },
+      { id: "WB3", name: "Meja 3 (Inner)", val: lx3 },
+      { id: "WB4", name: "Meja 4 (Right)", val: lx4 }
+    ];
+    const luxVals = deskLuxList.map(d => d.val);
 
-    // Uniformity Ratio U0 = Emin / Eavg (Standar SNI / CIE >= 0.60)
-    // Jika ada sensor mati/0 lux, hitung kerataan dari sensor yang aktif agar tidak bias
-    const activeSensors = deskLuxList.filter(l => l > 0);
-    const effMinLux = activeSensors.length > 0 ? Math.min(...activeSensors) : 0;
-    const effAvgLux = activeSensors.length > 0 ? (activeSensors.reduce((a, b) => a + b, 0) / activeSensors.length) : avgLux;
-    const uniformity = effAvgLux > 0 ? (effMinLux / effAvgLux) : 0.72;
+    // ── 1. Average Illuminance (E_avg) = sum(E_i) / n
+    const avgLux = luxVals.reduce((a, b) => a + b, 0) / luxVals.length;
+
+    // ── 2. Minimum Illuminance (E_min) = min(E_1..E_4)
+    const minObj = deskLuxList.reduce((min, cur) => cur.val < min.val ? cur : min, deskLuxList[0]);
+    const minLux = minObj.val;
+    const maxLux = Math.max(...luxVals);
+
+    // ── 3. Illuminance Uniformity (U_0) = E_min / E_avg (Standar SNI 03-6197 >= 0.60)
+    const uniformity = avgLux > 0 ? (minLux / avgLux) : 0.70;
+
+    // ── 4. Illuminance Compliance (IC) = (N_compliant / N_valid) * 100%
+    // Target pencahayaan meja kerja SNI: 350 s/d 550 Lux
+    const targetMin = 350;
+    const targetMax = 550;
+    const compliantCount = luxVals.filter(v => v >= targetMin && v <= targetMax).length;
+    const compliancePct = (compliantCount / luxVals.length) * 100;
+
+    // ── 5. Visual Discomfort Index (VDI) = (1/4) * sum( |E_i - E_target| / E_target )
+    // E_target = 450 Lux (titik tengah rekomendasi kenyamanan visual SNI)
+    const targetLux = 450;
+    const vdi = (1 / luxVals.length) * luxVals.reduce((acc, v) => acc + (Math.abs(v - targetLux) / targetLux), 0);
 
     // Daylight Harvesting Savings: kontribusi cahaya alami
     let daylightSavingPct = 38.5;
@@ -182,7 +201,7 @@
       daylightSavingPct = 18.0;
     }
 
-    // Tampilkan di KPI & Denah
+    // Tampilkan di Peta / Denah
     setEl("map-lx1", fmt(lx1, 0) + " Lux");
     setEl("map-lx2", fmt(lx2, 0) + " Lux");
     setEl("map-lx3", fmt(lx3, 0) + " Lux");
@@ -190,15 +209,78 @@
     setEl("map-lx-out", fmt(lxOut, 0) + " Lux");
     setEl("map-irradiance", fmt(solar, 0) + " W/m²");
 
+    // ── Render 5 Parameter Iluminansi (Cards & Badges) ──
+    // 1. E_avg
+    setEl("light-eavg", fmt(avgLux, 1) + " Lux");
     setEl("light-avg-lux", fmt(avgLux, 0) + " Lux");
     setEl("light-avg-lux-metric", fmt(avgLux, 0) + " Lux");
+    const eavgBadge = document.getElementById("light-eavg-badge");
+    if (eavgBadge) {
+      if (avgLux >= 350 && avgLux <= 550) {
+        eavgBadge.textContent = "Optimal (SNI 350–550 Lux)";
+        eavgBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono";
+      } else if (avgLux < 350) {
+        eavgBadge.textContent = "Kurang Terang (<350 Lux)";
+        eavgBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 font-mono";
+      } else {
+        eavgBadge.textContent = "Terlalu Terang (>550 Lux)";
+        eavgBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono";
+      }
+    }
+
+    // 2. U_0 (Uniformity)
+    setEl("light-u0", uniformity.toFixed(3));
+    setEl("light-uniformity-val", uniformity.toFixed(2));
+    const u0Badge = document.getElementById("light-u0-badge");
+    if (u0Badge) {
+      if (uniformity >= 0.60) {
+        u0Badge.textContent = "Merata (SNI ≥ 0.60)";
+        u0Badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono";
+      } else {
+        u0Badge.textContent = "Kurang Merata (<0.60)";
+        u0Badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 font-mono";
+      }
+    }
+
+    // 3. E_min
+    setEl("light-emin", fmt(minLux, 0) + " Lux");
     setEl("light-min-lux", fmt(minLux, 0) + " Lux");
     setEl("light-max-lux", fmt(maxLux, 0) + " Lux");
-    setEl("light-uniformity-val", uniformity.toFixed(2));
-    setEl("light-daylight-saving", daylightSavingPct.toFixed(1) + "%");
-    setEl("light-outdoor-lux", fmt(lxOut, 0) + " Lux");
+    const eminBadge = document.getElementById("light-emin-badge");
+    if (eminBadge) {
+      eminBadge.textContent = `Tergelap: ${minObj.id} (${minObj.name.split(" ")[0]})`;
+      eminBadge.className = minLux >= 350 
+        ? "px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono"
+        : "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 font-mono";
+    }
 
-    // Status Kerataan Cahaya
+    // 4. IC (Compliance)
+    setEl("light-ic", compliancePct.toFixed(1) + "%");
+    const icBadge = document.getElementById("light-ic-badge");
+    if (icBadge) {
+      icBadge.textContent = `${compliantCount}/4 Meja Sesuai Target`;
+      icBadge.className = compliancePct >= 100
+        ? "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono"
+        : (compliancePct >= 75 ? "px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono" : "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 font-mono");
+    }
+
+    // 5. VDI (Visual Discomfort Index)
+    setEl("light-vdi", vdi.toFixed(4));
+    const vdiBadge = document.getElementById("light-vdi-badge");
+    if (vdiBadge) {
+      if (vdi <= 0.10) {
+        vdiBadge.textContent = "Sangat Nyaman (VDI ≤ 0.10)";
+        vdiBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono";
+      } else if (vdi <= 0.20) {
+        vdiBadge.textContent = "Nyaman Terkendali";
+        vdiBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 font-mono";
+      } else {
+        vdiBadge.textContent = "Ada Potensi Silau/Gelap";
+        vdiBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 font-mono";
+      }
+    }
+
+    // Status Kerataan Cahaya Lama (kompatibilitas)
     const uniformityBadge = document.getElementById("light-uniformity-badge");
     if (uniformityBadge) {
       if (uniformity >= 0.60) {
@@ -206,11 +288,11 @@
         uniformityBadge.className = "text-emerald-700 font-bold";
       } else {
         uniformityBadge.textContent = "Kurang Merata (<0.60)";
-        uniformityBadge.className = "text-amber-700 font-bold";
+        uniformityBadge.className = "text-rose-700 font-bold";
       }
     }
 
-    // Evaluasi Kesesuaian SNI (350 - 500 Lux)
+    // Evaluasi Kesesuaian SNI Lama
     const evalBadge = document.getElementById("light-sni-badge");
     if (evalBadge) {
       if (avgLux >= 350 && avgLux <= 550) {
@@ -224,6 +306,9 @@
         evalBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 inline-flex items-center gap-1.5";
       }
     }
+
+    setEl("light-daylight-saving", daylightSavingPct.toFixed(1) + "%");
+    setEl("light-outdoor-lux", fmt(lxOut, 0) + " Lux");
   }
 
   // ── 3. Fetch Data Historis Lampu dari MySQL ───────────────────────────────────

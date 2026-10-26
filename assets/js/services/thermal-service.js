@@ -54,8 +54,8 @@
     const icl = clo * 0.155; // m2 K / W
     const fcl = clo <= 0.078 ? 1.0 + 1.29 * icl : 1.05 + 0.645 * icl;
 
-    // Saturated water vapor pressure (Pa)
-    const pa = (rh / 100) * 10 * Math.exp(16.6536 - 4030.183 / (ta + 235));
+    // Saturated water vapor pressure (Pa) — exp(...) yields kPa, * 1000 converts to Pa
+    const pa = (rh / 100) * 1000 * Math.exp(16.6536 - 4030.183 / (ta + 235));
 
     // Iteration to solve clothing surface temperature tcl
     const tra = tr + 273.15;

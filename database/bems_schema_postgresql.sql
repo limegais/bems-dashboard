@@ -220,7 +220,28 @@ CREATE TABLE bems_telemetry.occupancy (
 );
 CREATE INDEX idx_occupancy_time_room ON bems_telemetry.occupancy (time DESC, room_id);
 
--- 2.5 Raw MQTT archive (forensik & replay semua topik)
+-- 2.5 Metrik Iluminansi Pencahayaan Ruangan (5 Parameter Lux: Eavg, U0, Emin, IC, VDI)
+CREATE TABLE bems_telemetry.lighting_metrics (
+    id                     BIGSERIAL    PRIMARY KEY,
+    time                   TIMESTAMPTZ  NOT NULL,
+    room_id                INT          NOT NULL DEFAULT 1 REFERENCES bems_core.rooms(id),
+    avg_illuminance        REAL         NOT NULL, -- E_avg: Rata-rata pencahayaan meja kerja (Lux)
+    illuminance_uniformity REAL         NOT NULL, -- U_0: Rasio keseragaman (E_min / E_avg)
+    min_illuminance        REAL         NOT NULL, -- E_min: Workstation meja kerja paling gelap (Lux)
+    compliance_pct         REAL         NOT NULL, -- IC: Persentase pengukuran memenuhi target (350-550 Lux)
+    visual_discomfort_idx  REAL         NOT NULL, -- VDI: Indeks ketidaknyamanan visual terhadap target 450 Lux
+    lux_wb1                REAL,                  -- Sensor meja 1 (Window Desk)
+    lux_wb2                REAL,                  -- Sensor meja 2 (Middle Desk)
+    lux_wb3                REAL,                  -- Sensor meja 3 (Inner Desk)
+    lux_wb4                REAL,                  -- Sensor meja 4 (Right Desk)
+    target_lux             REAL         DEFAULT 450.0,
+    compliance_status      VARCHAR(50),
+    created_at             TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_light_metrics_time_room ON bems_telemetry.lighting_metrics (time DESC, room_id);
+COMMENT ON TABLE bems_telemetry.lighting_metrics IS '5 Parameter evaluasi iluminansi visual living lab (SNI 03-6197)';
+
+-- 2.6 Raw MQTT archive (forensik & replay semua topik)
 CREATE TABLE bems_telemetry.mqtt_raw_log (
     id           BIGSERIAL    PRIMARY KEY,
     received_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),

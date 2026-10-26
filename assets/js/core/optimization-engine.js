@@ -112,9 +112,9 @@
     rh = rh || 55;
     va = va || 0.15;
 
-    // Saturated vapor pressure (Pa) — Antoine equation
-    const pSat = Math.exp(16.6536 - 4030.183 / (ta + 235)) * 10;
-    const pa = (rh / 100) * pSat; // partial vapor pressure
+    // Saturated vapor pressure (Pa) — Antoine equation: exp(...) yields kPa, * 1000 converts to Pa
+    const pSat = Math.exp(16.6536 - 4030.183 / (ta + 235)) * 1000;
+    const pa = (rh / 100) * pSat; // partial vapor pressure (Pa)
 
     // Clothing surface temperature approximation
     const icl = 0.155 * clo;

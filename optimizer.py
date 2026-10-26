@@ -52,7 +52,15 @@ FAN_LABELS = {1: "Low", 2: "Med", 3: "High / Auto"}
 
 
 def model_ac_power(tset, t_outdoor=32.0, fan=2):
-    """Regresi daya AC kompresor inverter (kW) berbasis data PZEM Channel 1."""
+    """Regresi daya AC kompresor inverter (kW) berbasis data PZEM Channel 1.
+
+    Poin B: Model ini adalah aproksimasi linear. Konsumsi AC inverter nyata
+    bersifat non-linear terhadap setpoint dan beban pendinginan aktual.
+    Untuk akurasi penelitian:
+    - Kalibrasi koefisien (0.06, 0.03, 0.015) dengan data PZEM-004T aktual.
+    - Pertimbangkan beban panas internal: okupansi, peralatan, radiasi matahari.
+    - Bandingkan prediksi model vs pengukuran aktual sebagai validasi.
+    """
     setpoint_factor = 1.0 - 0.06 * (tset - 24.0)
     outdoor_factor = 1.0 + 0.03 * max(0.0, t_outdoor - 30.0)
     fan_factor = 1.0 + (fan - 2) * 0.015
@@ -76,9 +84,24 @@ def model_indoor_temp(tset, t_outdoor=32.0, fan=2):
 
 
 def model_pmv(t_indoor, rh_indoor=55.0, va=0.20, met=1.1, clo=0.5):
-    """Fanger PMV (ISO 7730) regresi analitik untuk iklim tropis kantor UNS."""
-    pa = (rh_indoor / 100.0) * 10.0 * math.exp(16.6536 - 4030.183 / (t_indoor + 235.0))
-    t_neutral = 24.5 - 0.015 * (pa - 15.0) - 1.5 * (va - 0.15)
+    """Fanger PMV (ISO 7730) regresi analitik untuk iklim tropis kantor UNS.
+
+    Poin A (Revisi):
+    - Tekanan uap jenuh air parsial pa dinyatakan secara konsisten dalam satuan kPa:
+        pa = (rh_indoor / 100.0) * exp(16.6536 - 4030.183 / (t_indoor + 235.0))  [kPa]
+      (Faktor pengali 10 dihilangkan karena exp(...) langsung menghasilkan kPa).
+    - Suhu netral T_neutral menggunakan selisih (pa - 1.50) kPa (ekuivalen 15 hPa).
+    - CATATAN VALIDASI & KETERBATASAN MODEL:
+      Model PMV di bawah ini adalah MODEL REGRESI LINEAR SURROGATE terkalibrasi untuk
+      kondisi kantor tropis FT UNS (met=1.1, clo=0.5, Trad ≈ Tindoor, va=0.15-0.40 m/s),
+      bukan implementasi standar penuh persamaan non-linear implisit Fanger ISO 7730
+      (yang memerlukan iterasi perpindahan panas konveksi/radiasi dan suhu pakaian t_cl).
+      Model ini digunakan untuk efisiensi komputasi instan (<1 µs) dalam iterasi evolusioner.
+      Untuk verifikasi standar dan pengujian benchmark, implementasi Fanger ISO 7730
+      lengkap (misal pythermalcomfort) disarankan sebagai kontrol validasi.
+    """
+    pa = (rh_indoor / 100.0) * math.exp(16.6536 - 4030.183 / (t_indoor + 235.0))
+    t_neutral = 24.5 - 0.15 * (pa - 1.50) - 1.5 * (va - 0.15)
     delta_t = t_indoor - t_neutral
     return max(-3.0, min(3.0, 0.32 * delta_t))
 
@@ -90,18 +113,57 @@ def model_ppd(pmv):
 
 
 def model_desk_lux(pwm_z1, pwm_z2, lux_outdoor=1200.0):
-    """Iluminansi meja kerja gabungan luminer LED + daylight harvesting (Lux)."""
+    """Iluminansi meja kerja gabungan luminer LED + daylight harvesting (Lux).
+
+    Koefisien kontribusi (0.08, 280, 180) harus divalidasi dengan pengukuran
+    lux-meter pada kondisi aktual ruangan (tutup/buka tirai, sudut matahari).
+    Poin C: model ini adalah regresi pendekatan linear; validasi lapangan wajib.
+    """
     daylight = lux_outdoor * 0.08
     art_z1 = 280.0 * (pwm_z1 / 100.0)
     art_z2 = 180.0 * (pwm_z2 / 100.0)
     return daylight + art_z1 + art_z2
 
 
-def evaluate_solution(vars_vec, ctx):
+def lux_penalty_pct(desk_lux, target_lux=480.0, dead_band=50.0, overlight_weight=0.5, hard_thresh=350.0, w_hard=0.5):
+    """Penalti iluminansi berbasis persen (skala sebanding dengan PPD %).
+
+    Poin B (Revisi):
+    - Seluruh komponen penalti dinyatakan secara konsisten dalam satuan persen (%) tanpa dimensi campuran.
+    - Zona toleransi SNI 03-6197: target 480 Lux, dead-band ±50 Lux -> zona [430, 530] Lux (penalti = 0%).
+    - Jika E_desk < 430 Lux: penalti proporsional (430 - E_desk)/430 * 100%.
+    - Jika E_desk < 350 Lux (pelanggaran keras SNI): ditambahkan denda keras ternormalisasi:
+        delta_hard = w_hard * ((350 - E_desk) / 350) * 100%
+      yang merupakan besaran relatif murni (%) terhadap ambang 350 Lux.
+    - Jika E_desk > 530 Lux: penalti glare proporsional (E_desk - 530)/530 * 50%.
+    - Batas maksimum penalti (cap 95.0%) diterapkan di akhir setelah semua komponen dijumlahkan.
     """
-    Evaluasi fungsi objektif [f1, f2]:
-      f1 = Total Power (kW)
-      f2 = Discomfort Index (%)
+    lo = target_lux - dead_band   # 430 Lux
+    hi = target_lux + dead_band   # 530 Lux
+
+    if desk_lux < lo:
+        deficit_pct = (lo - desk_lux) / lo * 100.0
+        if desk_lux < hard_thresh:
+            # Denda keras ternormalisasi dalam % terhadap ambang 350 Lux
+            delta_hard = w_hard * ((hard_thresh - desk_lux) / hard_thresh) * 100.0
+            deficit_pct += delta_hard
+        return min(deficit_pct, 95.0)   # Cap 95% setelah semua komponen dihitung
+    elif desk_lux > hi:
+        # Penalti ringan untuk kelebihan pencahayaan (glare)
+        surplus_pct = (desk_lux - hi) / hi * 100.0 * overlight_weight
+        return min(surplus_pct, 30.0)
+    return 0.0
+
+
+def evaluate_solution(vars_vec, ctx):
+    """Evaluasi fungsi objektif [f1, f2]:
+
+      f1 = P_AC + P_Lamp  [kW]  — minimasi konsumsi daya total
+      f2 = PPD + P_lux    [%]   — minimasi ketidaknyamanan termal & visual
+
+    Poin A: PPD (%) dan Penalty_lux (%) kini memiliki satuan yang sebanding.
+    Solusi yang tidak memenuhi E_desk >= 480 Lux mendapat penalti besar pada f2
+    sehingga terdominasi oleh solusi yang memenuhi kendala pencahayaan.
     """
     tset = vars_vec[0]
     pwm_z1 = vars_vec[1]
@@ -112,26 +174,23 @@ def evaluate_solution(vars_vec, ctx):
     rh_in = ctx.get("rhIndoor", 55.0)
     lux_out = ctx.get("luxOutdoor", 1200.0)
 
-    # 1. Energy
+    # ── Objektif 1: Energi ───────────────────────────────────────────────────
     p_ac = model_ac_power(tset, t_out, fan)
     p_lamp = model_lamp_power(pwm_z1, pwm_z2)
     f1 = p_ac + p_lamp
 
-    # 2. Thermal Comfort (PPD)
+    # ── Objektif 2: Kenyamanan Termal (PPD) ─────────────────────────────────
     t_in = model_indoor_temp(tset, t_out, fan)
     va = FAN_MAP.get(fan, 0.20)
     pmv = model_pmv(t_in, rh_in, va)
     ppd = model_ppd(pmv)
 
-    # 3. Visual Comfort (Lux penalty)
+    # ── Objektif 2: Kenyamanan Visual (Penalty Lux berbasis %) ───────────────
+    # Poin C: target 480 Lux dengan dead-band ±50 Lux, konsisten dengan SNI.
     desk_lux = model_desk_lux(pwm_z1, pwm_z2, lux_out)
-    lux_penalty = 0.0
-    if desk_lux < 350.0:
-        lux_penalty = (350.0 - desk_lux) * 0.05
-    elif desk_lux > 650.0:
-        lux_penalty = (desk_lux - 650.0) * 0.02
+    p_lux = lux_penalty_pct(desk_lux, target_lux=ROOM["target_lux"])
 
-    f2 = ppd + lux_penalty
+    f2 = ppd + p_lux
     return [f1, f2]
 
 
@@ -205,7 +264,20 @@ def crowding_distance(front, objectives):
 
 
 def find_knee_point(pareto_front):
-    """Menemukan Knee-Point (titik kompromi terbaik) pada Pareto front."""
+    """Menemukan Knee-Point menggunakan jarak maksimum terhadap garis penghubung titik ekstrem (Poin C).
+
+    Poin C (Revisi):
+    - Normalisasi kedua objektif [f1, f2] ke [0, 1] berbasis batas min-max Pareto front aktual.
+    - Tentukan titik ekstrem aktual:
+        A = titik dengan f1 minimum (daya terendah, ketidaknyamanan tertinggi)
+        B = titik dengan f2 minimum (ketidaknyamanan terendah, daya tertinggi)
+    - Bentuk garis chord AB yang menghubungkan kedua ekstrem ternormalisasi.
+    - Untuk setiap kandidat titik P pada front Pareto, hitung jarak tegak lurus bertanda (signed distance):
+        d_signed(P) = [ dx * (y_A - y_P) - dy * (x_A - x_P) ] / L_AB
+      di mana orientasi positif didefinisikan ke arah titik ideal (0,0) untuk masalah minimisasi (kurva konveks).
+    - Titik dengan defleksi positif terbesar (peningkatan trade-off paling tajam) dipilih sebagai knee-point.
+    - Jika front bersifat linear atau konkaf (tidak ada d_signed > 0), gunakan fallback jarak Euclidean terdekat ke (0,0).
+    """
     if len(pareto_front) <= 2:
         return 0
 
@@ -217,18 +289,42 @@ def find_knee_point(pareto_front):
     r1 = f1_max - f1_min if (f1_max - f1_min) > 1e-9 else 1.0
     r2 = f2_max - f2_min if (f2_max - f2_min) > 1e-9 else 1.0
 
-    line_len = math.sqrt(2.0)
-    best_idx = 0
-    max_dist = -1.0
+    # Normalisasi semua titik ke [0, 1]
+    norm_pts = [
+        ((f1_vals[i] - f1_min) / r1, (f2_vals[i] - f2_min) / r2)
+        for i in range(len(pareto_front))
+    ]
 
-    for i in range(len(pareto_front)):
-        p_norm = [(f1_vals[i] - f1_min) / r1, (f2_vals[i] - f2_min) / r2]
-        dist = abs(p_norm[0] - p_norm[1]) / line_len
-        centrality = 1.0 - abs(0.5 - (i / (len(pareto_front) - 1)))
-        score = dist + 0.3 * centrality
-        if score > max_dist:
-            max_dist = score
+    # Cari titik ekstrem aktual dari solusi non-dominated
+    idx_A = min(range(len(norm_pts)), key=lambda i: (norm_pts[i][0], norm_pts[i][1]))
+    idx_B = min(range(len(norm_pts)), key=lambda i: (norm_pts[i][1], norm_pts[i][0]))
+
+    pt_A = norm_pts[idx_A]
+    pt_B = norm_pts[idx_B]
+
+    dx = pt_B[0] - pt_A[0]
+    dy = pt_B[1] - pt_A[1]
+    chord_len = math.hypot(dx, dy)
+
+    if chord_len < 1e-6:
+        return min(range(len(norm_pts)), key=lambda i: math.hypot(norm_pts[i][0], norm_pts[i][1]))
+
+    # Hitung signed perpendicular distance ke arah titik ideal (0,0)
+    best_idx = idx_A
+    max_tradeoff_dist = -float("inf")
+
+    for i in range(len(norm_pts)):
+        px, py = norm_pts[i]
+        # Cross product 2D terhadap vektor AB
+        signed_dist = (dx * (pt_A[1] - py) - dy * (pt_A[0] - px)) / chord_len
+        if signed_dist > max_tradeoff_dist:
+            max_tradeoff_dist = signed_dist
             best_idx = i
+
+    # Validasi kelengkungan: jika tidak ada titik dengan defleksi positif ke arah origin,
+    # fallback ke titik dengan jarak Euclidean terdekat ke titik utopia (0,0)
+    if max_tradeoff_dist <= 1e-6:
+        best_idx = min(range(len(norm_pts)), key=lambda i: math.hypot(norm_pts[i][0], norm_pts[i][1]))
 
     return best_idx
 
@@ -377,7 +473,18 @@ class NSGA2Optimizer:
 
 
 class MOPSOOptimizer:
-    """Implementasi Multi-Objective Particle Swarm Optimization (MOPSO)."""
+    """Implementasi Multi-Objective Particle Swarm Optimization (MOPSO).
+
+    Poin D: Implementasi lengkap mencakup:
+    - Batas kecepatan partikel (v_max) per dimensi.
+    - Seleksi leader dari arsip menggunakan roulette wheel berbasis crowding
+      distance (leader dengan kepadatan rendah = peluang dipilih lebih tinggi).
+    - Pembaruan pbest: hanya update jika solusi baru mendominasi pbest lama;
+      jika non-dominated (tidak ada yang mendominasi), update dengan prob 0.5.
+    - Pemangkasan arsip: gunakan crowding distance untuk membuang solusi pada
+      area padat saat arsip melebihi kapasitas.
+    - Penanganan variabel diskrit FanSpeed via pembulatan setelah clamp.
+    """
 
     def __init__(self, swarm_size=50, max_iter=80, w=0.72, c1=1.49, c2=1.49,
                  active_vars=None, fixed_vals=None):
@@ -388,6 +495,48 @@ class MOPSOOptimizer:
         self.c2 = c2
         self.active_vars = active_vars or [0, 1, 2, 3]
         self.fixed_vals = fixed_vals or {}
+        # v_max = 20% rentang tiap dimensi untuk stabilitas konvergensi
+        all_bounds = [BOUNDS["tset"], BOUNDS["pwm_z1"], BOUNDS["pwm_z2"], BOUNDS["fan"]]
+        self.v_max = [0.20 * (b[1] - b[0]) for b in all_bounds]
+
+    def _select_leader_roulette(self, archive):
+        """Pilih leader dari arsip dengan roulette wheel berbasis crowding distance.
+
+        Solusi pada area crowding rendah (jarak besar) mendapat bobot lebih tinggi
+        sehingga mendorong eksplorasi area yang belum terjamah Pareto front.
+        """
+        if len(archive) == 1:
+            return archive[0]
+
+        # Hitung crowding distance untuk seluruh arsip
+        objs = [a["objectives"] for a in archive]
+        n = len(archive)
+        cd = [0.0] * n
+
+        for m in range(2):  # 2 objektif
+            sorted_idx = sorted(range(n), key=lambda k: objs[k][m])
+            f_min = objs[sorted_idx[0]][m]
+            f_max = objs[sorted_idx[-1]][m]
+            f_range = f_max - f_min if (f_max - f_min) > 1e-9 else 1.0
+            cd[sorted_idx[0]] = float("inf")
+            cd[sorted_idx[-1]] = float("inf")
+            for k in range(1, n - 1):
+                cd[sorted_idx[k]] += (objs[sorted_idx[k + 1]][m] - objs[sorted_idx[k - 1]][m]) / f_range
+
+        # Ganti inf dengan nilai besar terbatas agar roulette bisa dihitung
+        max_finite = max((v for v in cd if v != float("inf")), default=1.0)
+        weights = [min(v, max_finite * 2.0) for v in cd]
+        total = sum(weights)
+        if total < 1e-12:
+            return random.choice(archive)
+
+        r = random.uniform(0, total)
+        cumulative = 0.0
+        for i, w in enumerate(weights):
+            cumulative += w
+            if r <= cumulative:
+                return archive[i]
+        return archive[-1]
 
     def run(self, ctx):
         all_bounds = [BOUNDS["tset"], BOUNDS["pwm_z1"], BOUNDS["pwm_z2"], BOUNDS["fan"]]
@@ -404,45 +553,58 @@ class MOPSOOptimizer:
             for idx, val in self.fixed_vals.items():
                 p[int(idx)] = float(val)
             positions.append(p)
-            v = [(b[1] - b[0]) * random.uniform(-0.1, 0.1) for b in all_bounds]
+            # Kecepatan awal kecil: ±5% rentang
+            v = [(b[1] - b[0]) * random.uniform(-0.05, 0.05) for b in all_bounds]
             velocities.append(v)
 
         pbest = [list(pos) for pos in positions]
         pbest_obj = [evaluate_solution(pos, ctx) for pos in positions]
         archive = []
 
-        # Init archive with non-dominated initial positions
+        # Init arsip dengan posisi awal yang non-dominated
         for i, pos in enumerate(positions):
-            obj = pbest_obj[i]
-            archive = self._update_archive(archive, [{"vars": pos, "objectives": obj}])
+            archive = self._update_archive(archive, [{"vars": pos, "objectives": pbest_obj[i]}])
 
         hv_history = []
         for it in range(self.max_iter):
             candidates = []
             for i in range(self.swarm_size):
-                leader = random.choice(archive) if archive else {"vars": pbest[i]}
+                # Seleksi leader dari arsip (roulette wheel berbasis crowding distance)
+                leader = self._select_leader_roulette(archive) if archive else {"vars": pbest[i]}
+
                 for d in self.active_vars:
                     r1 = random.random()
                     r2 = random.random()
-                    velocities[i][d] = (
+                    new_v = (
                         self.w * velocities[i][d]
                         + self.c1 * r1 * (pbest[i][d] - positions[i][d])
                         + self.c2 * r2 * (leader["vars"][d] - positions[i][d])
                     )
+                    # Batasi kecepatan (v_max) untuk stabilitas
+                    velocities[i][d] = max(-self.v_max[d], min(self.v_max[d], new_v))
                     positions[i][d] += velocities[i][d]
 
-                # Clamp
+                # Clamp posisi ke batas domain
                 positions[i][0] = max(BOUNDS["tset"][0], min(BOUNDS["tset"][1], positions[i][0]))
                 positions[i][1] = max(BOUNDS["pwm_z1"][0], min(BOUNDS["pwm_z1"][1], positions[i][1]))
                 positions[i][2] = max(BOUNDS["pwm_z2"][0], min(BOUNDS["pwm_z2"][1], positions[i][2]))
+                # Poin D: FanSpeed adalah variabel diskrit {1,2,3} — bulatkan setelah clamp
                 positions[i][3] = float(max(1, min(3, round(positions[i][3]))))
                 for idx, val in self.fixed_vals.items():
                     positions[i][int(idx)] = float(val)
 
                 obj = evaluate_solution(positions[i], ctx)
-                if dominates(obj, pbest_obj[i]) or (not dominates(pbest_obj[i], obj) and random.random() < 0.5):
+
+                # Pembaruan pbest: dominasi ketat atau non-dominated dengan prob 0.5
+                if dominates(obj, pbest_obj[i]):
+                    # Solusi baru lebih baik — selalu update
                     pbest[i] = list(positions[i])
                     pbest_obj[i] = list(obj)
+                elif not dominates(pbest_obj[i], obj):
+                    # Keduanya non-dominated — update probabilistik untuk diversitas
+                    if random.random() < 0.5:
+                        pbest[i] = list(positions[i])
+                        pbest_obj[i] = list(obj)
 
                 candidates.append({"vars": list(positions[i]), "objectives": list(obj)})
 
@@ -469,24 +631,48 @@ class MOPSOOptimizer:
         }
 
     def _update_archive(self, archive, candidates, max_size=50):
+        """Perbarui arsip Pareto eksternal dan pangkas jika melebihi kapasitas.
+
+        Poin D: Pemangkasan menggunakan crowding distance — solusi pada area
+        padat (CD kecil) dibuang terlebih dahulu untuk mempertahankan keberagaman.
+        """
         pool = archive + candidates
         non_dom = []
         for i, a in enumerate(pool):
-            is_dom = False
-            for j, b in enumerate(pool):
-                if i != j and dominates(b["objectives"], a["objectives"]):
-                    is_dom = True
-                    break
+            is_dom = any(
+                j != i and dominates(b["objectives"], a["objectives"])
+                for j, b in enumerate(pool)
+            )
             if not is_dom:
-                # Hindari duplikat identik
-                if not any(abs(nd["objectives"][0] - a["objectives"][0]) < 1e-4 and
-                           abs(nd["objectives"][1] - a["objectives"][1]) < 1e-4 for nd in non_dom):
+                # Hindari duplikat identik dalam arsip
+                if not any(
+                    abs(nd["objectives"][0] - a["objectives"][0]) < 1e-4 and
+                    abs(nd["objectives"][1] - a["objectives"][1]) < 1e-4
+                    for nd in non_dom
+                ):
                     non_dom.append(a)
 
+        # Pemangkasan arsip: buang solusi crowding tinggi (area padat)
         if len(non_dom) > max_size:
-            non_dom.sort(key=lambda x: x["objectives"][0])
-            step = len(non_dom) / max_size
-            non_dom = [non_dom[int(i * step)] for i in range(max_size)]
+            n = len(non_dom)
+            objs = [a["objectives"] for a in non_dom]
+            cd = [0.0] * n
+            for m in range(2):
+                sorted_idx = sorted(range(n), key=lambda k: objs[k][m])
+                f_min = objs[sorted_idx[0]][m]
+                f_max = objs[sorted_idx[-1]][m]
+                f_range = f_max - f_min if (f_max - f_min) > 1e-9 else 1.0
+                cd[sorted_idx[0]] = float("inf")
+                cd[sorted_idx[-1]] = float("inf")
+                for k in range(1, n - 1):
+                    cd[sorted_idx[k]] += (
+                        objs[sorted_idx[k + 1]][m] - objs[sorted_idx[k - 1]][m]
+                    ) / f_range
+            # Urutkan dari CD besar ke kecil; pertahankan max_size teratas
+            indexed_cd = sorted(enumerate(cd), key=lambda x: x[1], reverse=True)
+            keep = {idx for idx, _ in indexed_cd[:max_size]}
+            non_dom = [non_dom[i] for i in range(n) if i in keep]
+
         return non_dom
 
 
@@ -560,11 +746,46 @@ def run_optimization(mode="all_moga", ac_method=None, lamp_method=None, ctx=None
             lamp_eng = NSGA2Optimizer(pop_size=40, generations=40, active_vars=[1, 2], fixed_vals={0: fixed_tset, 3: fixed_fan})
 
         lamp_res = lamp_eng.run(ctx)
+
+        # ── Re-evaluasi Global Lengkap Solusi Akhir (Poin D) ──────────────────
+        # Evaluasi ulang seluruh solusi gabungan [fixed_tset, pwm_z1, pwm_z2, fixed_fan]
+        # dengan fungsi objektif global: f1 = P_AC + P_Lamp, f2 = PPD + P_lux.
+        # Menjamin interaksi gabungan kedua subsistem konsisten secara fisik dan matematis.
+        combined_candidates = []
+        for sol in lamp_res["paretoFront"]:
+            v = [fixed_tset, sol["vars"][1], sol["vars"][2], float(fixed_fan)]
+            full_objs = evaluate_solution(v, ctx)
+            combined_candidates.append({
+                "vars": v,
+                "objectives": full_objs,
+                "tset": fixed_tset,
+                "pwm_z1": v[1],
+                "pwm_z2": v[2],
+                "fan": int(round(fixed_fan)),
+            })
+
+        # Saring solusi non-dominated murni dari kandidat gabungan
+        final_pf = []
+        for i, a in enumerate(combined_candidates):
+            is_dom = any(
+                j != i and dominates(b["objectives"], a["objectives"])
+                for j, b in enumerate(combined_candidates)
+            )
+            if not is_dom:
+                if not any(
+                    abs(nd["objectives"][0] - a["objectives"][0]) < 1e-4 and
+                    abs(nd["objectives"][1] - a["objectives"][1]) < 1e-4
+                    for nd in final_pf
+                ):
+                    final_pf.append(a)
+
+        final_pf.sort(key=lambda s: s["objectives"][0])
+
         raw = {
-            "paretoFront": lamp_res["paretoFront"],
+            "paretoFront": final_pf if final_pf else combined_candidates,
             "allPopulation": lamp_res.get("allPopulation") or lamp_res.get("allSwarm") or [],
             "hvHistory": ac_res["hvHistory"] + lamp_res["hvHistory"],
-            "finalHV": lamp_res["finalHV"],
+            "finalHV": compute_hypervolume_2d([s["objectives"] for s in (final_pf or combined_candidates)]),
             "decomposed": True,
         }
     else:

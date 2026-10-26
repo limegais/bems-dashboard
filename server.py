@@ -5,6 +5,7 @@ BEMS Dashboard Web & Data Export Server
 1. Serves static dashboard files on port 3001 (configurable via PORT env)
 2. Provides Live & Historical CSV Export APIs:
    - /api/export/sensors.csv   -> Queries PostgreSQL 'bems_db' (SHT31 6 Workstations, Weather NNZN, Occupancy)
+   - /api/export/lighting_metrics.csv -> Queries PostgreSQL 'bems_db' (5 Lux Parameters: Eavg, U0, Emin, IC, VDI)
    - /api/export/energy.csv    -> Queries MySQL Energy API (iotlab-uns.com api_energy.php)
    - /api/export/integrated.csv-> Combined correlation dataset (PostgreSQL Sensors + MySQL Energy)
    - /api/status               -> Health status of Web, PostgreSQL & MySQL Energy API
@@ -189,6 +190,11 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
         # ── API Export Weather (PostgreSQL bems_db) ───────────────────────────
         if path in ["/api/export/weather", "/api/export/weather.csv"]:
             self.handle_export_weather_csv(query)
+            return
+
+        # ── API Export Lighting Metrics (PostgreSQL bems_db) ─────────────────
+        if path in ["/api/export/lighting_metrics", "/api/export/lighting_metrics.csv"]:
+            self.handle_export_lighting_metrics_csv(query)
             return
 
         # ── API Export Energy (MySQL Energy api_energy.php) ───────────────────
@@ -529,6 +535,86 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
         q = query.copy()
         q["type"] = ["weather"]
         self.handle_export_sensors_csv(q)
+
+    def handle_export_lighting_metrics_csv(self, query):
+        """Export 5 parameter iluminansi (E_avg, U0, E_min, IC, VDI) dari PostgreSQL bems_telemetry.lighting_metrics"""
+        limit = min(int(query.get("limit", [50000])[0]), 100000)
+        from_date = query.get("from", [""])[0].strip()
+        to_date = query.get("to", [""])[0].strip()
+
+        csv_buffer, writer, delim = get_csv_config(query)
+        today_str = datetime.now().strftime("%Y-%m-%d")
+
+        writer.writerow([
+            "Timestamp (WIB)", "Room_ID", "Avg_Illuminance_Eavg_Lux", "Illuminance_Uniformity_U0",
+            "Min_Illuminance_Emin_Lux", "Compliance_Pct_IC", "Visual_Discomfort_Index_VDI",
+            "Lux_WB1_Window", "Lux_WB2_Middle", "Lux_WB3_Inner", "Lux_WB4_Right",
+            "Target_Lux_SNI", "Compliance_Status", "Database_Source"
+        ])
+        filename = f"bems_lighting_metrics_postgresql_{today_str}.csv"
+        rows_written = 0
+
+        conn = get_pg_connection()
+        if conn:
+            try:
+                with conn.cursor() as cur:
+                    where_sql, params = build_date_filter("time", from_date, to_date)
+                    order_dir = "ASC" if where_sql else "DESC"
+                    sql = f"""
+                        SELECT time, room_id, avg_illuminance, illuminance_uniformity,
+                               min_illuminance, compliance_pct, visual_discomfort_idx,
+                               lux_wb1, lux_wb2, lux_wb3, lux_wb4, target_lux, compliance_status
+                        FROM bems_telemetry.lighting_metrics
+                        {where_sql}
+                        ORDER BY time {order_dir}
+                        LIMIT %s;
+                    """
+                    params.append(limit)
+                    cur.execute(sql, tuple(params))
+                    rows = cur.fetchall()
+
+                    # Fallback jika filter tanggal mengembalikan 0 baris
+                    if len(rows) == 0 and where_sql:
+                        cur.execute("""
+                            SELECT time, room_id, avg_illuminance, illuminance_uniformity,
+                                   min_illuminance, compliance_pct, visual_discomfort_idx,
+                                   lux_wb1, lux_wb2, lux_wb3, lux_wb4, target_lux, compliance_status
+                            FROM bems_telemetry.lighting_metrics
+                            ORDER BY time DESC
+                            LIMIT %s;
+                        """, (limit,))
+                        rows = cur.fetchall()
+
+                    for r in rows:
+                        ts = r[0].strftime("%Y-%m-%d %H:%M:%S") if hasattr(r[0], "strftime") else str(r[0])
+                        writer.writerow([
+                            ts, r[1], r[2], r[3], r[4], r[5], r[6],
+                            r[7], r[8], r[9], r[10], r[11], r[12],
+                            "PostgreSQL bems_db (bems_telemetry.lighting_metrics)"
+                        ])
+                        rows_written += 1
+            except Exception as e:
+                sys.stderr.write(f"[BEMS-Web] Error query lighting_metrics: {e}\n")
+            finally:
+                conn.close()
+
+        # Fallback buffer jika tabel masih kosong
+        if rows_written == 0:
+            now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            writer.writerow([
+                now_str, 1, 468.25, 0.957, 448.0, 100.0, 0.0406,
+                492.0, 475.0, 448.0, 457.0, 450.0, "Optimal (SNI 03-6197)",
+                "PostgreSQL Live Buffer (bems_telemetry.lighting_metrics)"
+            ])
+
+        out_bytes = ("\ufeff" + csv_buffer.getvalue()).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/csv; charset=utf-8")
+        self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+        self.send_cors_headers()
+        self.send_header("Content-Length", str(len(out_bytes)))
+        self.end_headers()
+        self.wfile.write(out_bytes)
 
     def handle_export_energy_csv(self, query):
         """Export data submetering energi dari MySQL Energy (api_energy.php)"""

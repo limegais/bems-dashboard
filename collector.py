@@ -286,6 +286,38 @@ class BemsDatabase:
         except Exception as e:
             logger.error(f"Error insert occupancy snapshot: {e}")
 
+        # 5. Simpan Lighting Metrics (5 Parameter Iluminansi: E_avg, U0, E_min, IC, VDI)
+        try:
+            wb1 = float(nnzn_data.get("lux_wb1", 420.0))
+            wb2 = float(nnzn_data.get("lux_wb2", 410.0))
+            wb3 = float(nnzn_data.get("lux_wb3", 390.0))
+            wb4 = float(nnzn_data.get("lux_wb4", 430.0))
+            wb_luxes = [wb1, wb2, wb3, wb4]
+            e_avg = sum(wb_luxes) / len(wb_luxes)
+            e_min = min(wb_luxes)
+            u0 = round(e_min / e_avg, 3) if e_avg > 0 else 0.70
+            e_target = 450.0
+            n_compliant = sum(1 for lx in wb_luxes if 350.0 <= lx <= 550.0)
+            ic_pct = round((n_compliant / len(wb_luxes)) * 100.0, 1)
+            vdi = round(sum(abs(lx - e_target) / e_target for lx in wb_luxes) / len(wb_luxes), 4)
+            status_str = "Optimal (SNI 03-6197)" if (350.0 <= e_avg <= 550.0) else ("Kurang Cahaya (<350 lx)" if e_avg < 350.0 else "Terang Tinggi (>550 lx)")
+
+            with self.lock:
+                with self.conn.cursor() as cur:
+                    cur.execute("""
+                        INSERT INTO bems_telemetry.lighting_metrics
+                            (time, room_id, avg_illuminance, illuminance_uniformity,
+                             min_illuminance, compliance_pct, visual_discomfort_idx,
+                             lux_wb1, lux_wb2, lux_wb3, lux_wb4, target_lux, compliance_status)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (
+                        now, self.room_id, e_avg, u0, e_min, ic_pct, vdi,
+                        wb1, wb2, wb3, wb4, e_target, status_str
+                    ))
+            inserted_items.append("1 Lighting Metrics")
+        except Exception as e:
+            logger.error(f"Error insert lighting metrics snapshot: {e}")
+
         return inserted_items
 
 

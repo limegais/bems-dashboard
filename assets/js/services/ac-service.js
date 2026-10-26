@@ -51,8 +51,8 @@
     if (!ta || !rh) return { pmv: -0.15, ppd: 5.5, status: "Comfortable (Neutral)", cat: "A" };
     
     // Simplifikasi ISO 7730 Polynomial Fit untuk ruang kantor ber-AC
-    const fnps = Math.exp(16.6536 - 4030.183 / (ta + 235));
-    const pa = (rh / 100) * fnps * 10; // Tekanan uap parsial (Pa)
+    const fnps = Math.exp(16.6536 - 4030.183 / (ta + 235)); // kPa
+    const pa = (rh / 100) * fnps * 1000; // Tekanan uap parsial (Pa)
     
     // Perkiraan perbedaan panas
     const deltaT = ta - 24.0;
