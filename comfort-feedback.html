@@ -122,34 +122,32 @@
                 <svg class="w-5 h-5 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 Form Evaluasi Kenyamanan
               </h2>
-              <p class="text-xs text-slate-400">Suara Anda langsung memengaruhi rekomendasi setpoint AI &amp; otomasi lampu</p>
+              <p class="text-xs text-slate-400">Suara Anda langsung memengaruhi rekomendasi setpoint AI</p>
             </div>
             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 font-mono">100% Anonim</span>
           </div>
 
-          <!-- TAB SWITCHER: Suhu (Termal) vs Cahaya (Visual) -->
+          <!-- TAB SWITCHER: Form Terpadu (Semua) vs Suhu vs Cahaya -->
           <div class="p-1 bg-slate-100 rounded-xl flex items-center gap-1 text-xs font-semibold">
-            <button type="button" id="tab-btn-thermal" onclick="window.ComfortService.switchTab('thermal')" class="flex-1 py-2 px-3 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 bg-white text-teal-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer">
-              <span>🌡️</span>
-              <span>Kenyamanan Suhu</span>
+            <button type="button" id="tab-btn-all" onclick="window.ComfortService.switchTab('all')" class="flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1 bg-white text-teal-900 shadow-xs font-bold border border-slate-200/60 cursor-pointer">
+              <span>📋</span>
+              <span>Terpadu (Semua)</span>
             </button>
-            <button type="button" id="tab-btn-visual" onclick="window.ComfortService.switchTab('visual')" class="flex-1 py-2 px-3 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium cursor-pointer">
+            <button type="button" id="tab-btn-thermal" onclick="window.ComfortService.switchTab('thermal')" class="flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1 text-slate-600 hover:text-slate-900 font-medium cursor-pointer">
+              <span>🌡️</span>
+              <span>Suhu</span>
+            </button>
+            <button type="button" id="tab-btn-visual" onclick="window.ComfortService.switchTab('visual')" class="flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1 text-slate-600 hover:text-slate-900 font-medium cursor-pointer">
               <span>💡</span>
-              <span>Kenyamanan Cahaya</span>
+              <span>Cahaya</span>
             </button>
           </div>
 
-          <!-- TAB 1: FORM KENYAMANAN SUHU (TERMAL) -->
-          <form id="form-thermal" onsubmit="window.ComfortService.submitThermalFeedback(event)" class="space-y-3.5 text-xs">
-            <div class="flex items-center justify-between pb-1 border-b border-slate-100/70 text-[11px] text-slate-500">
-              <span class="font-medium">Evaluasi Termal &amp; Pengkondisian Udara AC</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 font-mono">ASHRAE 55</span>
-            </div>
-
+          <form id="comfort-main-form" onsubmit="window.ComfortService.submitUnifiedFeedback(event)" class="space-y-3.5 text-xs">
             <!-- Pilihan Lokasi Ruang / Meja -->
             <div>
-              <label for="fb-thermal-room" class="font-bold text-slate-700 block mb-1">Zona Lokasi Kerja Anda:</label>
-              <select id="fb-thermal-room" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 text-xs">
+              <label for="fb-room" class="font-bold text-slate-700 block mb-1">Zona Lokasi Kerja Anda:</label>
+              <select id="fb-room" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 text-xs">
                 <option value="Workbench 1 (Jendela)">Workbench 1 (Dekat Fasad Jendela Barat)</option>
                 <option value="Workbench 2 (Tengah)">Workbench 2 (Meja Kerja Tengah)</option>
                 <option value="Workbench 3 (Dalam)">Workbench 3 (Area Dalam / Core)</option>
@@ -157,142 +155,90 @@
               </select>
             </div>
 
-            <!-- ASHRAE 7-Point Thermal Sensation Vote -->
-            <div>
-              <label class="font-bold text-slate-700 block mb-1.5">Bagaimana Sensasi Suhu Udara Saat Ini? (TCV 7-Point):</label>
-              <div class="grid grid-cols-7 gap-1 text-center font-mono">
-                <button type="button" onclick="window.ComfortService.setTcvVote(-3)" data-val="-3" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-3</button>
-                <button type="button" onclick="window.ComfortService.setTcvVote(-2)" data-val="-2" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-2</button>
-                <button type="button" onclick="window.ComfortService.setTcvVote(-1)" data-val="-1" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-1</button>
-                <button type="button" onclick="window.ComfortService.setTcvVote(0)" data-val="0" class="tcv-vote-btn active py-2.5 rounded-xl font-bold text-xs bg-teal-800 text-white shadow-2xs border-2 border-teal-600 cursor-pointer">0</button>
-                <button type="button" onclick="window.ComfortService.setTcvVote(1)" data-val="1" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+1</button>
-                <button type="button" onclick="window.ComfortService.setTcvVote(2)" data-val="2" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+2</button>
-                <button type="button" onclick="window.ComfortService.setTcvVote(3)" data-val="3" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+3</button>
+            <!-- ── SEKSI EVALUASI KENYAMANAN SUHU (TERMAL) ── -->
+            <div id="section-thermal-fields" class="space-y-3 pt-1 border-t border-slate-100">
+              <!-- ASHRAE 7-Point Thermal Sensation Vote (-3 sampai +3) -->
+              <div>
+                <label class="font-bold text-slate-700 block mb-1.5">Bagaimana Sensasi Suhu Udara Saat Ini? (TCV 7-Point):</label>
+                <div class="grid grid-cols-7 gap-1 text-center font-mono">
+                  <button type="button" onclick="window.ComfortService.setTcvVote(-3)" data-val="-3" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-3</button>
+                  <button type="button" onclick="window.ComfortService.setTcvVote(-2)" data-val="-2" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-2</button>
+                  <button type="button" onclick="window.ComfortService.setTcvVote(-1)" data-val="-1" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-1</button>
+                  <button type="button" onclick="window.ComfortService.setTcvVote(0)" data-val="0" class="tcv-vote-btn active py-2.5 rounded-xl font-bold text-xs bg-teal-800 text-white shadow-2xs border-2 border-teal-600 cursor-pointer">0</button>
+                  <button type="button" onclick="window.ComfortService.setTcvVote(1)" data-val="1" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+1</button>
+                  <button type="button" onclick="window.ComfortService.setTcvVote(2)" data-val="2" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+2</button>
+                  <button type="button" onclick="window.ComfortService.setTcvVote(3)" data-val="3" class="tcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+3</button>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1 px-1">
+                  <span class="text-blue-600">Sangat Dingin</span>
+                  <span class="text-teal-700 font-bold">Netral Nyaman</span>
+                  <span class="text-rose-600">Sangat Panas</span>
+                </div>
               </div>
-              <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1 px-1">
-                <span class="text-blue-600">Sangat Dingin</span>
-                <span class="text-teal-700 font-bold">Netral Nyaman</span>
-                <span class="text-rose-600">Sangat Panas</span>
-              </div>
-            </div>
 
-            <!-- Preferensi Termal -->
-            <div>
-              <label for="fb-thermal-pref" class="font-bold text-slate-700 block mb-1">Preferensi Anda Terhadap Suhu AC:</label>
-              <select id="fb-thermal-pref" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 text-xs">
-                <option value="Tidak Berubah">Tidak Perlu Berubah (Sudah Nyaman)</option>
-                <option value="Lebih Dingin">Ingin Sedikit Lebih Dingin (Turunkan Suhu AC)</option>
-                <option value="Lebih Hangat">Ingin Lebih Hangat (Naikkan Suhu AC)</option>
-              </select>
-            </div>
-
-            <!-- Sensasi Aliran Udara / Sirkulasi AC -->
-            <div>
-              <label class="font-bold text-slate-700 block mb-1.5">Sensasi Aliran Udara / Sirkulasi AC:</label>
-              <div class="grid grid-cols-3 gap-1.5 text-center font-mono">
-                <button type="button" onclick="window.ComfortService.setAirVote('Draughty')" data-val="Draughty" class="air-vote-btn px-2 py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">💨 Kencang</button>
-                <button type="button" onclick="window.ComfortService.setAirVote('Pas')" data-val="Pas" class="air-vote-btn active px-2 py-2 rounded-xl font-bold text-xs bg-teal-800 text-white shadow-2xs border-2 border-teal-600 cursor-pointer">🍃 Semilir Pas</button>
-                <button type="button" onclick="window.ComfortService.setAirVote('Stuffy')" data-val="Stuffy" class="air-vote-btn px-2 py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">🛑 Pengap</button>
+              <!-- Preferensi Termal -->
+              <div>
+                <label for="fb-thermal-pref" class="font-bold text-slate-700 block mb-1">Preferensi Anda Terhadap Suhu:</label>
+                <select id="fb-thermal-pref" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 text-xs">
+                  <option value="Tidak Berubah">Tidak Perlu Berubah (Sudah Nyaman)</option>
+                  <option value="Lebih Dingin">Ingin Sedikit Lebih Dingin (Turunkan Suhu AC)</option>
+                  <option value="Lebih Hangat">Ingin Lebih Hangat (Naikkan Suhu AC)</option>
+                </select>
               </div>
             </div>
 
-            <!-- Catatan Opsional Suhu -->
-            <div>
-              <label for="fb-thermal-comment" class="font-bold text-slate-700 block mb-1">Komentar / Keluhan Suhu (Opsional):</label>
-              <input type="text" id="fb-thermal-comment" placeholder="Contoh: Udara agak dingin di dekat jendela barat..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 text-xs" />
+            <!-- ── SEKSI EVALUASI KENYAMANAN CAHAYA (VISUAL) ── -->
+            <div id="section-visual-fields" class="space-y-3 pt-2 border-t border-slate-100">
+              <!-- Visual Sensation Vote (VCV 7-Point: -3 sampai +3, SAMA SEPERTI SUHU DI ATASNYA) -->
+              <div>
+                <label class="font-bold text-slate-700 block mb-1.5">Bagaimana Sensasi Pencahayaan di Meja Anda? (VCV 7-Point):</label>
+                <div class="grid grid-cols-7 gap-1 text-center font-mono">
+                  <button type="button" onclick="window.ComfortService.setVisVote(-3)" data-val="-3" class="vcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-3</button>
+                  <button type="button" onclick="window.ComfortService.setVisVote(-2)" data-val="-2" class="vcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-2</button>
+                  <button type="button" onclick="window.ComfortService.setVisVote(-1)" data-val="-1" class="vcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-1</button>
+                  <button type="button" onclick="window.ComfortService.setVisVote(0)" data-val="0" class="vcv-vote-btn active py-2.5 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 cursor-pointer">0</button>
+                  <button type="button" onclick="window.ComfortService.setVisVote(1)" data-val="1" class="vcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+1</button>
+                  <button type="button" onclick="window.ComfortService.setVisVote(2)" data-val="2" class="vcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+2</button>
+                  <button type="button" onclick="window.ComfortService.setVisVote(3)" data-val="3" class="vcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+3</button>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1 px-1">
+                  <span class="text-indigo-600">Sangat Redup</span>
+                  <span class="text-amber-700 font-bold">Netral Nyaman</span>
+                  <span class="text-rose-600">Sangat Silau</span>
+                </div>
+              </div>
+
+              <!-- Preferensi Pencahayaan -->
+              <div>
+                <label for="fb-visual-pref" class="font-bold text-slate-700 block mb-1">Preferensi Anda Terhadap Pencahayaan:</label>
+                <select id="fb-visual-pref" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs">
+                  <option value="Tidak Berubah">Tidak Perlu Berubah (Sudah Nyaman)</option>
+                  <option value="Lebih Terang">Ingin Lebih Terang (Naikkan Dimmer Lampu)</option>
+                  <option value="Lebih Redup">Ingin Lebih Redup (Turunkan Dimmer Lampu)</option>
+                </select>
+              </div>
+
+              <!-- Evaluasi Silau (Discomfort Glare) -->
+              <div>
+                <label class="font-bold text-slate-700 block mb-1">Kenyamanan Pencahayaan di Meja Anda (Kondisi Silau):</label>
+                <div class="grid grid-cols-3 gap-1.5 text-center font-mono">
+                  <button type="button" onclick="window.ComfortService.setGlareVote('Redup')" data-val="Redup" class="glare-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">🌑 Terlalu Redup</button>
+                  <button type="button" onclick="window.ComfortService.setGlareVote('Nyaman')" data-val="Nyaman" class="glare-vote-btn active py-2 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 cursor-pointer">💡 Nyaman (Ideal)</button>
+                  <button type="button" onclick="window.ComfortService.setGlareVote('Silau')" data-val="Silau" class="glare-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">⚡ Silau (Glare)</button>
+                </div>
+              </div>
             </div>
 
-            <!-- Tombol Kirim Suhu -->
-            <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+            <!-- Catatan Opsional -->
+            <div class="pt-1 border-t border-slate-100">
+              <label for="fb-comment" class="font-bold text-slate-700 block mb-1">Komentar / Keluhan (Opsional):</label>
+              <input type="text" id="fb-comment" placeholder="Contoh: Udara agak dingin di dekat jendela barat..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 text-xs" />
+            </div>
+
+            <!-- Tombol Kirim -->
+            <button type="submit" id="btn-submit-feedback" class="w-full py-2.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer">
               <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-              Kirim Feedback Suhu ke BEMS
-            </button>
-          </form>
-
-          <!-- TAB 2: FORM KENYAMANAN CAHAYA (VISUAL) -->
-          <form id="form-visual" onsubmit="window.ComfortService.submitVisualFeedback(event)" class="space-y-3.5 text-xs hidden">
-            <div class="flex items-center justify-between pb-1 border-b border-slate-100/70 text-[11px] text-slate-500">
-              <span class="font-medium">Evaluasi Kualitas Pencahayaan &amp; Glare</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 font-mono">SNI 03-6197</span>
-            </div>
-
-            <!-- Pilihan Lokasi Ruang / Meja -->
-            <div>
-              <label for="fb-visual-room" class="font-bold text-slate-700 block mb-1">Zona Lokasi Kerja Anda:</label>
-              <select id="fb-visual-room" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs">
-                <option value="Workbench 1 (Jendela)">Workbench 1 (Dekat Fasad Jendela Barat)</option>
-                <option value="Workbench 2 (Tengah)">Workbench 2 (Meja Kerja Tengah)</option>
-                <option value="Workbench 3 (Dalam)">Workbench 3 (Area Dalam / Core)</option>
-                <option value="Workbench 4 (Kanan)">Workbench 4 (Area Meja Sisi Kanan)</option>
-              </select>
-            </div>
-
-            <!-- Visual Sensation Vote (5-Point VCV) -->
-            <div>
-              <label class="font-bold text-slate-700 block mb-1.5">Tingkat Terang Cahaya di Meja Anda (5-Point VCV):</label>
-              <div class="grid grid-cols-5 gap-1 text-center font-mono">
-                <button type="button" onclick="window.ComfortService.setVisVote(-2)" data-val="-2" class="vis-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-2</button>
-                <button type="button" onclick="window.ComfortService.setVisVote(-1)" data-val="-1" class="vis-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">-1</button>
-                <button type="button" onclick="window.ComfortService.setVisVote(0)" data-val="0" class="vis-vote-btn active py-2 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 cursor-pointer">0</button>
-                <button type="button" onclick="window.ComfortService.setVisVote(1)" data-val="1" class="vis-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+1</button>
-                <button type="button" onclick="window.ComfortService.setVisVote(2)" data-val="2" class="vis-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer">+2</button>
-              </div>
-              <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-1 px-1">
-                <span class="text-indigo-600">Sangat Redup</span>
-                <span class="text-amber-700 font-bold">Ideal (350–500 Lux)</span>
-                <span class="text-rose-600">Sangat Silau</span>
-              </div>
-            </div>
-
-            <!-- Preferensi Pencahayaan -->
-            <div>
-              <label for="fb-visual-pref" class="font-bold text-slate-700 block mb-1">Preferensi Anda Terhadap Pencahayaan:</label>
-              <select id="fb-visual-pref" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs">
-                <option value="Tidak Berubah">Tidak Perlu Berubah (Sudah Cukup &amp; Nyaman)</option>
-                <option value="Lebih Terang">Ingin Lebih Terang (Naikkan Dimmer Lampu)</option>
-                <option value="Lebih Redup">Ingin Lebih Redup / Teduh (Turunkan Intensitas Lampu)</option>
-              </select>
-            </div>
-
-            <!-- Evaluasi Silau & Gangguan Visual -->
-            <div>
-              <label class="font-bold text-slate-700 block mb-1.5">Kondisi Silau &amp; Gangguan Visual (Glare Assessment):</label>
-              <div class="grid grid-cols-2 gap-1.5 text-center">
-                <button type="button" onclick="window.ComfortService.setGlareVote('Bebas Silau')" data-val="Bebas Silau" class="glare-vote-btn active py-2 px-2.5 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 text-left flex items-center gap-1.5 cursor-pointer">
-                  <span>✨</span> <span>Bebas Silau (Ideal)</span>
-                </button>
-                <button type="button" onclick="window.ComfortService.setGlareVote('Pantulan Monitor')" data-val="Pantulan Monitor" class="glare-vote-btn py-2 px-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors text-left flex items-center gap-1.5 cursor-pointer">
-                  <span>🖥️</span> <span>Pantulan Monitor</span>
-                </button>
-                <button type="button" onclick="window.ComfortService.setGlareVote('Silau Jendela')" data-val="Silau Jendela" class="glare-vote-btn py-2 px-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors text-left flex items-center gap-1.5 cursor-pointer">
-                  <span>☀️</span> <span>Silau Jendela Fasad</span>
-                </button>
-                <button type="button" onclick="window.ComfortService.setGlareVote('Bayangan Meja')" data-val="Bayangan Meja" class="glare-vote-btn py-2 px-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors text-left flex items-center gap-1.5 cursor-pointer">
-                  <span>🌑</span> <span>Bayangan Meja</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Sumber Penerangan / Kondisi Ruang -->
-            <div>
-              <label for="fb-visual-source" class="font-bold text-slate-700 block mb-1">Kondisi Penerangan Saat Ini:</label>
-              <select id="fb-visual-source" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs">
-                <option value="Campuran Alami & Lampu">Campuran Cahaya Alami (Daylight) &amp; Lampu Plafon</option>
-                <option value="Dominan Lampu Plafon">Didominasi Lampu Plafon LED</option>
-                <option value="Butuh Task Lamp">Perlu Lampu Meja Tambahan (Task Lamp)</option>
-              </select>
-            </div>
-
-            <!-- Catatan Opsional Cahaya -->
-            <div>
-              <label for="fb-visual-comment" class="font-bold text-slate-700 block mb-1">Komentar / Keluhan Cahaya (Opsional):</label>
-              <input type="text" id="fb-visual-comment" placeholder="Contoh: Ada pantulan matahari di layar monitor saat sore..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs" />
-            </div>
-
-            <!-- Tombol Kirim Cahaya -->
-            <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer">
-              <svg class="w-4 h-4 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-              Kirim Feedback Cahaya ke BEMS
+              <span>Kirim Feedback Anonim ke BEMS</span>
             </button>
           </form>
         </div>

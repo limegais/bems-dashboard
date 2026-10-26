@@ -1,11 +1,11 @@
 /**
  * BEMS Dashboard — Comfort Feedback Service
  * Mengelola umpan balik persepsi kenyamanan termal dan visual penghuni ruangan:
- * - Tab switcher interaktif: Evaluasi Termal (Suhu AC) vs Evaluasi Visual (Pencahayaan & Glare)
- * - Skala ASHRAE 55 7-Point Thermal Sensation Vote (TCV: -3 s/d +3) & Kecepatan Udara
- * - Skala SNI 03-6197 / IESNA 5-Point Visual Sensation Vote (VCV: -2 s/d +2) & Glare Assessment
- * - Sinkronisasi otomatis dengan 4 grafik analisis distribusi & korelasi sensor riil (SHT31 Ta & Lux meja)
- * - Real-time comfort log table & kalkulasi indeks kenyamanan gabungan
+ * - Tab switcher interaktif: Terpadu (Suhu & Cahaya) / Khusus Suhu / Khusus Cahaya
+ * - Skala ASHRAE 55 7-Point Thermal Sensation Vote (TCV: -3 s/d +3)
+ * - Skala 7-Point Visual Comfort Vote (VCV: -3 s/d +3, simetris dengan suhu)
+ * - Sinkronisasi otomatis dengan grafik analisis distribusi (7-bar) & regresi sensor riil
+ * - Real-time comfort log table & kalkulasi kepuasan penghuni
  */
 
 (function () {
@@ -16,18 +16,17 @@
     thermalSatisfactionPct: 87.9,
     visualSatisfactionPct: 91.4,
     combinedIndex: 89.6,
-    activeTab: "thermal",
+    activeTab: "all",
     currentTcv: 0,
-    currentAir: "Pas",
     currentVis: 0,
-    currentGlare: "Bebas Silau",
+    currentGlare: "Nyaman",
     recentVotes: [
-      { id: 1, time: "23:45:10", room: "Workbench 1 (Jendela)", category: "visual", metric: "485 Lux", voteLabel: "Ideal (0)", pref: "Tidak Berubah", condition: "Bebas Silau", note: "Pencahayaan sangat pas untuk bekerja di depan laptop." },
-      { id: 2, time: "23:30:25", room: "Workbench 2 (Tengah)", category: "thermal", metric: "24.1 °C", voteLabel: "Netral (0)", pref: "Tidak Berubah", condition: "Semilir Pas", note: "Suhu udara sejuk dan aliran merata." },
-      { id: 3, time: "23:12:40", room: "Workbench 3 (Dalam)", category: "thermal", metric: "23.8 °C", voteLabel: "Sejuk (-1)", pref: "Lebih Hangat", condition: "Semilir Pas", note: "Terasa sedikit sejuk di bawah diffuser AC." },
-      { id: 4, time: "22:55:18", room: "Workbench 4 (Kanan)", category: "visual", metric: "520 Lux", voteLabel: "Agak Terang (+1)", pref: "Lebih Redup", condition: "Pantulan Monitor", note: "Cahaya matahari sore agak memantul di sudut monitor." },
-      { id: 5, time: "22:20:05", room: "Workbench 1 (Jendela)", category: "thermal", metric: "24.6 °C", voteLabel: "Hangat (+1)", pref: "Lebih Dingin", condition: "Pengap", note: "Agak hangat saat banyak orang berkumpul di meja." },
-      { id: 6, time: "21:50:33", room: "Workbench 2 (Tengah)", category: "visual", metric: "472 Lux", voteLabel: "Ideal (0)", pref: "Tidak Berubah", condition: "Bebas Silau", note: "Lampu plafon LED nyaman untuk mata." }
+      { id: 1, time: "23:45:10", room: "Workbench 1 (Jendela)", category: "terpadu", metric: "24.2 °C · 485 lx", voteLabel: "TCV: 0 · VCV: 0", pref: "Sudah Nyaman", condition: "Ideal (Tidak Silau)", note: "Suhu dan pencahayaan sangat pas untuk mengetik di laptop." },
+      { id: 2, time: "23:30:25", room: "Workbench 2 (Tengah)", category: "thermal", metric: "24.1 °C", voteLabel: "Netral (0)", pref: "Tidak Berubah", condition: "Sirkulasi Pas", note: "Suhu udara sejuk dan aliran AC merata." },
+      { id: 3, time: "23:12:40", room: "Workbench 3 (Dalam)", category: "thermal", metric: "23.8 °C", voteLabel: "Sejuk (-1)", pref: "Lebih Hangat", condition: "Sirkulasi Pas", note: "Terasa sedikit sejuk di bawah diffuser AC." },
+      { id: 4, time: "22:55:18", room: "Workbench 4 (Kanan)", category: "visual", metric: "520 Lux", voteLabel: "Agak Terang (+1)", pref: "Lebih Redup", condition: "Silau Monitor", note: "Cahaya matahari sore agak memantul di sudut monitor." },
+      { id: 5, time: "22:20:05", room: "Workbench 1 (Jendela)", category: "thermal", metric: "24.6 °C", voteLabel: "Hangat (+1)", pref: "Lebih Dingin", condition: "Agak Pengap", note: "Agak hangat saat banyak orang berkumpul di meja." },
+      { id: 6, time: "21:50:33", room: "Workbench 2 (Tengah)", category: "visual", metric: "472 Lux", voteLabel: "Netral Nyaman (0)", pref: "Sudah Nyaman", condition: "Ideal", note: "Lampu plafon LED nyaman untuk mata." }
     ]
   };
 
@@ -54,63 +53,65 @@
     usePointStyle: true
   };
 
-  // ── Tab Switcher: Thermal (Suhu) vs Visual (Cahaya) ──────────────────────────
+  // ── Tab Switcher: Terpadu (Semua) vs Suhu vs Cahaya ───────────────────────────
   function switchTab(tab) {
     state.activeTab = tab;
-    const isThermal = tab === "thermal";
 
-    // Form buttons
-    const tabThermalBtn = document.getElementById("tab-btn-thermal");
-    const tabVisualBtn = document.getElementById("tab-btn-visual");
-    const formThermal = document.getElementById("form-thermal");
-    const formVisual = document.getElementById("form-visual");
+    const tabBtnAll = document.getElementById("tab-btn-all");
+    const tabBtnThermal = document.getElementById("tab-btn-thermal");
+    const tabBtnVisual = document.getElementById("tab-btn-visual");
+    const secThermal = document.getElementById("section-thermal-fields");
+    const secVisual = document.getElementById("section-visual-fields");
+    const btnSubmit = document.getElementById("btn-submit-feedback");
 
-    if (tabThermalBtn && tabVisualBtn) {
-      if (isThermal) {
-        tabThermalBtn.className = "flex-1 py-2 px-3 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 bg-white text-teal-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
-        tabVisualBtn.className = "flex-1 py-2 px-3 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
+    const defaultBtnClass = "flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1 text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
+    const activeBtnClass = "flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1 bg-white text-teal-900 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
+
+    if (tabBtnAll) tabBtnAll.className = tab === "all" ? activeBtnClass : defaultBtnClass;
+    if (tabBtnThermal) tabBtnThermal.className = tab === "thermal" ? activeBtnClass : defaultBtnClass;
+    if (tabBtnVisual) tabBtnVisual.className = tab === "visual" ? activeBtnClass : defaultBtnClass;
+
+    if (secThermal) secThermal.classList.toggle("hidden", tab === "visual");
+    if (secVisual) secVisual.classList.toggle("hidden", tab === "thermal");
+
+    if (btnSubmit) {
+      if (tab === "thermal") {
+        btnSubmit.querySelector("span").textContent = "Kirim Feedback Suhu ke BEMS";
+      } else if (tab === "visual") {
+        btnSubmit.querySelector("span").textContent = "Kirim Feedback Cahaya ke BEMS";
       } else {
-        tabVisualBtn.className = "flex-1 py-2 px-3 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 bg-white text-amber-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
-        tabThermalBtn.className = "flex-1 py-2 px-3 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
+        btnSubmit.querySelector("span").textContent = "Kirim Feedback Terpadu ke BEMS";
       }
     }
 
-    if (formThermal && formVisual) {
-      formThermal.classList.toggle("hidden", !isThermal);
-      formVisual.classList.toggle("hidden", isThermal);
-    }
-
-    // Chart switcher buttons & containers
+    // Chart switcher sync
     const chartThermalSection = document.getElementById("charts-thermal-section");
     const chartVisualSection = document.getElementById("charts-visual-section");
     const chartTabThermalBtn = document.getElementById("chart-tab-btn-thermal");
     const chartTabVisualBtn = document.getElementById("chart-tab-btn-visual");
     const analyticsTitle = document.getElementById("active-analytics-title");
 
-    if (chartThermalSection && chartVisualSection) {
-      chartThermalSection.classList.toggle("hidden", !isThermal);
-      chartVisualSection.classList.toggle("hidden", isThermal);
-    }
-
-    if (chartTabThermalBtn && chartTabVisualBtn) {
-      if (isThermal) {
-        chartTabThermalBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-teal-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
-        chartTabVisualBtn.className = "px-3 py-1 rounded-md text-xs transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
-        if (analyticsTitle) analyticsTitle.textContent = "Distribusi Termal (ASHRAE 55)";
-        if (charts.thermalDist) charts.thermalDist.resize();
-        if (charts.thermalCorr) charts.thermalCorr.resize();
-      } else {
-        chartTabVisualBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-amber-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
-        chartTabThermalBtn.className = "px-3 py-1 rounded-md text-xs transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
-        if (analyticsTitle) analyticsTitle.textContent = "Distribusi Pencahayaan (SNI 03-6197)";
-        initVisualCharts();
-        if (charts.visualDist) charts.visualDist.resize();
-        if (charts.visualCorr) charts.visualCorr.resize();
-      }
+    if (tab === "visual") {
+      if (chartThermalSection) chartThermalSection.classList.add("hidden");
+      if (chartVisualSection) chartVisualSection.classList.remove("hidden");
+      if (chartTabThermalBtn) chartTabThermalBtn.className = "px-3 py-1 rounded-md text-xs transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
+      if (chartTabVisualBtn) chartTabVisualBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-amber-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
+      if (analyticsTitle) analyticsTitle.textContent = "Distribusi Pencahayaan (SNI 03-6197)";
+      initVisualCharts();
+      if (charts.visualDist) charts.visualDist.resize();
+      if (charts.visualCorr) charts.visualCorr.resize();
+    } else {
+      if (chartThermalSection) chartThermalSection.classList.remove("hidden");
+      if (chartVisualSection) chartVisualSection.classList.add("hidden");
+      if (chartTabThermalBtn) chartTabThermalBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-teal-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
+      if (chartTabVisualBtn) chartTabVisualBtn.className = "px-3 py-1 rounded-md text-xs transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
+      if (analyticsTitle) analyticsTitle.textContent = "Distribusi Termal (ASHRAE 55)";
+      if (charts.thermalDist) charts.thermalDist.resize();
+      if (charts.thermalCorr) charts.thermalCorr.resize();
     }
   }
 
-  // ── Button Selection Handlers: Thermal ─────────────────────────────────────────
+  // ── Thermal Rating Selection: -3 s/d +3 ────────────────────────────────────────
   function setTcvVote(val) {
     state.currentTcv = parseInt(val, 10);
     document.querySelectorAll(".tcv-vote-btn").forEach(btn => {
@@ -122,47 +123,39 @@
     });
   }
 
-  function setAirVote(val) {
-    state.currentAir = val;
-    document.querySelectorAll(".air-vote-btn").forEach(btn => {
-      if (btn.getAttribute("data-val") === val) {
-        btn.className = "air-vote-btn active px-2 py-2 rounded-xl font-bold text-xs bg-teal-800 text-white shadow-2xs border-2 border-teal-600 cursor-pointer";
-      } else {
-        btn.className = "air-vote-btn px-2 py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer";
-      }
-    });
-  }
-
-  // ── Button Selection Handlers: Visual ──────────────────────────────────────────
+  // ── Visual Rating Selection: -3 s/d +3 (SAMA PERSIS DENGAN SUHU) ───────────────
   function setVisVote(val) {
     state.currentVis = parseInt(val, 10);
-    document.querySelectorAll(".vis-vote-btn").forEach(btn => {
+    document.querySelectorAll(".vcv-vote-btn").forEach(btn => {
       if (parseInt(btn.getAttribute("data-val"), 10) === state.currentVis) {
-        btn.className = "vis-vote-btn active py-2 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 cursor-pointer";
+        btn.className = "vcv-vote-btn active py-2.5 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 cursor-pointer";
       } else {
-        btn.className = "vis-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer";
+        btn.className = "vcv-vote-btn py-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer";
       }
     });
   }
 
+  // ── Glare Rating Selection ───────────────────────────────────────────────────
   function setGlareVote(val) {
     state.currentGlare = val;
     document.querySelectorAll(".glare-vote-btn").forEach(btn => {
-      if (btn.getAttribute("data-val") === val) {
-        btn.className = "glare-vote-btn active py-2 px-2.5 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 text-left flex items-center gap-1.5 cursor-pointer";
+      const btnVal = btn.getAttribute("data-val");
+      if (btnVal === val) {
+        btn.className = "glare-vote-btn active py-2 rounded-xl font-bold text-xs bg-amber-600 text-white shadow-2xs border-2 border-amber-500 cursor-pointer";
       } else {
-        btn.className = "glare-vote-btn py-2 px-2.5 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors text-left flex items-center gap-1.5 cursor-pointer";
+        btn.className = "glare-vote-btn py-2 rounded-xl font-medium text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer";
       }
     });
   }
 
-  // ── Submit Feedback Handlers ──────────────────────────────────────────────────
-  function submitThermalFeedback(event) {
+  // ── Unified Feedback Submission ───────────────────────────────────────────────
+  function submitUnifiedFeedback(event) {
     if (event) event.preventDefault();
 
-    const room = document.getElementById("fb-thermal-room") ? document.getElementById("fb-thermal-room").value : "Workbench 1";
-    const pref = document.getElementById("fb-thermal-pref") ? document.getElementById("fb-thermal-pref").value : "Tidak Berubah";
-    const comment = document.getElementById("fb-thermal-comment") ? document.getElementById("fb-thermal-comment").value.trim() : "";
+    const room = document.getElementById("fb-room") ? document.getElementById("fb-room").value : "Workbench 1";
+    const thermalPref = document.getElementById("fb-thermal-pref") ? document.getElementById("fb-thermal-pref").value : "Tidak Berubah";
+    const visualPref = document.getElementById("fb-visual-pref") ? document.getElementById("fb-visual-pref").value : "Tidak Berubah";
+    const comment = document.getElementById("fb-comment") ? document.getElementById("fb-comment").value.trim() : "";
 
     const tcvMap = {
       "-3": "Sangat Dingin (-3)",
@@ -174,72 +167,55 @@
       "3": "Sangat Panas (+3)"
     };
 
-    const airMap = {
-      "Draughty": "Kencang",
-      "Pas": "Semilir Pas",
-      "Stuffy": "Pengap"
+    const vcvMap = {
+      "-3": "Sangat Redup (-3)",
+      "-2": "Redup (-2)",
+      "-1": "Agak Redup (-1)",
+      "0": "Netral Nyaman (0)",
+      "1": "Agak Terang (+1)",
+      "2": "Terang (+2)",
+      "3": "Sangat Silau (+3)"
+    };
+
+    const glareMap = {
+      "Redup": "Terlalu Redup",
+      "Bebas Silau": "Nyaman (Ideal)",
+      "Nyaman": "Nyaman (Ideal)",
+      "Silau": "Silau (Glare)"
     };
 
     const now = new Date();
     const timeStr = now.toTimeString().split(" ")[0];
     const liveTa = (window.liveData && window.liveData.aggregates && window.liveData.aggregates.avgTemp) || 24.3;
-
-    const newVote = {
-      id: Date.now(),
-      time: timeStr,
-      room: room,
-      category: "thermal",
-      metric: `${liveTa.toFixed(1)} °C`,
-      voteLabel: tcvMap[String(state.currentTcv)] || "Netral (0)",
-      pref: pref,
-      condition: airMap[state.currentAir] || "Semilir Pas",
-      note: comment || "Feedback kenyamanan termal dicatat secara anonim."
-    };
-
-    state.recentVotes.unshift(newVote);
-    if (state.recentVotes.length > 8) state.recentVotes.pop();
-    state.totalVotes++;
-
-    updateStats();
-    renderRecentTable();
-
-    showToast("🌡️ Terima kasih! Evaluasi kenyamanan termal berhasil dikirim ke BEMS Living Lab.", "teal");
-
-    if (document.getElementById("fb-thermal-comment")) {
-      document.getElementById("fb-thermal-comment").value = "";
-    }
-  }
-
-  function submitVisualFeedback(event) {
-    if (event) event.preventDefault();
-
-    const room = document.getElementById("fb-visual-room") ? document.getElementById("fb-visual-room").value : "Workbench 1";
-    const pref = document.getElementById("fb-visual-pref") ? document.getElementById("fb-visual-pref").value : "Tidak Berubah";
-    const source = document.getElementById("fb-visual-source") ? document.getElementById("fb-visual-source").value : "Campuran Alami & Lampu";
-    const comment = document.getElementById("fb-visual-comment") ? document.getElementById("fb-visual-comment").value.trim() : "";
-
-    const visMap = {
-      "-2": "Sangat Redup (-2)",
-      "-1": "Agak Redup (-1)",
-      "0": "Ideal (0)",
-      "1": "Agak Terang (+1)",
-      "2": "Sangat Silau (+2)"
-    };
-
-    const now = new Date();
-    const timeStr = now.toTimeString().split(" ")[0];
     const liveLux = (window.liveData && window.liveData.aggregates && window.liveData.aggregates.avgLux) || 485;
 
+    let category = "terpadu";
+    let metric = `${liveTa.toFixed(1)} °C · ${Math.round(liveLux)} lx`;
+    let voteLabel = `TCV: ${state.currentTcv} · VCV: ${state.currentVis}`;
+    let pref = `Suhu: ${thermalPref} · Cahaya: ${visualPref}`;
+
+    if (state.activeTab === "thermal") {
+      category = "thermal";
+      metric = `${liveTa.toFixed(1)} °C`;
+      voteLabel = tcvMap[String(state.currentTcv)] || "Netral (0)";
+      pref = thermalPref;
+    } else if (state.activeTab === "visual") {
+      category = "visual";
+      metric = `${Math.round(liveLux)} Lux`;
+      voteLabel = vcvMap[String(state.currentVis)] || "Netral Nyaman (0)";
+      pref = visualPref;
+    }
+
     const newVote = {
       id: Date.now(),
       time: timeStr,
       room: room,
-      category: "visual",
-      metric: `${Math.round(liveLux)} Lux`,
-      voteLabel: visMap[String(state.currentVis)] || "Ideal (0)",
+      category: category,
+      metric: metric,
+      voteLabel: voteLabel,
       pref: pref,
-      condition: state.currentGlare || "Bebas Silau",
-      note: comment || (source ? `Kondisi: ${source}` : "Feedback kenyamanan visual dicatat secara anonim.")
+      condition: glareMap[state.currentGlare] || "Nyaman (Ideal)",
+      note: comment || "Feedback kenyamanan penghuni dicatat secara anonim."
     };
 
     state.recentVotes.unshift(newVote);
@@ -249,10 +225,16 @@
     updateStats();
     renderRecentTable();
 
-    showToast("💡 Terima kasih! Evaluasi kenyamanan pencahayaan berhasil dikirim ke BEMS Living Lab.", "amber");
+    const toastMsg = state.activeTab === "visual"
+      ? "💡 Terima kasih! Evaluasi kenyamanan pencahayaan berhasil dicatat ke BEMS."
+      : state.activeTab === "thermal"
+        ? "🌡️ Terima kasih! Evaluasi kenyamanan termal berhasil dicatat ke BEMS."
+        : "✅ Terima kasih! Evaluasi kenyamanan suhu & cahaya (-3 s/d +3) berhasil dicatat ke BEMS.";
 
-    if (document.getElementById("fb-visual-comment")) {
-      document.getElementById("fb-visual-comment").value = "";
+    showToast(toastMsg, state.activeTab === "visual" ? "amber" : "teal");
+
+    if (document.getElementById("fb-comment")) {
+      document.getElementById("fb-comment").value = "";
     }
   }
 
@@ -282,21 +264,16 @@
     if (!tbody) return;
 
     tbody.innerHTML = state.recentVotes.map(v => {
-      const isThermal = v.category === "thermal";
-      const catBadge = isThermal
-        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">🌡️ Termal</span>`
-        : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">💡 Visual</span>`;
-
-      let voteBadge = "bg-slate-100 text-slate-700 border-slate-200";
-      if (isThermal) {
-        if (v.voteLabel.includes("-")) voteBadge = "bg-blue-50 text-blue-800 border-blue-200";
-        else if (v.voteLabel.includes("+")) voteBadge = "bg-rose-50 text-rose-800 border-rose-200";
-        else voteBadge = "bg-teal-50 text-teal-800 border-teal-200";
-      } else {
-        if (v.voteLabel.includes("-")) voteBadge = "bg-indigo-50 text-indigo-800 border-indigo-200";
-        else if (v.voteLabel.includes("+")) voteBadge = "bg-amber-50 text-amber-800 border-amber-200";
-        else voteBadge = "bg-emerald-50 text-emerald-800 border-emerald-200";
+      let catBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">📋 Terpadu</span>`;
+      if (v.category === "thermal") {
+        catBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">🌡️ Termal</span>`;
+      } else if (v.category === "visual") {
+        catBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">💡 Visual</span>`;
       }
+
+      let voteBadge = "bg-teal-50 text-teal-800 border-teal-200";
+      if (v.voteLabel.includes("-")) voteBadge = "bg-blue-50 text-blue-800 border-blue-200";
+      else if (v.voteLabel.includes("+")) voteBadge = "bg-rose-50 text-rose-800 border-rose-200";
 
       return `
         <tr class="hover:bg-slate-50/80 transition-colors">
@@ -317,7 +294,7 @@
     }).join("");
   }
 
-  // ── Inisialisasi Grafik Chart.js ───────────────────────────────────────────────
+  // ── Grafik Chart.js (Thermal & Visual 7-Point) ─────────────────────────────────
   function initCharts() {
     // 1. Chart Distribusi Suara ASHRAE 7-Point (Thermal)
     const ctxDist = document.getElementById("comfortDistChart");
@@ -429,19 +406,19 @@
   }
 
   function initVisualCharts() {
-    // 3. Chart Distribusi Sensasi Pencahayaan (Visual)
+    // 3. Chart Distribusi Sensasi Pencahayaan (Visual 7-Point)
     const ctxVisDist = document.getElementById("visualDistChart");
     if (ctxVisDist && !charts.visualDist) {
       charts.visualDist = new Chart(ctxVisDist, {
         type: "bar",
         data: {
-          labels: ["-2 Sangat Redup", "-1 Agak Redup", "0 Nyaman (Ideal)", "+1 Agak Terang", "+2 Sangat Silau"],
+          labels: ["-3 Sangat Redup", "-2 Redup", "-1 Agak Redup", "0 Netral", "+1 Agak Terang", "+2 Terang", "+3 Sangat Silau"],
           datasets: [
             {
               label: "Persentase Suara Penghuni (%)",
-              data: [3.4, 5.2, 70.7, 13.8, 6.9],
+              data: [1.7, 3.4, 12.1, 62.1, 13.8, 5.2, 1.7],
               backgroundColor: [
-                "#6366f1", "#93c5fd", "#d97706", "#f59e0b", "#ef4444"
+                "#6366f1", "#818cf8", "#93c5fd", "#d97706", "#f59e0b", "#f97316", "#ef4444"
               ],
               borderRadius: 6
             }
@@ -464,21 +441,20 @@
               title: { display: true, text: "Persentase Responden (%)", font: { size: 11 } },
               ticks: { callback: v => `${v}%` },
               min: 0,
-              max: 80
+              max: 70
             }
           }
         }
       });
     }
 
-    // 4. Chart Korelasi Iluminansi Meja vs Sensasi Visual Penghuni
+    // 4. Chart Korelasi Iluminansi Meja vs Sensasi Visual Penghuni (7-Point)
     const ctxVisCorr = document.getElementById("visualCorrelationChart");
     if (ctxVisCorr && !charts.visualCorr) {
       const samplePoints = [
-        { x: 190, y: -2 }, { x: 240, y: -2 }, { x: 290, y: -1 }, { x: 320, y: -1 },
-        { x: 380, y: 0 },  { x: 410, y: 0 },  { x: 440, y: 0 },  { x: 465, y: 0 },
-        { x: 480, y: 0 },  { x: 500, y: 0 },  { x: 530, y: 0 },  { x: 580, y: 1 },
-        { x: 640, y: 1 },  { x: 720, y: 2 },  { x: 810, y: 2 }
+        { x: 160, y: -3 }, { x: 230, y: -2 }, { x: 310, y: -1 }, { x: 390, y: 0 },
+        { x: 440, y: 0 },  { x: 470, y: 0 },  { x: 490, y: 0 },  { x: 520, y: 0 },
+        { x: 580, y: 1 },  { x: 670, y: 1 },  { x: 750, y: 2 },  { x: 860, y: 3 }
       ];
 
       charts.visualCorr = new Chart(ctxVisCorr, {
@@ -495,9 +471,9 @@
             {
               label: "Garis Regresi Linear Kepuasan Cahaya",
               data: [
-                { x: 180, y: -2.1 },
-                { x: 462, y: 0.0 }, // Titik ideal SNI 03-6197
-                { x: 800, y: +2.1 }
+                { x: 150, y: -3.0 },
+                { x: 462, y: 0.0 }, // Titik netral ideal SNI 03-6197
+                { x: 860, y: +3.0 }
               ],
               showLine: true,
               borderColor: "#ea580c",
@@ -523,14 +499,14 @@
             x: {
               title: { display: true, text: "Tingkat Iluminansi Meja Kerja (Lux)", font: { size: 11, weight: "bold" } },
               ticks: { callback: v => `${v} lx` },
-              min: 150,
-              max: 850
+              min: 100,
+              max: 900
             },
             y: {
-              title: { display: true, text: "Visual Comfort Vote (VCV 5-Point)", font: { size: 11, weight: "bold" } },
+              title: { display: true, text: "Visual Sensation Vote (VCV 7-Point)", font: { size: 11, weight: "bold" } },
               ticks: { callback: v => `${v}` },
-              min: -2,
-              max: 2
+              min: -3,
+              max: 3
             }
           }
         }
@@ -545,25 +521,21 @@
       updateStats();
       renderRecentTable();
       setTcvVote(0);
-      setAirVote("Pas");
       setVisVote(0);
-      setGlareVote("Bebas Silau");
-      switchTab("thermal");
+      setGlareVote("Nyaman");
+      switchTab("all");
     },
     switchTab,
-    submitThermalFeedback,
-    submitVisualFeedback,
-    submitFeedback: (e) => {
-      if (state.activeTab === "visual") submitVisualFeedback(e);
-      else submitThermalFeedback(e);
-    },
+    submitUnifiedFeedback,
+    submitFeedback: (e) => submitUnifiedFeedback(e),
     setTcvVote,
-    setAirVote,
     setVisVote,
     setGlareVote,
     setVcvVote: (val) => {
-      if (val === "Terlalu Redup") setVisVote(-2);
-      else if (val === "Silau") setVisVote(2);
+      // Legacy backward-compatibility
+      if (val === "Terlalu Redup" || val === -2) setVisVote(-2);
+      else if (val === "Silau" || val === 2) setVisVote(2);
+      else if (typeof val === "number") setVisVote(val);
       else setVisVote(0);
     }
   };
