@@ -156,9 +156,13 @@
     if (resultsLockedNotice) resultsLockedNotice.classList.toggle("hidden", isAdmin);
     if (guestBanner) guestBanner.classList.toggle("hidden", isAdmin);
 
-    // Form column styling: selalu lebar & proporsional (max-w-4xl) agar 7 tombol memiliki ruang leluasa
+    // Form column styling: di mode Admin berdampingan (xl:col-span-7) dengan grafik (xl:col-span-5), di mode Guest terpusat (max-w-4xl)
     if (formsCol) {
-      formsCol.className = "max-w-4xl mx-auto w-full space-y-6 transition-all";
+      if (isAdmin) {
+        formsCol.className = "xl:col-span-7 space-y-5 transition-all";
+      } else {
+        formsCol.className = "col-span-12 max-w-4xl mx-auto w-full space-y-6 transition-all";
+      }
     }
 
     // Toggle admin preview switch

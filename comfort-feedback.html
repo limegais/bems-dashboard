@@ -67,7 +67,7 @@
       </div>
 
       <!-- ── 4 Executive KPI Cards (HANYA BISA DILIHAT OLEH ADMIN) ── -->
-      <section id="kpi-section" aria-label="KPI Kepuasan Penghuni" class="max-w-4xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section id="kpi-section" aria-label="KPI Kepuasan Penghuni" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Card 1: Total Submissions -->
         <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
           <div>
@@ -134,10 +134,10 @@
       </section>
 
       <!-- ── FORM INPUT FEEDBACK INTERAKTIF & ANALISIS GRAFIS ── -->
-      <section aria-label="Form Umpan Balik dan Analisis Grafis" class="space-y-6">
+      <section id="main-content-section" aria-label="Form Umpan Balik dan Analisis Grafis" class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
 
-        <!-- Kolom Formulir Evaluasi (Tampilan Lebar & Proporsional Sesuai Standar Kuesioner) -->
-        <div id="forms-column" class="max-w-4xl mx-auto w-full space-y-6">
+        <!-- Kolom Formulir Evaluasi (Col 7 di Desktop untuk Admin, Col 12 di Guest) -->
+        <div id="forms-column" class="xl:col-span-7 space-y-5">
 
           <!-- Pilihan Zona Lokasi Kerja & Tab Switcher -->
           <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 space-y-3">
@@ -177,8 +177,10 @@
           <!-- ═════════════════════════════════════════════════════════════════ -->
           <div id="thermal-rating-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-5">
             <!-- Header Form Termal -->
-            <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
-              <span class="text-xl">🌡️</span>
+            <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
+              <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
+              </span>
               <h2 class="text-base sm:text-lg font-bold text-blue-950 tracking-tight">Thermal Comfort Rating Form</h2>
             </div>
 
@@ -334,8 +336,10 @@
           <!-- ═════════════════════════════════════════════════════════════════ -->
           <div id="visual-rating-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-5">
             <!-- Header Form Visual -->
-            <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
-              <span class="text-xl">💡</span>
+            <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
+              <span class="w-8 h-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              </span>
               <h2 class="text-base sm:text-lg font-bold text-sky-950 tracking-tight">Visual Comfort Rating Form</h2>
             </div>
 
@@ -500,7 +504,7 @@
         <!-- ═════════════════════════════════════════════════════════════════ -->
         <!-- KOLOM HASIL & ANALISIS GRAFIK (HANYA BISA DILIHAT OLEH ADMIN)   -->
         <!-- ═════════════════════════════════════════════════════════════════ -->
-        <div id="analytics-section" class="max-w-4xl mx-auto w-full space-y-4">
+        <div id="analytics-section" class="xl:col-span-5 space-y-5">
 
           <!-- Switcher Mode Grafik Analisis -->
           <div class="flex items-center justify-between bg-white rounded-2xl border border-slate-200/90 shadow-sm px-4 py-2.5">
@@ -646,11 +650,11 @@
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/services/export-service.js?v=25"></script>
-<script src="assets/js/components/layout.js?v=25"></script>
+<script src="assets/js/services/export-service.js?v=26"></script>
+<script src="assets/js/components/layout.js?v=26"></script>
 <script src="assets/js/core/mqtt-client.js"></script>
-<script src="assets/js/services/comfort-service.js?v=25"></script>
-<script src="assets/js/pages/page-init.js?v=25"></script>
+<script src="assets/js/services/comfort-service.js?v=26"></script>
+<script src="assets/js/pages/page-init.js?v=26"></script>
 
 <script>
   // Pastikan sesi tamu otomatis dibuat jika pengguna membuka halaman tanpa login terlebih dahulu
