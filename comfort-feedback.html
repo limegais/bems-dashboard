@@ -51,9 +51,9 @@
       </section>
 
       <!-- ── Banner Khusus Guest (Pengunjung) ── -->
-      <div id="guest-info-banner" class="hidden max-w-4xl mx-auto w-full p-4 rounded-2xl bg-blue-50/90 border border-blue-200/90 text-blue-950 text-xs flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+      <div id="guest-info-banner" class="hidden max-w-3xl mx-auto w-full p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-slate-800 text-xs flex flex-wrap items-center justify-between gap-3 shadow-2xs">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
+          <div class="w-9 h-9 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
             👤
           </div>
           <div>
@@ -61,7 +61,7 @@
             <p class="text-slate-600 mt-0.5">Silakan isi formulir evaluasi kenyamanan suhu dan visual Anda di bawah ini. Sesuai kebijakan privasi &amp; keamanan, <strong>hasil rekapitulasi data &amp; grafik kepuasan hanya dapat diakses oleh Administrator</strong>.</p>
           </div>
         </div>
-        <a href="login.html" class="px-3.5 py-1.5 rounded-xl bg-white border border-blue-200 text-blue-700 hover:text-blue-900 font-bold hover:bg-blue-50 transition-colors shadow-2xs">
+        <a href="login.html" class="px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-teal-800 font-bold hover:bg-slate-100 transition-colors shadow-2xs">
           Login Admin &rarr;
         </a>
       </div>
@@ -85,7 +85,7 @@
         </div>
 
         <!-- Card 2: Thermal Satisfaction Rate -->
-        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-blue-300 transition-all flex flex-col justify-between">
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Thermal Satisfaction (Suhu)</span>
@@ -101,23 +101,23 @@
         </div>
 
         <!-- Card 3: Visual Satisfaction Rate -->
-        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-sky-300 transition-all flex flex-col justify-between">
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 hover:border-slate-300 transition-all flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Visual Satisfaction (Cahaya)</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-200 font-mono">SNI 03-6197</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 font-mono">SNI 03-6197</span>
             </div>
-            <strong id="kpi-fb-visual" class="text-2xl font-bold text-sky-900 font-mono tracking-tight block">91,4%</strong>
+            <strong id="kpi-fb-visual" class="text-2xl font-bold text-slate-900 font-mono tracking-tight block">91,4%</strong>
             <p class="text-xs text-slate-500 mt-1">Tingkat Silau &amp; Keredupan Terkendali</p>
           </div>
           <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs text-slate-500 font-mono">
             <span>Rerata Iluminansi:</span>
-            <strong class="text-sky-800 font-bold">482 Lux (Ideal)</strong>
+            <strong class="text-slate-800 font-bold">482 Lux (Ideal)</strong>
           </div>
         </div>
 
         <!-- Card 4: Indeks Gabungan -->
-        <div class="bg-gradient-to-br from-teal-50/70 via-white to-blue-50/50 rounded-2xl border border-teal-200/80 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
+        <div class="bg-gradient-to-br from-teal-50/50 via-white to-slate-50/50 rounded-2xl border border-teal-200/80 shadow-sm p-4 hover:border-teal-300 transition-all flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-semibold text-teal-800 uppercase tracking-wider">Indeks Kenyamanan Gabungan</span>
@@ -134,10 +134,10 @@
       </section>
 
       <!-- ── FORM INPUT FEEDBACK INTERAKTIF & ANALISIS GRAFIS ── -->
-      <section id="main-content-section" aria-label="Form Umpan Balik dan Analisis Grafis" class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+      <section id="main-content-section" aria-label="Form Umpan Balik dan Analisis Grafis" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- Kolom Formulir Evaluasi (Col 7 di Desktop untuk Admin, Col 12 di Guest) -->
-        <div id="forms-column" class="xl:col-span-7 space-y-5">
+        <!-- Kolom Formulir Evaluasi (Col 6 di Desktop untuk Admin, Centered Col 12 di Guest) -->
+        <div id="forms-column" class="lg:col-span-6 space-y-5">
 
           <!-- Pilihan Zona Lokasi Kerja & Tab Switcher -->
           <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 space-y-3">
@@ -148,7 +148,7 @@
               </div>
               <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 font-mono">100% Anonim</span>
             </div>
-            <select id="fb-room" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-xs">
+            <select id="fb-room" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-sans bg-white focus:outline-none focus:ring-2 focus:ring-teal-700 text-xs">
               <option value="Workbench 1 (Jendela)">Workbench 1 (Dekat Fasad Jendela Barat)</option>
               <option value="Workbench 2 (Tengah)" selected>Workbench 2 (Meja Kerja Tengah)</option>
               <option value="Workbench 3 (Dalam)">Workbench 3 (Area Dalam / Core)</option>
@@ -157,7 +157,7 @@
 
             <!-- TAB SWITCHER: Terpadu vs Suhu vs Cahaya -->
             <div class="p-1 bg-slate-100 rounded-xl flex items-center gap-1 text-xs font-semibold">
-              <button type="button" id="tab-btn-all" onclick="window.ComfortService.switchTab('all')" class="flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 bg-white text-blue-900 shadow-xs font-bold border border-slate-200/80 cursor-pointer">
+              <button type="button" id="tab-btn-all" onclick="window.ComfortService.switchTab('all')" class="flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-xs font-bold border border-slate-200/80 cursor-pointer">
                 <span>📋</span>
                 <span>Terpadu (Semua)</span>
               </button>
@@ -175,156 +175,159 @@
           <!-- ═════════════════════════════════════════════════════════════════ -->
           <!-- 1. THERMAL COMFORT RATING FORM (3 PERTANYAAN RESMI ASHRAE 55)   -->
           <!-- ═════════════════════════════════════════════════════════════════ -->
-          <div id="thermal-rating-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-5">
+          <div id="thermal-rating-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
             <!-- Header Form Termal -->
-            <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
-              <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-2xs">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
-              </span>
-              <h2 class="text-base sm:text-lg font-bold text-blue-950 tracking-tight">Thermal Comfort Rating Form</h2>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-800 border border-teal-200/60 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
+                </span>
+                <div>
+                  <h2 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">Thermal Comfort Rating Form</h2>
+                  <p class="text-[11px] text-slate-400">Evaluasi sensasi suhu, preferensi, dan tingkat kepuasan termal</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 font-mono">ASHRAE 55</span>
             </div>
 
             <!-- Q1: Thermal Sensation Vote (TSV) -->
-            <div class="bg-[#eff6ff] border border-blue-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
-                  Q1
+            <div class="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-200 text-slate-700">Q1</span>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800">Thermal Sensation Vote (TSV)</h3>
                 </div>
-                <div>
-                  <h3 class="text-sm sm:text-base font-bold text-blue-900 leading-snug">Thermal Sensation Vote (TSV)</h3>
-                  <p class="text-xs sm:text-sm text-slate-600 italic">Right now, how do you feel?</p>
-                </div>
+                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">7-Point Scale</span>
               </div>
+              <p class="text-xs text-slate-500 italic">Right now, how do you feel?</p>
 
               <!-- 7 Skala Pilihan TSV -->
-              <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center pt-1 font-sans">
-                <button type="button" onclick="window.ComfortService.setThermalTsv(-3)" data-val="-3" class="thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;3</span>
-                  <span class="tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Cold</span>
+              <div class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center font-sans">
+                <button type="button" onclick="window.ComfortService.setThermalTsv(-3)" data-val="-3" class="thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;3</span>
+                  <span class="tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Cold</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTsv(-2)" data-val="-2" class="thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;2</span>
-                  <span class="tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Cool</span>
+                <button type="button" onclick="window.ComfortService.setThermalTsv(-2)" data-val="-2" class="thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;2</span>
+                  <span class="tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Cool</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTsv(-1)" data-val="-1" class="thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;1</span>
-                  <span class="tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly Cool</span>
+                <button type="button" onclick="window.ComfortService.setThermalTsv(-1)" data-val="-1" class="thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;1</span>
+                  <span class="tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly Cool</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTsv(0)" data-val="0" class="thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">0</span>
-                  <span class="tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Neutral</span>
+                <button type="button" onclick="window.ComfortService.setThermalTsv(0)" data-val="0" class="thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">0</span>
+                  <span class="tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Neutral</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTsv(1)" data-val="1" class="thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+1</span>
-                  <span class="tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly Warm</span>
+                <button type="button" onclick="window.ComfortService.setThermalTsv(1)" data-val="1" class="thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+1</span>
+                  <span class="tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly Warm</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTsv(2)" data-val="2" class="thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+2</span>
-                  <span class="tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Warm</span>
+                <button type="button" onclick="window.ComfortService.setThermalTsv(2)" data-val="2" class="thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+2</span>
+                  <span class="tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Warm</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTsv(3)" data-val="3" class="thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+3</span>
-                  <span class="tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Hot</span>
+                <button type="button" onclick="window.ComfortService.setThermalTsv(3)" data-val="3" class="thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+3</span>
+                  <span class="tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Hot</span>
                 </button>
               </div>
 
               <!-- Indikator Status Pilihan -->
-              <p id="tsv-status-text" class="text-xs text-blue-500/80 italic pt-1">&mdash; Not selected &mdash;</p>
+              <p id="tsv-status-text" class="text-[11px] text-slate-400 font-mono italic pt-0.5">&mdash; Not selected &mdash;</p>
             </div>
 
             <!-- Q2: Thermal Preference Vote (TPV) -->
-            <div class="bg-[#eff6ff] border border-blue-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
-                  Q2
+            <div class="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-200 text-slate-700">Q2</span>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800">Thermal Preference Vote (TPV)</h3>
                 </div>
-                <div>
-                  <h3 class="text-sm sm:text-base font-bold text-blue-900 leading-snug">Thermal Preference Vote (TPV)</h3>
-                  <p class="text-xs sm:text-sm text-slate-600 italic">Right now, would you prefer to be...?</p>
-                </div>
+                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">3-Point Scale</span>
               </div>
+              <p class="text-xs text-slate-500 italic">Right now, would you prefer to be...?</p>
 
               <!-- 3 Skala Pilihan TPV -->
-              <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center pt-1 font-sans">
-                <button type="button" onclick="window.ComfortService.setThermalTpv(-1)" data-val="-1" class="thermal-tpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;1</span>
-                  <span class="tpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5">Cooler</span>
+              <div class="grid grid-cols-3 gap-2 text-center font-sans">
+                <button type="button" onclick="window.ComfortService.setThermalTpv(-1)" data-val="-1" class="thermal-tpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;1</span>
+                  <span class="tpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5">Cooler</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTpv(0)" data-val="0" class="thermal-tpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">0</span>
-                  <span class="tpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5">No Change</span>
+                <button type="button" onclick="window.ComfortService.setThermalTpv(0)" data-val="0" class="thermal-tpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">0</span>
+                  <span class="tpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5">No Change</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalTpv(1)" data-val="1" class="thermal-tpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="tpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+1</span>
-                  <span class="tpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5">Warmer</span>
+                <button type="button" onclick="window.ComfortService.setThermalTpv(1)" data-val="1" class="thermal-tpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="tpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+1</span>
+                  <span class="tpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5">Warmer</span>
                 </button>
               </div>
 
               <!-- Indikator Status Pilihan -->
-              <p id="tpv-status-text" class="text-xs text-blue-500/80 italic pt-1">&mdash; Not selected &mdash;</p>
+              <p id="tpv-status-text" class="text-[11px] text-slate-400 font-mono italic pt-0.5">&mdash; Not selected &mdash;</p>
             </div>
 
             <!-- Q3: Thermal Satisfaction -->
-            <div class="bg-[#eff6ff] border border-blue-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
-                  Q3
+            <div class="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-200 text-slate-700">Q3</span>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800">Thermal Satisfaction</h3>
                 </div>
-                <div>
-                  <h3 class="text-sm sm:text-base font-bold text-blue-900 leading-snug">Thermal Satisfaction</h3>
-                  <p class="text-xs sm:text-sm text-slate-600 italic">How satisfied are you with the thermal environment?</p>
-                </div>
+                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">7-Point Scale</span>
               </div>
+              <p class="text-xs text-slate-500 italic">How satisfied are you with the thermal environment?</p>
 
               <!-- 7 Skala Pilihan Kepuasan Termal -->
-              <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center pt-1 font-sans">
-                <button type="button" onclick="window.ComfortService.setThermalSat(-3)" data-val="-3" class="thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;3</span>
-                  <span class="sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Very Dissatisfied</span>
+              <div class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center font-sans">
+                <button type="button" onclick="window.ComfortService.setThermalSat(-3)" data-val="-3" class="thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;3</span>
+                  <span class="sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Very Dissatisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalSat(-2)" data-val="-2" class="thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;2</span>
-                  <span class="sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Dissatisfied</span>
+                <button type="button" onclick="window.ComfortService.setThermalSat(-2)" data-val="-2" class="thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;2</span>
+                  <span class="sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Dissatisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalSat(-1)" data-val="-1" class="thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;1</span>
-                  <span class="sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly Dissatisfied</span>
+                <button type="button" onclick="window.ComfortService.setThermalSat(-1)" data-val="-1" class="thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;1</span>
+                  <span class="sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly Dissatisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalSat(0)" data-val="0" class="thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">0</span>
-                  <span class="sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Neutral</span>
+                <button type="button" onclick="window.ComfortService.setThermalSat(0)" data-val="0" class="thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">0</span>
+                  <span class="sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Neutral</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalSat(1)" data-val="1" class="thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+1</span>
-                  <span class="sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly Satisfied</span>
+                <button type="button" onclick="window.ComfortService.setThermalSat(1)" data-val="1" class="thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+1</span>
+                  <span class="sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly Satisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalSat(2)" data-val="2" class="thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+2</span>
-                  <span class="sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Satisfied</span>
+                <button type="button" onclick="window.ComfortService.setThermalSat(2)" data-val="2" class="thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+2</span>
+                  <span class="sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Satisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setThermalSat(3)" data-val="3" class="thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+3</span>
-                  <span class="sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Very Satisfied</span>
+                <button type="button" onclick="window.ComfortService.setThermalSat(3)" data-val="3" class="thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+3</span>
+                  <span class="sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Very Satisfied</span>
                 </button>
               </div>
 
               <!-- Indikator Status Pilihan -->
-              <p id="thermal-sat-status-text" class="text-xs text-blue-500/80 italic pt-1">&mdash; Not selected &mdash;</p>
+              <p id="thermal-sat-status-text" class="text-[11px] text-slate-400 font-mono italic pt-0.5">&mdash; Not selected &mdash;</p>
             </div>
 
             <!-- Additional Comments (optional) -->
             <div class="space-y-1.5">
-              <label for="thermal-comment" class="text-xs sm:text-sm font-bold text-slate-700 block">Additional Comments (optional)</label>
-              <textarea id="thermal-comment" rows="3" placeholder="Describe your thermal comfort experience..." class="w-full rounded-2xl border border-slate-200 bg-white p-3 text-xs sm:text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-2xs"></textarea>
+              <label for="thermal-comment" class="text-xs font-bold text-slate-700 block">Catatan Tambahan (Opsional):</label>
+              <textarea id="thermal-comment" rows="2" placeholder="Tuliskan catatan terkait sensasi suhu Anda saat ini..." class="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent transition-all shadow-2xs"></textarea>
             </div>
 
             <!-- Action Buttons: Submit Thermal & Reset -->
-            <div class="flex items-center gap-3 pt-2">
-              <button type="button" onclick="window.ComfortService.submitThermalFeedback(event)" class="px-5 py-2.5 sm:py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer hover:shadow">
+            <div class="flex items-center gap-3 pt-1">
+              <button type="button" onclick="window.ComfortService.submitThermalFeedback(event)" class="px-5 py-2.5 rounded-xl bg-teal-800 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                <span>Submit Thermal Feedback</span>
+                <span>Kirim Evaluasi Suhu</span>
               </button>
-              <button type="button" onclick="window.ComfortService.resetThermalForm()" class="px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 hover:text-slate-900 font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+              <button type="button" onclick="window.ComfortService.resetThermalForm()" class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 hover:text-slate-900 font-bold text-xs shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 <span>Reset</span>
               </button>
@@ -334,156 +337,159 @@
           <!-- ═════════════════════════════════════════════════════════════════ -->
           <!-- 2. VISUAL COMFORT RATING FORM (3 PERTANYAAN RESMI SNI / CIE)     -->
           <!-- ═════════════════════════════════════════════════════════════════ -->
-          <div id="visual-rating-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-5">
+          <div id="visual-rating-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
             <!-- Header Form Visual -->
-            <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
-              <span class="w-8 h-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 shadow-2xs">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-              </span>
-              <h2 class="text-base sm:text-lg font-bold text-sky-950 tracking-tight">Visual Comfort Rating Form</h2>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-800 border border-teal-200/60 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                </span>
+                <div>
+                  <h2 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">Visual Comfort Rating Form</h2>
+                  <p class="text-[11px] text-slate-400">Evaluasi sensasi terang/gelap, preferensi, dan kenyamanan visual</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 font-mono">SNI 03-6197</span>
             </div>
 
             <!-- Q1: Lighting Sensation Vote (LSV) -->
-            <div class="bg-[#eff6ff] border border-blue-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
-                  Q1
+            <div class="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-200 text-slate-700">Q1</span>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800">Lighting Sensation Vote (LSV)</h3>
                 </div>
-                <div>
-                  <h3 class="text-sm sm:text-base font-bold text-blue-900 leading-snug">Lighting Sensation Vote (LSV)</h3>
-                  <p class="text-xs sm:text-sm text-slate-600 italic">How do you perceive the current lighting level?</p>
-                </div>
+                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">7-Point Scale</span>
               </div>
+              <p class="text-xs text-slate-500 italic">How do you perceive the current lighting level?</p>
 
               <!-- 7 Skala Pilihan LSV -->
-              <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center pt-1 font-sans">
-                <button type="button" onclick="window.ComfortService.setVisualLsv(-3)" data-val="-3" class="visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;3</span>
-                  <span class="lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Very dark</span>
+              <div class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center font-sans">
+                <button type="button" onclick="window.ComfortService.setVisualLsv(-3)" data-val="-3" class="visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;3</span>
+                  <span class="lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Very dark</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLsv(-2)" data-val="-2" class="visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;2</span>
-                  <span class="lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Dark</span>
+                <button type="button" onclick="window.ComfortService.setVisualLsv(-2)" data-val="-2" class="visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;2</span>
+                  <span class="lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Dark</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLsv(-1)" data-val="-1" class="visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;1</span>
-                  <span class="lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly dark</span>
+                <button type="button" onclick="window.ComfortService.setVisualLsv(-1)" data-val="-1" class="visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;1</span>
+                  <span class="lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly dark</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLsv(0)" data-val="0" class="visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">0</span>
-                  <span class="lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Neutral</span>
+                <button type="button" onclick="window.ComfortService.setVisualLsv(0)" data-val="0" class="visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">0</span>
+                  <span class="lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Neutral</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLsv(1)" data-val="1" class="visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+1</span>
-                  <span class="lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly bright</span>
+                <button type="button" onclick="window.ComfortService.setVisualLsv(1)" data-val="1" class="visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+1</span>
+                  <span class="lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly bright</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLsv(2)" data-val="2" class="visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+2</span>
-                  <span class="lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Bright</span>
+                <button type="button" onclick="window.ComfortService.setVisualLsv(2)" data-val="2" class="visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+2</span>
+                  <span class="lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Bright</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLsv(3)" data-val="3" class="visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+3</span>
-                  <span class="lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Very bright</span>
+                <button type="button" onclick="window.ComfortService.setVisualLsv(3)" data-val="3" class="visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+3</span>
+                  <span class="lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Very bright</span>
                 </button>
               </div>
 
               <!-- Indikator Status Pilihan -->
-              <p id="lsv-status-text" class="text-xs text-blue-500/80 italic pt-1">&mdash; Not selected &mdash;</p>
+              <p id="lsv-status-text" class="text-[11px] text-slate-400 font-mono italic pt-0.5">&mdash; Not selected &mdash;</p>
             </div>
 
             <!-- Q2: Lighting Preference Vote (LPV) -->
-            <div class="bg-[#eff6ff] border border-blue-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
-                  Q2
+            <div class="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-200 text-slate-700">Q2</span>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800">Lighting Preference Vote (LPV)</h3>
                 </div>
-                <div>
-                  <h3 class="text-sm sm:text-base font-bold text-blue-900 leading-snug">Lighting Preference Vote (LPV)</h3>
-                  <p class="text-xs sm:text-sm text-slate-600 italic">Right now, would you prefer the lighting to be...?</p>
-                </div>
+                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">3-Point Scale</span>
               </div>
+              <p class="text-xs text-slate-500 italic">Right now, would you prefer the lighting to be...?</p>
 
               <!-- 3 Skala Pilihan LPV -->
-              <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center pt-1 font-sans">
-                <button type="button" onclick="window.ComfortService.setVisualLpv(-1)" data-val="-1" class="visual-lpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;1</span>
-                  <span class="lpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5">Darker</span>
+              <div class="grid grid-cols-3 gap-2 text-center font-sans">
+                <button type="button" onclick="window.ComfortService.setVisualLpv(-1)" data-val="-1" class="visual-lpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;1</span>
+                  <span class="lpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5">Darker</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLpv(0)" data-val="0" class="visual-lpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">0</span>
-                  <span class="lpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5">No change</span>
+                <button type="button" onclick="window.ComfortService.setVisualLpv(0)" data-val="0" class="visual-lpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">0</span>
+                  <span class="lpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5">No change</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualLpv(1)" data-val="1" class="visual-lpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="lpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+1</span>
-                  <span class="lpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5">Brighter</span>
+                <button type="button" onclick="window.ComfortService.setVisualLpv(1)" data-val="1" class="visual-lpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="lpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+1</span>
+                  <span class="lpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5">Brighter</span>
                 </button>
               </div>
 
               <!-- Indikator Status Pilihan -->
-              <p id="lpv-status-text" class="text-xs text-blue-500/80 italic pt-1">&mdash; Not selected &mdash;</p>
+              <p id="lpv-status-text" class="text-[11px] text-slate-400 font-mono italic pt-0.5">&mdash; Not selected &mdash;</p>
             </div>
 
             <!-- Q3: Visual Satisfaction Vote (VSaV) -->
-            <div class="bg-[#eff6ff] border border-blue-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
-                  Q3
+            <div class="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-slate-200 text-slate-700">Q3</span>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800">Visual Satisfaction Vote (VSaV)</h3>
                 </div>
-                <div>
-                  <h3 class="text-sm sm:text-base font-bold text-blue-900 leading-snug">Visual Satisfaction Vote (VSaV)</h3>
-                  <p class="text-xs sm:text-sm text-slate-600 italic">How satisfied are you with the current visual conditions?</p>
-                </div>
+                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">7-Point Scale</span>
               </div>
+              <p class="text-xs text-slate-500 italic">How satisfied are you with the current visual conditions?</p>
 
               <!-- 7 Skala Pilihan Kepuasan Visual -->
-              <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center pt-1 font-sans">
-                <button type="button" onclick="window.ComfortService.setVisualVsav(-3)" data-val="-3" class="visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;3</span>
-                  <span class="vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Very dissatisfied</span>
+              <div class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center font-sans">
+                <button type="button" onclick="window.ComfortService.setVisualVsav(-3)" data-val="-3" class="visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;3</span>
+                  <span class="vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Very dissatisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualVsav(-2)" data-val="-2" class="visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;2</span>
-                  <span class="vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Dissatisfied</span>
+                <button type="button" onclick="window.ComfortService.setVisualVsav(-2)" data-val="-2" class="visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;2</span>
+                  <span class="vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Dissatisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualVsav(-1)" data-val="-1" class="visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">&minus;1</span>
-                  <span class="vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly dissatisfied</span>
+                <button type="button" onclick="window.ComfortService.setVisualVsav(-1)" data-val="-1" class="visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">&minus;1</span>
+                  <span class="vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly dissatisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualVsav(0)" data-val="0" class="visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">0</span>
-                  <span class="vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Neutral</span>
+                <button type="button" onclick="window.ComfortService.setVisualVsav(0)" data-val="0" class="visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">0</span>
+                  <span class="vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Neutral</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualVsav(1)" data-val="1" class="visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+1</span>
-                  <span class="vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Slightly satisfied</span>
+                <button type="button" onclick="window.ComfortService.setVisualVsav(1)" data-val="1" class="visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+1</span>
+                  <span class="vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Slightly satisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualVsav(2)" data-val="2" class="visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+2</span>
-                  <span class="vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Satisfied</span>
+                <button type="button" onclick="window.ComfortService.setVisualVsav(2)" data-val="2" class="visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+2</span>
+                  <span class="vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Satisfied</span>
                 </button>
-                <button type="button" onclick="window.ComfortService.setVisualVsav(3)" data-val="3" class="visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all">
-                  <span class="vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight">+3</span>
-                  <span class="vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">Very satisfied</span>
+                <button type="button" onclick="window.ComfortService.setVisualVsav(3)" data-val="3" class="visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs">
+                  <span class="vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight">+3</span>
+                  <span class="vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full">Very satisfied</span>
                 </button>
               </div>
 
               <!-- Indikator Status Pilihan -->
-              <p id="vsav-status-text" class="text-xs text-blue-500/80 italic pt-1">&mdash; Not selected &mdash;</p>
+              <p id="vsav-status-text" class="text-[11px] text-slate-400 font-mono italic pt-0.5">&mdash; Not selected &mdash;</p>
             </div>
 
             <!-- Additional Comments (optional) -->
             <div class="space-y-1.5">
-              <label for="visual-comment" class="text-xs sm:text-sm font-bold text-slate-700 block">Additional Comments (optional)</label>
-              <textarea id="visual-comment" rows="3" placeholder="Describe your visual comfort experience..." class="w-full rounded-2xl border border-slate-200 bg-white p-3 text-xs sm:text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all shadow-2xs"></textarea>
+              <label for="visual-comment" class="text-xs font-bold text-slate-700 block">Catatan Tambahan (Opsional):</label>
+              <textarea id="visual-comment" rows="2" placeholder="Tuliskan catatan terkait pencahayaan meja Anda saat ini..." class="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent transition-all shadow-2xs"></textarea>
             </div>
 
             <!-- Action Buttons: Submit Visual & Reset -->
-            <div class="flex items-center gap-3 pt-2">
-              <button type="button" onclick="window.ComfortService.submitVisualFeedback(event)" class="px-5 py-2.5 sm:py-3 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer hover:shadow">
+            <div class="flex items-center gap-3 pt-1">
+              <button type="button" onclick="window.ComfortService.submitVisualFeedback(event)" class="px-5 py-2.5 rounded-xl bg-teal-800 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                <span>Submit Visual Feedback</span>
+                <span>Kirim Evaluasi Cahaya</span>
               </button>
-              <button type="button" onclick="window.ComfortService.resetVisualForm()" class="px-4 py-2.5 sm:py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 hover:text-slate-900 font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+              <button type="button" onclick="window.ComfortService.resetVisualForm()" class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 hover:text-slate-900 font-bold text-xs shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 <span>Reset</span>
               </button>
@@ -491,12 +497,12 @@
           </div>
 
           <!-- Keterangan Terproteksi untuk Guest -->
-          <div id="guest-results-locked" class="hidden p-4 rounded-2xl border border-slate-200/90 bg-white shadow-2xs text-slate-500 text-xs space-y-2">
+          <div id="guest-results-locked" class="hidden p-4 rounded-xl border border-slate-200/90 bg-slate-50/80 shadow-2xs text-slate-600 text-xs space-y-2">
             <div class="flex items-center gap-2 text-slate-800 font-bold">
-              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <svg class="w-4 h-4 text-teal-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
               <span>Hasil Evaluasi Hanya Dapat Diakses Administrator</span>
             </div>
-            <p class="leading-relaxed">Data survei yang Anda kirimkan langsung diproses oleh algoritma cerdas BEMS Living Lab untuk mengoptimalkan suhu AC dan intensitas pencahayaan ruangan. Seluruh rekapitulasi grafik statistik dan riwayat suara diproteksi khusus untuk Administrator BEMS.</p>
+            <p class="leading-relaxed text-[11px] text-slate-500">Data survei yang Anda kirimkan langsung diproses oleh algoritma cerdas BEMS Living Lab untuk mengoptimalkan suhu AC dan intensitas pencahayaan ruangan. Seluruh rekapitulasi grafik statistik dan riwayat suara diproteksi khusus untuk Administrator BEMS.</p>
           </div>
 
         </div>
@@ -504,16 +510,16 @@
         <!-- ═════════════════════════════════════════════════════════════════ -->
         <!-- KOLOM HASIL & ANALISIS GRAFIK (HANYA BISA DILIHAT OLEH ADMIN)   -->
         <!-- ═════════════════════════════════════════════════════════════════ -->
-        <div id="analytics-section" class="xl:col-span-5 space-y-5">
+        <div id="analytics-section" class="lg:col-span-6 space-y-5">
 
           <!-- Switcher Mode Grafik Analisis -->
           <div class="flex items-center justify-between bg-white rounded-2xl border border-slate-200/90 shadow-sm px-4 py-2.5">
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold text-slate-800">Visualisasi Analisis:</span>
-              <span id="active-analytics-title" class="text-xs text-blue-800 font-mono font-semibold">Distribusi &amp; Korelasi Termal (ASHRAE 55)</span>
+              <span id="active-analytics-title" class="text-xs text-teal-800 font-mono font-semibold">Distribusi &amp; Korelasi Termal (ASHRAE 55)</span>
             </div>
             <div class="flex items-center gap-1 p-0.5 bg-slate-100 rounded-lg text-xs font-semibold">
-              <button type="button" id="chart-tab-btn-thermal" onclick="window.ComfortService.switchAnalyticsTab('thermal')" class="px-3 py-1 rounded-md text-xs transition-all bg-white text-blue-900 shadow-xs font-bold border border-slate-200/60 cursor-pointer">
+              <button type="button" id="chart-tab-btn-thermal" onclick="window.ComfortService.switchAnalyticsTab('thermal')" class="px-3 py-1 rounded-md text-xs transition-all bg-white text-slate-900 shadow-xs font-bold border border-slate-200/60 cursor-pointer">
                 🌡️ Suhu (Termal)
               </button>
               <button type="button" id="chart-tab-btn-visual" onclick="window.ComfortService.switchAnalyticsTab('visual')" class="px-3 py-1 rounded-md text-xs transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer">
@@ -531,7 +537,7 @@
                   <h3 class="text-sm font-bold text-slate-900">Distribusi Sensasi Termal Responden (TSV 7-Point)</h3>
                   <p class="text-xs text-slate-400">Persentase suara penghuni terhadap skala sensasi dingin s/d panas</p>
                 </div>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200 font-mono">58 Responden</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 font-mono">58 Responden</span>
               </div>
 
               <div class="h-[210px] w-full pt-1">
@@ -539,7 +545,7 @@
               </div>
 
               <p class="text-[11px] text-slate-500 pt-1 border-t border-slate-100 leading-relaxed font-mono">
-                Mayoritas responden (58,6%) berada pada titik <strong class="text-blue-800">0 (Neutral)</strong> dan total 87,9% berada dalam rentang toleransi nyaman [-1, +1], memenuhi kriteria keberhasilan ASHRAE 55.
+                Mayoritas responden (58,6%) berada pada titik <strong class="text-teal-800">0 (Neutral)</strong> dan total 87,9% berada dalam rentang toleransi nyaman [-1, +1], memenuhi kriteria keberhasilan ASHRAE 55.
               </p>
             </div>
 
@@ -550,7 +556,7 @@
                   <h3 class="text-sm font-bold text-slate-900">Korelasi Suhu Terukur (Ta) vs Sensasi Termal Penghuni</h3>
                   <p class="text-xs text-slate-400">Titik netral (Vote = 0) tercapai pada suhu rata-rata 24.2 °C</p>
                 </div>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200 font-mono">Regresi Linier</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 font-mono">Regresi Linier</span>
               </div>
 
               <div class="h-[210px] w-full pt-1">
@@ -568,7 +574,7 @@
                   <h3 class="text-sm font-bold text-slate-900">Distribusi Sensasi Pencahayaan Responden (LSV 7-Point)</h3>
                   <p class="text-xs text-slate-400">Persentase suara penghuni terhadap skala sangat redup s/d sangat terang</p>
                 </div>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-200 font-mono">58 Responden</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 font-mono">58 Responden</span>
               </div>
 
               <div class="h-[210px] w-full pt-1">
@@ -576,7 +582,7 @@
               </div>
 
               <p class="text-[11px] text-slate-500 pt-1 border-t border-slate-100 leading-relaxed font-mono">
-                Mayoritas responden (62,1%) menilai pencahayaan berada pada titik <strong class="text-sky-800">Neutral (0)</strong> dan total 88,0% berada dalam rentang nyaman, selaras dengan rekomendasi SNI 03-6197 (350–500 Lux).
+                Mayoritas responden (62,1%) menilai pencahayaan berada pada titik <strong class="text-teal-800">Neutral (0)</strong> dan total 88,0% berada dalam rentang nyaman, selaras dengan rekomendasi SNI 03-6197 (350–500 Lux).
               </p>
             </div>
 
@@ -587,7 +593,7 @@
                   <h3 class="text-sm font-bold text-slate-900">Korelasi Tingkat Iluminansi Meja (Lux) vs Sensasi Visual</h3>
                   <p class="text-xs text-slate-400">Titik ideal penghuni (Vote = 0) tercapai pada intensitas rata-rata 462 Lux</p>
                 </div>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-200 font-mono">Regresi Linier</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 font-mono">Regresi Linier</span>
               </div>
 
               <div class="h-[210px] w-full pt-1">
@@ -601,7 +607,7 @@
       </section>
 
       <!-- ── LOG RESPON TERBARU PENGAWASAN BEMS (HANYA BISA DILIHAT OLEH ADMIN) ── -->
-      <section id="recent-log-section" aria-label="Tabel Respon Terbaru" class="max-w-4xl mx-auto w-full bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+      <section id="recent-log-section" aria-label="Tabel Respon Terbaru" class="w-full bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
         <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
           <div>
             <h2 class="text-sm font-bold text-slate-900">Catatan Masukan Umpan Balik Terbaru (Real-Time Comfort Log)</h2>
@@ -650,11 +656,11 @@
 <script src="assets/js/core/api-client.js"></script>
 <script src="assets/js/mock/page-data.js"></script>
 <script src="assets/js/services/page-data-service.js"></script>
-<script src="assets/js/services/export-service.js?v=26"></script>
-<script src="assets/js/components/layout.js?v=26"></script>
+<script src="assets/js/services/export-service.js?v=27"></script>
+<script src="assets/js/components/layout.js?v=27"></script>
 <script src="assets/js/core/mqtt-client.js"></script>
-<script src="assets/js/services/comfort-service.js?v=26"></script>
-<script src="assets/js/pages/page-init.js?v=26"></script>
+<script src="assets/js/services/comfort-service.js?v=27"></script>
+<script src="assets/js/pages/page-init.js?v=27"></script>
 
 <script>
   // Pastikan sesi tamu otomatis dibuat jika pengguna membuka halaman tanpa login terlebih dahulu

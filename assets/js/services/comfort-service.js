@@ -156,12 +156,12 @@
     if (resultsLockedNotice) resultsLockedNotice.classList.toggle("hidden", isAdmin);
     if (guestBanner) guestBanner.classList.toggle("hidden", isAdmin);
 
-    // Form column styling: di mode Admin berdampingan (xl:col-span-7) dengan grafik (xl:col-span-5), di mode Guest terpusat (max-w-4xl)
+    // Form column styling: di mode Admin berdampingan (lg:col-span-6) dengan grafik (lg:col-span-6), di mode Guest terpusat (max-w-3xl)
     if (formsCol) {
       if (isAdmin) {
-        formsCol.className = "xl:col-span-7 space-y-5 transition-all";
+        formsCol.className = "lg:col-span-6 space-y-5 transition-all";
       } else {
-        formsCol.className = "col-span-12 max-w-4xl mx-auto w-full space-y-6 transition-all";
+        formsCol.className = "col-span-12 max-w-3xl mx-auto w-full space-y-5 transition-all";
       }
     }
 
@@ -217,7 +217,7 @@
     const secVisual = document.getElementById("visual-rating-card");
 
     const defaultBtnClass = "flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
-    const activeBtnClass = "flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 bg-white text-blue-900 shadow-xs font-bold border border-slate-200/80 cursor-pointer";
+    const activeBtnClass = "flex-1 py-1.5 px-2 rounded-lg text-center transition-all flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-xs font-bold border border-slate-200/80 cursor-pointer";
 
     if (tabBtnAll) tabBtnAll.className = tab === "all" ? activeBtnClass : defaultBtnClass;
     if (tabBtnThermal) tabBtnThermal.className = tab === "thermal" ? activeBtnClass : defaultBtnClass;
@@ -245,7 +245,7 @@
       if (chartThermalSec) chartThermalSec.classList.add("hidden");
       if (chartVisualSec) chartVisualSec.classList.remove("hidden");
       if (chartTabThermalBtn) chartTabThermalBtn.className = "px-3 py-1 rounded-md text-xs transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
-      if (chartTabVisualBtn) chartTabVisualBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-sky-800 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
+      if (chartTabVisualBtn) chartTabVisualBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-slate-900 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
       if (analyticsTitle) analyticsTitle.textContent = "Distribusi & Korelasi Pencahayaan (SNI 03-6197)";
       initVisualCharts();
       if (charts.visualDist) charts.visualDist.resize();
@@ -253,7 +253,7 @@
     } else {
       if (chartThermalSec) chartThermalSec.classList.remove("hidden");
       if (chartVisualSec) chartVisualSec.classList.add("hidden");
-      if (chartTabThermalBtn) chartTabThermalBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-blue-900 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
+      if (chartTabThermalBtn) chartTabThermalBtn.className = "px-3 py-1 rounded-md text-xs transition-all bg-white text-slate-900 shadow-xs font-bold border border-slate-200/60 cursor-pointer";
       if (chartTabVisualBtn) chartTabVisualBtn.className = "px-3 py-1 rounded-md text-xs transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer";
       if (analyticsTitle) analyticsTitle.textContent = "Distribusi & Korelasi Termal (ASHRAE 55)";
       initCharts();
@@ -269,19 +269,19 @@
     document.querySelectorAll(".thermal-tsv-btn").forEach(btn => {
       const bVal = parseInt(btn.getAttribute("data-val"), 10);
       if (bVal === state.thermal.tsv) {
-        btn.className = "thermal-tsv-btn active flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-blue-600 text-white font-bold border-2 border-blue-600 ring-2 ring-blue-300 shadow-sm cursor-pointer transition-all";
-        btn.querySelector(".tsv-num").className = "tsv-num text-base sm:text-lg font-black text-white leading-tight";
-        btn.querySelector(".tsv-lbl").className = "tsv-lbl text-[10px] sm:text-xs text-blue-100 font-semibold leading-tight mt-0.5";
+        btn.className = "thermal-tsv-btn active flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-teal-800 text-white font-bold border-2 border-teal-800 shadow-sm cursor-pointer transition-all";
+        btn.querySelector(".tsv-num").className = "tsv-num text-xs sm:text-sm font-mono font-bold text-white leading-tight";
+        btn.querySelector(".tsv-lbl").className = "tsv-lbl text-[9px] sm:text-[10px] text-teal-100 font-medium leading-tight mt-0.5 truncate max-w-full";
       } else {
-        btn.className = "thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all";
-        btn.querySelector(".tsv-num").className = "tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-        btn.querySelector(".tsv-lbl").className = "tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+        btn.className = "thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+        btn.querySelector(".tsv-num").className = "tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+        btn.querySelector(".tsv-lbl").className = "tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
       }
     });
 
     const statusEl = document.getElementById("tsv-status-text");
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-blue-700 font-bold not-italic">✓ Selected: ${TSV_MAP[String(val)]}</span>`;
+      statusEl.innerHTML = `<span class="text-teal-800 font-bold font-mono not-italic">✓ Selected: ${TSV_MAP[String(val)]}</span>`;
     }
   }
 
@@ -291,19 +291,19 @@
     document.querySelectorAll(".thermal-tpv-btn").forEach(btn => {
       const bVal = parseInt(btn.getAttribute("data-val"), 10);
       if (bVal === state.thermal.tpv) {
-        btn.className = "thermal-tpv-btn active flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-blue-600 text-white font-bold border-2 border-blue-600 ring-2 ring-blue-300 shadow-sm cursor-pointer transition-all";
-        btn.querySelector(".tpv-num").className = "tpv-num text-base sm:text-lg font-black text-white leading-tight";
-        btn.querySelector(".tpv-lbl").className = "tpv-lbl text-xs text-blue-100 font-semibold leading-tight mt-0.5";
+        btn.className = "thermal-tpv-btn active flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-teal-800 text-white font-bold border-2 border-teal-800 shadow-sm cursor-pointer transition-all";
+        btn.querySelector(".tpv-num").className = "tpv-num text-xs sm:text-sm font-mono font-bold text-white leading-tight";
+        btn.querySelector(".tpv-lbl").className = "tpv-lbl text-[10px] sm:text-xs text-teal-100 font-medium leading-tight mt-0.5";
       } else {
-        btn.className = "thermal-tpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all";
-        btn.querySelector(".tpv-num").className = "tpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-        btn.querySelector(".tpv-lbl").className = "tpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5";
+        btn.className = "thermal-tpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+        btn.querySelector(".tpv-num").className = "tpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+        btn.querySelector(".tpv-lbl").className = "tpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5";
       }
     });
 
     const statusEl = document.getElementById("tpv-status-text");
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-blue-700 font-bold not-italic">✓ Selected: ${TPV_MAP[String(val)]}</span>`;
+      statusEl.innerHTML = `<span class="text-teal-800 font-bold font-mono not-italic">✓ Selected: ${TPV_MAP[String(val)]}</span>`;
     }
   }
 
@@ -313,19 +313,19 @@
     document.querySelectorAll(".thermal-sat-btn").forEach(btn => {
       const bVal = parseInt(btn.getAttribute("data-val"), 10);
       if (bVal === state.thermal.sat) {
-        btn.className = "thermal-sat-btn active flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-blue-600 text-white font-bold border-2 border-blue-600 ring-2 ring-blue-300 shadow-sm cursor-pointer transition-all";
-        btn.querySelector(".sat-num").className = "sat-num text-base sm:text-lg font-black text-white leading-tight";
-        btn.querySelector(".sat-lbl").className = "sat-lbl text-[10px] sm:text-xs text-blue-100 font-semibold leading-tight mt-0.5";
+        btn.className = "thermal-sat-btn active flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-teal-800 text-white font-bold border-2 border-teal-800 shadow-sm cursor-pointer transition-all";
+        btn.querySelector(".sat-num").className = "sat-num text-xs sm:text-sm font-mono font-bold text-white leading-tight";
+        btn.querySelector(".sat-lbl").className = "sat-lbl text-[9px] sm:text-[10px] text-teal-100 font-medium leading-tight mt-0.5 truncate max-w-full";
       } else {
-        btn.className = "thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all";
-        btn.querySelector(".sat-num").className = "sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-        btn.querySelector(".sat-lbl").className = "sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+        btn.className = "thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+        btn.querySelector(".sat-num").className = "sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+        btn.querySelector(".sat-lbl").className = "sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
       }
     });
 
     const statusEl = document.getElementById("thermal-sat-status-text");
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-blue-700 font-bold not-italic">✓ Selected: ${THERMAL_SAT_MAP[String(val)]}</span>`;
+      statusEl.innerHTML = `<span class="text-teal-800 font-bold font-mono not-italic">✓ Selected: ${THERMAL_SAT_MAP[String(val)]}</span>`;
     }
   }
 
@@ -336,19 +336,19 @@
     state.thermal.comment = "";
 
     document.querySelectorAll(".thermal-tsv-btn").forEach(btn => {
-      btn.className = "thermal-tsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all";
-      btn.querySelector(".tsv-num").className = "tsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-      btn.querySelector(".tsv-lbl").className = "tsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+      btn.className = "thermal-tsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+      btn.querySelector(".tsv-num").className = "tsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+      btn.querySelector(".tsv-lbl").className = "tsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
     });
     document.querySelectorAll(".thermal-tpv-btn").forEach(btn => {
-      btn.className = "thermal-tpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all";
-      btn.querySelector(".tpv-num").className = "tpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-      btn.querySelector(".tpv-lbl").className = "tpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5";
+      btn.className = "thermal-tpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+      btn.querySelector(".tpv-num").className = "tpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+      btn.querySelector(".tpv-lbl").className = "tpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5";
     });
     document.querySelectorAll(".thermal-sat-btn").forEach(btn => {
-      btn.className = "thermal-sat-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-blue-300 shadow-2xs cursor-pointer transition-all";
-      btn.querySelector(".sat-num").className = "sat-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-      btn.querySelector(".sat-lbl").className = "sat-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+      btn.className = "thermal-sat-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+      btn.querySelector(".sat-num").className = "sat-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+      btn.querySelector(".sat-lbl").className = "sat-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
     });
 
     setEl("tsv-status-text", "— Not selected —");
@@ -358,7 +358,7 @@
     const commentInput = document.getElementById("thermal-comment");
     if (commentInput) commentInput.value = "";
 
-    showToast("Form evaluasi termal telah di-reset.", "blue");
+    showToast("Form evaluasi termal telah di-reset.", "teal");
   }
 
   // ── 3 Pertanyaan Evaluasi Kenyamanan Visual (Cahaya) ────────────────────────
@@ -368,19 +368,19 @@
     document.querySelectorAll(".visual-lsv-btn").forEach(btn => {
       const bVal = parseInt(btn.getAttribute("data-val"), 10);
       if (bVal === state.visual.lsv) {
-        btn.className = "visual-lsv-btn active flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-sky-600 text-white font-bold border-2 border-sky-600 ring-2 ring-sky-300 shadow-sm cursor-pointer transition-all";
-        btn.querySelector(".lsv-num").className = "lsv-num text-base sm:text-lg font-black text-white leading-tight";
-        btn.querySelector(".lsv-lbl").className = "lsv-lbl text-[10px] sm:text-xs text-sky-100 font-semibold leading-tight mt-0.5";
+        btn.className = "visual-lsv-btn active flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-teal-800 text-white font-bold border-2 border-teal-800 shadow-sm cursor-pointer transition-all";
+        btn.querySelector(".lsv-num").className = "lsv-num text-xs sm:text-sm font-mono font-bold text-white leading-tight";
+        btn.querySelector(".lsv-lbl").className = "lsv-lbl text-[9px] sm:text-[10px] text-teal-100 font-medium leading-tight mt-0.5 truncate max-w-full";
       } else {
-        btn.className = "visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all";
-        btn.querySelector(".lsv-num").className = "lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-        btn.querySelector(".lsv-lbl").className = "lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+        btn.className = "visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+        btn.querySelector(".lsv-num").className = "lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+        btn.querySelector(".lsv-lbl").className = "lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
       }
     });
 
     const statusEl = document.getElementById("lsv-status-text");
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-sky-700 font-bold not-italic">✓ Selected: ${LSV_MAP[String(val)]}</span>`;
+      statusEl.innerHTML = `<span class="text-teal-800 font-bold font-mono not-italic">✓ Selected: ${LSV_MAP[String(val)]}</span>`;
     }
   }
 
@@ -390,19 +390,19 @@
     document.querySelectorAll(".visual-lpv-btn").forEach(btn => {
       const bVal = parseInt(btn.getAttribute("data-val"), 10);
       if (bVal === state.visual.lpv) {
-        btn.className = "visual-lpv-btn active flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-sky-600 text-white font-bold border-2 border-sky-600 ring-2 ring-sky-300 shadow-sm cursor-pointer transition-all";
-        btn.querySelector(".lpv-num").className = "lpv-num text-base sm:text-lg font-black text-white leading-tight";
-        btn.querySelector(".lpv-lbl").className = "lpv-lbl text-xs text-sky-100 font-semibold leading-tight mt-0.5";
+        btn.className = "visual-lpv-btn active flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-teal-800 text-white font-bold border-2 border-teal-800 shadow-sm cursor-pointer transition-all";
+        btn.querySelector(".lpv-num").className = "lpv-num text-xs sm:text-sm font-mono font-bold text-white leading-tight";
+        btn.querySelector(".lpv-lbl").className = "lpv-lbl text-[10px] sm:text-xs text-teal-100 font-medium leading-tight mt-0.5";
       } else {
-        btn.className = "visual-lpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all";
-        btn.querySelector(".lpv-num").className = "lpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-        btn.querySelector(".lpv-lbl").className = "lpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5";
+        btn.className = "visual-lpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+        btn.querySelector(".lpv-num").className = "lpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+        btn.querySelector(".lpv-lbl").className = "lpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5";
       }
     });
 
     const statusEl = document.getElementById("lpv-status-text");
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-sky-700 font-bold not-italic">✓ Selected: ${LPV_MAP[String(val)]}</span>`;
+      statusEl.innerHTML = `<span class="text-teal-800 font-bold font-mono not-italic">✓ Selected: ${LPV_MAP[String(val)]}</span>`;
     }
   }
 
@@ -412,19 +412,19 @@
     document.querySelectorAll(".visual-vsav-btn").forEach(btn => {
       const bVal = parseInt(btn.getAttribute("data-val"), 10);
       if (bVal === state.visual.vsav) {
-        btn.className = "visual-vsav-btn active flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-sky-600 text-white font-bold border-2 border-sky-600 ring-2 ring-sky-300 shadow-sm cursor-pointer transition-all";
-        btn.querySelector(".vsav-num").className = "vsav-num text-base sm:text-lg font-black text-white leading-tight";
-        btn.querySelector(".vsav-lbl").className = "vsav-lbl text-[10px] sm:text-xs text-sky-100 font-semibold leading-tight mt-0.5";
+        btn.className = "visual-vsav-btn active flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-teal-800 text-white font-bold border-2 border-teal-800 shadow-sm cursor-pointer transition-all";
+        btn.querySelector(".vsav-num").className = "vsav-num text-xs sm:text-sm font-mono font-bold text-white leading-tight";
+        btn.querySelector(".vsav-lbl").className = "vsav-lbl text-[9px] sm:text-[10px] text-teal-100 font-medium leading-tight mt-0.5 truncate max-w-full";
       } else {
-        btn.className = "visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all";
-        btn.querySelector(".vsav-num").className = "vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-        btn.querySelector(".vsav-lbl").className = "vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+        btn.className = "visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+        btn.querySelector(".vsav-num").className = "vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+        btn.querySelector(".vsav-lbl").className = "vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
       }
     });
 
     const statusEl = document.getElementById("vsav-status-text");
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-sky-700 font-bold not-italic">✓ Selected: ${VSAV_MAP[String(val)]}</span>`;
+      statusEl.innerHTML = `<span class="text-teal-800 font-bold font-mono not-italic">✓ Selected: ${VSAV_MAP[String(val)]}</span>`;
     }
   }
 
@@ -435,19 +435,19 @@
     state.visual.comment = "";
 
     document.querySelectorAll(".visual-lsv-btn").forEach(btn => {
-      btn.className = "visual-lsv-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all";
-      btn.querySelector(".lsv-num").className = "lsv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-      btn.querySelector(".lsv-lbl").className = "lsv-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+      btn.className = "visual-lsv-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+      btn.querySelector(".lsv-num").className = "lsv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+      btn.querySelector(".lsv-lbl").className = "lsv-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
     });
     document.querySelectorAll(".visual-lpv-btn").forEach(btn => {
-      btn.className = "visual-lpv-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all";
-      btn.querySelector(".lpv-num").className = "lpv-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-      btn.querySelector(".lpv-lbl").className = "lpv-lbl text-xs text-slate-500 font-medium leading-tight mt-0.5";
+      btn.className = "visual-lpv-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+      btn.querySelector(".lpv-num").className = "lpv-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+      btn.querySelector(".lpv-lbl").className = "lpv-lbl text-[10px] sm:text-xs text-slate-600 font-medium leading-tight mt-0.5";
     });
     document.querySelectorAll(".visual-vsav-btn").forEach(btn => {
-      btn.className = "visual-vsav-btn flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl bg-white text-slate-800 border border-slate-200/90 hover:border-sky-300 shadow-2xs cursor-pointer transition-all";
-      btn.querySelector(".vsav-num").className = "vsav-num text-base sm:text-lg font-extrabold text-slate-800 leading-tight";
-      btn.querySelector(".vsav-lbl").className = "vsav-lbl text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5";
+      btn.className = "visual-vsav-btn flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs";
+      btn.querySelector(".vsav-num").className = "vsav-num text-xs sm:text-sm font-mono font-bold text-slate-800 leading-tight";
+      btn.querySelector(".vsav-lbl").className = "vsav-lbl text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight mt-0.5 truncate max-w-full";
     });
 
     setEl("lsv-status-text", "— Not selected —");
@@ -457,7 +457,7 @@
     const commentInput = document.getElementById("visual-comment");
     if (commentInput) commentInput.value = "";
 
-    showToast("Form evaluasi pencahayaan telah di-reset.", "sky");
+    showToast("Form evaluasi pencahayaan telah di-reset.", "teal");
   }
 
   // ── Submit Feedback Termal (Suhu) ──────────────────────────────────────────
@@ -621,8 +621,8 @@
     tbody.innerHTML = state.recentVotes.map(v => {
       const isThermal = v.category === "thermal";
       const catBadge = isThermal
-        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">🌡️ Termal</span>`
-        : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-200">💡 Visual</span>`;
+        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">🌡️ Termal</span>`
+        : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">💡 Visual</span>`;
 
       return `
         <tr class="hover:bg-slate-50/80 transition-colors">
