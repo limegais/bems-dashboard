@@ -31,3 +31,16 @@ form.addEventListener("submit", async (event) => {
     submitBtn.disabled = false;
   }
 });
+
+const guestBtn = document.getElementById("login-guest-btn");
+if (guestBtn) {
+  guestBtn.addEventListener("click", () => {
+    Session.save({
+      user: "guest",
+      role: "Guest",
+      token: "bems-guest-" + Date.now(),
+      loginAt: new Date().toISOString()
+    });
+    window.location.href = "comfort-feedback.html";
+  });
+}

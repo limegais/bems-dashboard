@@ -12,6 +12,12 @@ const AuthService = {
       if (u === "user" || u === "occupant") {
         return { token: "bems-token-" + Date.now(), user: "user", role: "Occupant" };
       }
+      if (u === "guest") {
+        return { token: "bems-guest-" + Date.now(), user: "guest", role: "Guest" };
+      }
+    }
+    if (u === "guest") {
+      return { token: "bems-guest-" + Date.now(), user: "guest", role: "Guest" };
     }
 
     // Cek akun mock lainnya jika USE_MOCK true atau sebagai fallback lokal

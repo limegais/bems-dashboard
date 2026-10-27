@@ -7,4 +7,5 @@ const MOCK_ACCOUNTS = [
   { role: "Researcher", username: "researcher", password: "Research@123" },
   { role: "Operator", username: "operator", password: "Operator@123" },
   { role: "Occupant", username: "occupant", password: "Occupant@123" },
+  { role: "Guest", username: "guest", password: "guest" },
 ];
