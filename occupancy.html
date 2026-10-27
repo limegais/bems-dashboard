@@ -192,7 +192,7 @@
             <!-- Real Camera Image (MJPEG Stream) -->
             <img
               id="camera-img"
-              src="http://100.116.178.92:5000/video_feed?token=bems2026"
+              src="/video_feed?token=bems2026"
               alt="Smart Room Camera Feed"
               class="w-full h-full object-contain relative z-10 transition-opacity duration-300"
               onload="handleCameraLoad()"
@@ -205,11 +205,11 @@
               <canvas id="sim-canvas" width="640" height="360" class="max-w-full max-h-[85%] rounded border border-teal-500/30 shadow-2xl mb-2"></canvas>
               <div class="flex flex-wrap items-center justify-center gap-2 z-20 mt-1">
                 <span id="fallback-status-text" class="text-xs text-teal-400 font-mono">
-                  ● Server Smartroom (<span id="fallback-url-target">http://100.116.178.92:5000</span>)
+                  ● Server Smartroom (<span id="fallback-url-target">Cloud Proxy</span>)
                 </span>
-                <a id="smartroom-login-link" href="http://100.116.178.92:5000/login" target="_blank" class="px-3 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow transition-colors flex items-center gap-1">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                  Login Smart Room (Raspi)
+                <a id="smartroom-login-link" href="/video_feed?token=bems2026" target="_blank" class="px-3 py-1 rounded bg-teal-700 hover:bg-teal-600 text-white text-xs font-semibold shadow transition-colors flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  Buka Feed Langsung
                 </a>
                 <button onclick="retryCamera()" class="px-3 py-1 rounded bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow transition-colors">
                   Muat Ulang Feed
@@ -251,9 +251,9 @@
 
             <!-- Server Endpoint Quick Selector -->
             <div class="flex items-center gap-2">
-              <span class="text-[11px] text-slate-400 font-medium">Server API:</span>
+              <span class="text-[11px] text-slate-400 font-medium">Server Stream:</span>
               <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs">
-                <input id="camera-url-input" type="text" value="http://100.116.178.92:5000" class="bg-transparent border-none outline-none font-mono text-[11px] text-slate-700 w-48" placeholder="http://100.116.178.92:5000" />
+                <input id="camera-url-input" type="text" value="" class="bg-transparent border-none outline-none font-mono text-[11px] text-slate-700 w-44" placeholder="Cloud Proxy (Default)" />
                 <button onclick="applyCameraUrl()" class="ml-1 text-[10px] font-bold text-teal-700 hover:text-teal-900">SIMPAN</button>
               </div>
             </div>
@@ -605,16 +605,16 @@
       <div>
         <div class="flex items-center justify-between mb-1">
           <label class="font-semibold text-slate-700">URL Endpoint Server Smart Room</label>
-          <span class="text-[10px] text-slate-400">Port Default: 5000</span>
+          <span class="text-[10px] text-slate-400">Rekomendasi: Cloud Proxy</span>
         </div>
-        <input type="text" id="modal-url-input" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-teal-600" value="http://100.116.178.92:5000" placeholder="http://100.116.178.92:5000" />
+        <input type="text" id="modal-url-input" class="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-teal-600" value="" placeholder="Otomatis (Cloud Proxy)" />
         
         <!-- Preset tombol cepat -->
         <div class="flex items-center gap-1.5 mt-2 flex-wrap">
           <span class="text-[10px] text-slate-400 font-medium">Preset Cepat:</span>
-          <button type="button" onclick="setPresetUrl('http://100.116.178.92:5000')" class="px-2 py-0.5 rounded border border-teal-200 bg-teal-50 hover:bg-teal-100 font-mono text-[10px] text-teal-800 font-bold">Raspi Tailscale (100.116.178.92:5000)</button>
-          <button type="button" onclick="setPresetUrl('http://localhost:5000')" class="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 font-mono text-[10px] text-slate-700">Localhost</button>
-          <button type="button" onclick="setPresetUrl('http://raspberrypi.local:5000')" class="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 font-mono text-[10px] text-slate-700">raspberrypi.local</button>
+          <button type="button" onclick="setPresetUrl(window.location.origin)" class="px-2 py-0.5 rounded border border-teal-200 bg-teal-50 hover:bg-teal-100 font-mono text-[10px] text-teal-800 font-bold">Auto / Cloud Proxy (Rekomendasi Semua Device)</button>
+          <button type="button" onclick="setPresetUrl('http://10.18.0.213:5000')" class="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 font-mono text-[10px] text-slate-700">Raspi LAN Lab (10.18.0.213:5000)</button>
+          <button type="button" onclick="setPresetUrl('http://100.116.178.92:5000')" class="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 font-mono text-[10px] text-slate-700">Raspi Tailscale (100.116.178.92:5000)</button>
         </div>
       </div>
 
@@ -660,7 +660,19 @@
   /* ══════════════════════════════════════════════════════════════════════════
      SMART ROOM CAMERA & OCCUPANCY INTEGRATION
      ══════════════════════════════════════════════════════════════════════════ */
-  let cameraServerUrl = localStorage.getItem("smartroom_camera_url") || "http://100.116.178.92:5000";
+  // Default ke origin dashboard (Cloud Reverse Proxy HTTPS) agar bisa dibuka di device manapun tanpa kendala Mixed Content / Tailscale
+  const defaultProxyUrl = window.location.origin;
+  let savedCameraUrl = localStorage.getItem("smartroom_camera_url");
+  
+  // Auto-upgrade jika sebelumnya tersimpan IP Tailscale 100.116.178.92 atau protokol tidak aman HTTP di halaman HTTPS
+  if (!savedCameraUrl || 
+      savedCameraUrl.includes("100.116.178.92") || 
+      (window.location.protocol === "https:" && savedCameraUrl.startsWith("http://"))) {
+    savedCameraUrl = defaultProxyUrl;
+    localStorage.setItem("smartroom_camera_url", savedCameraUrl);
+  }
+
+  let cameraServerUrl = savedCameraUrl;
   let cameraEnabled   = true;
   let isSimMode       = false;
   let isCameraOnline  = false;
@@ -670,22 +682,43 @@
   // Initialize input
   const urlInput = document.getElementById("camera-url-input");
   const modalInput = document.getElementById("modal-url-input");
-  if (urlInput) urlInput.value = cameraServerUrl;
-  if (modalInput) modalInput.value = cameraServerUrl;
+  if (urlInput) urlInput.value = cameraServerUrl === window.location.origin ? "" : cameraServerUrl;
+  if (modalInput) modalInput.value = cameraServerUrl === window.location.origin ? "" : cameraServerUrl;
   updateUrlLabels();
+
+  function getEffectiveBaseUrl() {
+    if (!cameraServerUrl || cameraServerUrl === window.location.origin) {
+      return "";
+    }
+    return cameraServerUrl.replace(/\/$/, "");
+  }
+
+  function getCameraFeedUrl() {
+    const base = getEffectiveBaseUrl();
+    return `${base}/video_feed?token=bems2026`;
+  }
+
+  function getCameraApiUrl(endpoint) {
+    const base = getEffectiveBaseUrl();
+    return `${base}${endpoint}?token=bems2026`;
+  }
 
   function updateUrlLabels() {
     const disp = document.getElementById("current-endpoint-display");
     const foot = document.getElementById("footer-server-url");
     const fUrl = document.getElementById("fallback-url-target");
-    if (disp) disp.textContent = `${cameraServerUrl}/video_feed`;
-    if (foot) foot.textContent = cameraServerUrl;
-    if (fUrl) fUrl.textContent = cameraServerUrl;
+    const isProxy = !cameraServerUrl || cameraServerUrl === window.location.origin;
+    const displayLabel = isProxy ? "Cloud Proxy (Aktif)" : cameraServerUrl;
+
+    if (disp) disp.textContent = isProxy ? "/video_feed" : `${cameraServerUrl}/video_feed`;
+    if (foot) foot.textContent = displayLabel;
+    if (fUrl) fUrl.textContent = displayLabel;
   }
 
   function applyCameraUrl() {
     if (urlInput) {
-      cameraServerUrl = urlInput.value.trim().replace(/\/$/, "");
+      const val = urlInput.value.trim().replace(/\/$/, "");
+      cameraServerUrl = val === "" ? window.location.origin : val;
       localStorage.setItem("smartroom_camera_url", cameraServerUrl);
       updateUrlLabels();
       retryCamera();
@@ -694,7 +727,7 @@
 
   function setPresetUrl(url) {
     const m = document.getElementById("modal-url-input");
-    if (m) m.value = url;
+    if (m) m.value = (url === window.location.origin) ? "" : url;
   }
 
   function toggleConfigModal() {
@@ -704,9 +737,10 @@
 
   function saveAndApplyModalConfig() {
     if (modalInput) {
-      cameraServerUrl = modalInput.value.trim().replace(/\/$/, "");
+      const val = modalInput.value.trim().replace(/\/$/, "");
+      cameraServerUrl = val === "" ? window.location.origin : val;
       localStorage.setItem("smartroom_camera_url", cameraServerUrl);
-      if (urlInput) urlInput.value = cameraServerUrl;
+      if (urlInput) urlInput.value = cameraServerUrl === window.location.origin ? "" : cameraServerUrl;
       updateUrlLabels();
       toggleConfigModal();
       retryCamera();
@@ -715,18 +749,26 @@
 
   function testCameraConnection() {
     const statusBox = document.getElementById("modal-ping-status");
-    const target = (modalInput ? modalInput.value.trim().replace(/\/$/, "") : cameraServerUrl) + "/api/camera/status?token=bems2026";
+    const rawVal = modalInput ? modalInput.value.trim().replace(/\/$/, "") : "";
+    const base = (!rawVal || rawVal === window.location.origin) ? "" : rawVal;
+    const target = `${base}/api/camera/status?token=bems2026`;
+
     if (statusBox) statusBox.innerHTML = "Memeriksa status API endpoint...";
-    fetch(target, { method: "GET", mode: "cors", credentials: "include" })
+    fetch(target, { method: "GET", mode: "cors" })
       .then(res => res.json())
       .then(data => {
         if (statusBox) {
-          statusBox.innerHTML = `<span class="text-teal-600 font-bold">✓ KONEKSI SUKSES:</span> Status: ${data.status}, Res: ${data.width}x${data.height}, FPS: ${data.fps}`;
+          if (data.status === "active") {
+            const proxyNote = data.proxy ? ` (Cloud Proxy → ${data.backend || 'Raspberry Pi'})` : "";
+            statusBox.innerHTML = `<span class="text-teal-600 font-bold">✓ KONEKSI SUKSES:</span> Status: ${data.status}, Res: ${data.width}x${data.height}, FPS: ${data.fps}${proxyNote}`;
+          } else {
+            statusBox.innerHTML = `<span class="text-amber-600 font-bold">⚠ STATUS OFFLINE:</span> Kamera merespons tetapi offline (${data.message || 'Standby'}).`;
+          }
         }
       })
       .catch(err => {
         if (statusBox) {
-          statusBox.innerHTML = `<span class="text-rose-600 font-bold">✗ GAGAL:</span> Server belum aktif di port ini (${err.message}). Anda dapat menjalankan dashboard Smartroom atau menggunakan mode simulasi AI.`;
+          statusBox.innerHTML = `<span class="text-rose-600 font-bold">✗ GAGAL:</span> Server belum aktif (${err.message}). Gunakan mode simulasi AI jika kamera fisik sedang nonaktif.`;
         }
       });
   }
@@ -755,7 +797,7 @@
   function retryCamera() {
     const img = document.getElementById("camera-img");
     if (!img) return;
-    img.src = `${cameraServerUrl}/video_feed?token=bems2026&t=${Date.now()}`;
+    img.src = `${getCameraFeedUrl()}&t=${Date.now()}`;
     checkCameraStatusApi();
   }
 
@@ -765,7 +807,7 @@
     const btn   = document.getElementById("cam-toggle-btn");
     
     // Call Smartroom toggle API
-    fetch(`${cameraServerUrl}/api/camera/toggle`, { method: "POST", mode: "cors" })
+    fetch(getCameraApiUrl("/api/camera/toggle"), { method: "POST", mode: "cors" })
       .then(r => r.json())
       .catch(() => {});
 
@@ -798,7 +840,7 @@
 
   /* ── Check Smartroom Camera Status API ── */
   function checkCameraStatusApi() {
-    fetch(`${cameraServerUrl}/api/camera/status?token=bems2026`, { method: "GET", mode: "cors", credentials: "include" })
+    fetch(getCameraApiUrl("/api/camera/status"), { method: "GET", mode: "cors" })
       .then(res => res.json())
       .then(data => {
         if (data.status === "active") {

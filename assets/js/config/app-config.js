@@ -125,11 +125,13 @@ const APP_CONFIG = {
     }
   },
 
-  // ── Smart Room (Raspberry Pi Tailscale Edge) ──────────────────────────────
+  // ── Smart Room (Raspberry Pi Edge + Cloud Proxy) ───────────────────────────
   SMARTROOM: {
-    SERVER_URL: "http://100.116.178.92:5000",
-    VIDEO_FEED: "http://100.116.178.92:5000/video_feed",
-    CAMERA_STATUS: "http://100.116.178.92:5000/api/camera/status",
+    SERVER_URL: typeof window !== "undefined" ? window.location.origin : "http://10.18.0.213:5000",
+    VIDEO_FEED: "/video_feed",
+    CAMERA_STATUS: "/api/camera/status",
+    RASPI_LAN_URL: "http://10.18.0.213:5000",
+    RASPI_TAILSCALE_URL: "http://100.116.178.92:5000",
   },
 };
 

@@ -22,6 +22,7 @@ import sys
 import io
 import csv
 import json
+import socket
 import urllib.request
 import urllib.parse
 from datetime import datetime, timezone, timedelta
@@ -46,6 +47,17 @@ ENERGY_API_URL = os.getenv("ENERGY_API_URL", "https://iotlab-uns.com/api_energy.
 ENERGY_API_KEY = os.getenv("ENERGY_API_KEY", "iotlab_smartroom_2024")
 TARIF_KWH = 1500.0  # Rp/kWh (PLN B-2/TR)
 CARBON_FACTOR = 0.85  # kg CO2 / kWh
+
+# ── Reverse Proxy Camera Smart Room (Raspi YOLOv8 Edge) ──────────────────────
+# Prioritas 1: IP LAN Fisik Lab (10.18.0.213)
+# Prioritas 2: IP Tailscale CGNAT (100.116.178.92)
+# Prioritas 3: Localhost (127.0.0.1)
+CAMERA_BACKENDS = [
+    os.getenv("CAMERA_BACKEND_URL", "http://10.18.0.213:5000"),
+    "http://100.116.178.92:5000",
+    "http://127.0.0.1:5000"
+]
+CAMERA_TOKEN = os.getenv("CAMERA_TOKEN", "bems2026")
 
 
 def get_pg_connection():
@@ -182,6 +194,19 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_api_status()
             return
 
+        # ── Reverse Proxy Camera Smart Room Feed & Status ─────────────────────
+        if path in ["/api/camera/video_feed", "/api/camera/stream", "/video_feed"]:
+            self.handle_camera_video_feed(query)
+            return
+
+        if path == "/api/camera/status":
+            self.handle_camera_status(query)
+            return
+
+        if path == "/api/camera/toggle":
+            self.handle_camera_toggle(is_post=False)
+            return
+
         # ── API Export Sensors (PostgreSQL bems_db) ───────────────────────────
         if path in ["/api/export/sensors", "/api/export/sensors.csv"]:
             self.handle_export_sensors_csv(query)
@@ -218,6 +243,9 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
+        if path == "/api/camera/toggle":
+            self.handle_camera_toggle(is_post=True)
+            return
         if path == "/api/optimize":
             content_length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(content_length) if content_length > 0 else b"{}"
@@ -305,6 +333,10 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
         data = {
             "status": "online",
             "server_time": datetime.now().isoformat(),
+            "camera_proxy": {
+                "active": True,
+                "backends": CAMERA_BACKENDS
+            },
             "databases": {
                 "postgresql": {
                     "connected": pg_ok,
@@ -320,6 +352,133 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
             }
         }
         resp_bytes = json.dumps(data, indent=2).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_cors_headers()
+        self.send_header("Content-Length", str(len(resp_bytes)))
+        self.end_headers()
+        self.wfile.write(resp_bytes)
+
+    # ── Camera Reverse Proxy Handlers ─────────────────────────────────────────
+    def handle_camera_video_feed(self, query):
+        """Streaming reverse proxy untuk MJPEG camera feed dari Raspberry Pi"""
+        token = query.get("token", [CAMERA_TOKEN])[0]
+        upstream_resp = None
+        target_backend = None
+
+        for base_url in CAMERA_BACKENDS:
+            backend_url = f"{base_url}/video_feed?token={token}"
+            try:
+                req = urllib.request.Request(
+                    backend_url,
+                    headers={"User-Agent": "BEMS-Proxy/1.0"}
+                )
+                resp = urllib.request.urlopen(req, timeout=4)
+                if resp.status == 200:
+                    upstream_resp = resp
+                    target_backend = base_url
+                    break
+            except Exception:
+                continue
+
+        if not upstream_resp:
+            self.send_response(503)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_cors_headers()
+            self.end_headers()
+            self.wfile.write(b'{"status":"offline","message":"Camera server unreachable"}')
+            return
+
+        try:
+            content_type = upstream_resp.headers.get("Content-Type", "multipart/x-mixed-replace; boundary=frame")
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
+            self.send_header("X-Camera-Backend", target_backend)
+            self.send_cors_headers()
+            self.end_headers()
+
+            while True:
+                chunk = upstream_resp.read(4096)
+                if not chunk:
+                    break
+                self.wfile.write(chunk)
+                self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, socket.error):
+            # Client terputus / tab browser ditutup
+            pass
+        except Exception as e:
+            sys.stderr.write(f"[BEMS-Camera] Stream error: {e}\n")
+        finally:
+            try:
+                upstream_resp.close()
+            except Exception:
+                pass
+
+    def handle_camera_status(self, query):
+        """Proxy status kamera dari Raspberry Pi"""
+        token = query.get("token", [CAMERA_TOKEN])[0]
+        data = None
+        target_backend = None
+
+        for base_url in CAMERA_BACKENDS:
+            backend_url = f"{base_url}/api/camera/status?token={token}"
+            try:
+                req = urllib.request.Request(
+                    backend_url,
+                    headers={"User-Agent": "BEMS-Proxy/1.0"}
+                )
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    if resp.status == 200:
+                        data = json.loads(resp.read().decode("utf-8"))
+                        target_backend = base_url
+                        break
+            except Exception:
+                continue
+
+        if data:
+            data["proxy"] = "active"
+            data["backend"] = target_backend
+            resp_bytes = json.dumps(data).encode("utf-8")
+        else:
+            resp_bytes = json.dumps({
+                "status": "offline",
+                "proxy": "active",
+                "message": "Camera server offline"
+            }).encode("utf-8")
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_cors_headers()
+        self.send_header("Content-Length", str(len(resp_bytes)))
+        self.end_headers()
+        self.wfile.write(resp_bytes)
+
+    def handle_camera_toggle(self, is_post=False):
+        """Proxy toggle ON/OFF kamera ke Raspberry Pi"""
+        data = None
+        for base_url in CAMERA_BACKENDS:
+            backend_url = f"{base_url}/api/camera/toggle?token={CAMERA_TOKEN}"
+            try:
+                req_data = b"" if is_post else None
+                req = urllib.request.Request(
+                    backend_url,
+                    data=req_data,
+                    headers={"User-Agent": "BEMS-Proxy/1.0"}
+                )
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    if resp.status == 200:
+                        data = json.loads(resp.read().decode("utf-8"))
+                        break
+            except Exception:
+                continue
+
+        if not data:
+            data = {"status": "error", "message": "Failed to reach camera"}
+
+        resp_bytes = json.dumps(data).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_cors_headers()
@@ -832,11 +991,16 @@ class BemsRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(out_bytes)
 
 
+class ThreadingBemsServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    daemon_threads = True
+    allow_reuse_address = True
+
+
 def main():
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("0.0.0.0", PORT), BemsRequestHandler) as httpd:
-        print(f"[BEMS-Web] Server aktif di http://0.0.0.0:{PORT}")
+    with ThreadingBemsServer(("0.0.0.0", PORT), BemsRequestHandler) as httpd:
+        print(f"[BEMS-Web] Server aktif di http://0.0.0.0:{PORT} (Threading Mode)")
         print(f"[BEMS-Web] CSV Export Engine: Semicolon (;) Delimiter + CRLF + UTF-8 BOM Active")
+        print(f"[BEMS-Web] Camera Reverse Proxy: Active (Primary: {CAMERA_BACKENDS[0]})")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
